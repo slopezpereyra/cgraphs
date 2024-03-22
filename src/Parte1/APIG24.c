@@ -26,3 +26,11 @@ color Color(u32 i, Grafo G){
 u32 Vecino(u32 j, u32 i, Grafo G){
     return 0;
 }
+
+u32 Hashv() {
+    return 0;
+}
+
+u32 Hashl(u32 x, u32 y) {
+    return 0;
+}

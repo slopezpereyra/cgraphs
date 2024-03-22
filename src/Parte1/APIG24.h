@@ -1,7 +1,6 @@
 #ifndef APIG24_H
 #define APIG24_H
 
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -10,8 +9,6 @@
 
 // Grafo es un puntero a una estructura GrafoSt,
 // la cual debe estar definida en el .h de arriba
-
-typedef GrafoSt *Grafo;
 
 // Construccion/destruccion
 
@@ -60,7 +57,7 @@ u32 Delta(Grafo G);
 
 // *Funciones de extraccion de informacion de vertices
 
-u32 Grado(u32 i,Grafo G);
+u32 Grado(u32 i, Grafo G);
 color Color(u32 i, Grafo G);
 
 /**
@@ -70,14 +67,13 @@ color Color(u32 i, Grafo G);
 */
 u32 Vecino(u32 j, u32 i, Grafo G);
 
-
 // *Funciones con colores
 
 /**
  * Si i es mayor o igual que el numero de vertices, esta funcion no hace nada.
  * Si i es menor que el numero de vertices, la funcion asigna el color x al vertice i.
 */
-void AsignarColor(color x, u32 i, Grafo  G);
+void AsignarColor(color x, u32 i, Grafo G);
 
 /**
  * Si n es el numero de vertices de G, esta funcion asigna a Color[i] el color que tiene el vertice i en G, para cada i entre 0 y n − 1.
@@ -102,6 +98,10 @@ llamar a esta funcion, el array Color puede tener cualquier cosa. (dependiendo d
  *
  * Por lo tanto, el usuario de esta funcion debe tener en cuenta esto
 */
-void ImportarColores(color* Color, Grafo  G);
+void ImportarColores(color* Color, Grafo G);
+
+u32 Hashv();
+
+u32 Hashl(u32 x, u32 y);
 
 #endif
