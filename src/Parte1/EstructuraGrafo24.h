@@ -15,7 +15,7 @@ struct GrafoSt {
     u32 delta;          // Max de grados
     u32 sigma;          // Min de grados
     vertice* _vertices; // Arreglo de punteros a Vertice
-    lado* _lado;
+    lado* _lados;
 };
 
 struct Vertice {
