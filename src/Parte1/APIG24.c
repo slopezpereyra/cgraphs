@@ -12,7 +12,7 @@ u32 NumeroDeLados(Grafo G) {
 }
 
 u32 Delta(Grafo G) {
-    return 0;
+    return G->delta;
 }
 
 u32 Grado(u32 i, Grafo G){
