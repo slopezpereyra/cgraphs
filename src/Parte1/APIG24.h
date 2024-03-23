@@ -100,7 +100,7 @@ llamar a esta funcion, el array Color puede tener cualquier cosa. (dependiendo d
 */
 void ImportarColores(color* Color, Grafo G);
 
-u32 Hashv();
+u32 Hashv(u32 x);
 
 u32 Hashl(u32 x, u32 y);
 

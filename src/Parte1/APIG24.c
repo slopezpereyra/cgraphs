@@ -27,9 +27,19 @@ u32 Vecino(u32 j, u32 i, Grafo G){
     return 0;
 }
 
-u32 Hashv() {
-    return 0;
+u32 Hashv(u32 x) {
+    x = ((x >> 16) ^ x) * 0x45d9f3b;
+    x = ((x >> 16) ^ x) * 0x45d9f3b;
+    x = (x >> 16) ^ x;
+    return x;
 }
+
+// u32 UnHashv() {
+//     x = ((x >> 16) ^ x) * 0x119de1f3;
+//     x = ((x >> 16) ^ x) * 0x119de1f3;
+//     x = (x >> 16) ^ x;
+//     return x;
+// }
 
 u32 Hashl(u32 x, u32 y) {
     return 0;
