@@ -165,7 +165,7 @@ u32 NumeroDeVertices(Grafo G) {
 }
 
 u32 NumeroDeLados(Grafo G) {
-    return 0;
+    return G->m;
 }
 
 u32 Delta(Grafo G) {
