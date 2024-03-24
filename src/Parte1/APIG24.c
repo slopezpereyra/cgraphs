@@ -173,7 +173,12 @@ u32 Delta(Grafo G) {
 }
 
 u32 Grado(u32 i, Grafo G){
-    return 0;
+    int res = 0;
+    if (i < G->n) {
+    // TODO change i if it's the name of the vertex, not the hash
+        res = G->_vertices[i]->grado;
+    }
+    return res;
 }
 
 color Color(u32 i, Grafo G){
