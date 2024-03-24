@@ -1,0 +1,9 @@
+BasedOnStyle: LLVM
+
+IndentWidth: 4
+PointerAlignment: Left
+ReflowComments: false
+ColumnLimit: 80
+UseTab: Never
+
+# https://clang.llvm.org/docs/ClangFormatStyleOptions.html
