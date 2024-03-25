@@ -3,12 +3,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-u32 max(u32 x, u32 y){
-    if (x > y) { return(x); }return(y);
+u32 max(u32 x, u32 y) {
+    if (x > y) {
+        return (x);
+    }
+    return (y);
 }
 
-u32 min(u32 x, u32 y){
-    if (x < y) { return(x); }return(y);
+u32 min(u32 x, u32 y) {
+    if (x < y) {
+        return (x);
+    }
+    return (y);
 }
 
 /**
@@ -55,77 +61,97 @@ int CompararLados(const void* a, const void* b) {
  * Encuentra el u32 key tal que ( G -> _vertices )[key] contiene al vértice 
  * de nombre v.
  */
-u32 ObtenerVertexKey(u32 v, Grafo G){
-    u32 vertex_key = Hashv(v) % G -> n;
-    while ( (G -> _vertices)[vertex_key] -> nombre != v ){
-        vertex_key++;
-    }
-    return(vertex_key);
-}
-
+// u32 ObtenerVertexKey(u32 v, Grafo G) {
+//     u32 vertex_key = Hashv(v) % G->n;
+//     while ((G->_vertices)[vertex_key]->nombre != v) {
+//         vertex_key++;
+//     }
+//     return (vertex_key);
+// }
 
 /**
  * Inicializa un grafo de n vértices y m lados.
  */
-Grafo InicializarGrafo(u32 n, u32 m){
-    Grafo G = (Grafo) malloc(sizeof(struct GrafoSt));
-    G -> n = n;
-    G -> m = m;
-    G -> _vertices = (vertice *) malloc(n * sizeof(vertice));
-    G -> _lados = (lado *) malloc(2 * m * sizeof(lado));
+Grafo InicializarGrafo(u32 n, u32 m) {
+    Grafo G = (Grafo)malloc(sizeof(struct GrafoSt));
+    G->n = n;
+    G->m = m;
+    G->_vertices = (vertice*)malloc(n * sizeof(vertice));
+    G->nextVertice = 0;
+    G->_lados = (lado*)malloc(2 * m * sizeof(lado));
+    G->nextLado = 0;
 
-    return(G);
+    return (G);
 }
 
 /**
  * Comprueba si un vértice de nombre `nombre` ya existe en el grafo `G`.
- * De ser así no hace nada. De no ser así, lo agrega a `G -> _vertices` en la 
+ * De ser así no hace nada. De no ser así, lo agrega a `G -> _vertices` en la
  * posición correspondiente a su hash code.
  */
-void AgregarVertice(Grafo G, u32 nombre){
-    u32 key = Hashv(nombre) % (G -> n);
-    while ( (G -> _vertices)[key] != NULL ){
-        if ( ( G -> _vertices[key] ) -> nombre == nombre ){
+void AgregarVertice(Grafo G, u32 nombre) {
+    // NOTE: No hace falta chequear que si ya existe,
+    // dado que es utilizado despues de ordenar los lados.
+    (G->_vertices)[G->nextVertice] = (vertice)malloc(sizeof(struct Vertice));
+    (G->_vertices)[G->nextVertice]->nombre = nombre;
+    G->nextVertice++;
+
+    // OLD
+    // u32 key = Hashv(nombre) % (G->n);
+    // while ((G->_vertices)[key] != NULL) {
+        // if ((G->_vertices[key])->nombre == nombre) {
             // This vertex has already been included.
-            return;
-        }
-        key++;
-    }
-    ( G ->_vertices )[key] = (vertice)malloc(sizeof(struct Vertice));
-    ( G ->_vertices )[key] -> nombre = nombre;
+            // return;
+        // }
+        // key++;
+    // }
+    // (G->_vertices)[key] = (vertice)malloc(sizeof(struct Vertice));
+    // (G->_vertices)[key]->nombre = nombre;
 }
 
 /**
- * Dado un grafo `G` y nombres de vértices `x` e `y`, agrega en  `G -> _lados` 
- * el puntero al `Lado` x ~ y. Lo agrega en la posición dada por el hash code 
+ * Dado un grafo `G` y nombres de vértices `x` e `y`, agrega en  `G -> _lados`
+ * el puntero al `Lado` x ~ y. Lo agrega en la posición dada por el hash code
  * del lado.
- * 
  */
-void AgregarLado(Grafo G, u32 x, u32 y){
-    // Como Hashl -> 0, esta funcion agrega los lados en el orden en que 
-    // son cargados.
-    u32 index = Hashl(x, y);
-    // Handle collisions
-    while ( (G -> _lados)[index] != NULL ){
-        index++;
-    }
-    ( G ->_lados )[index] = (lado)malloc(sizeof(struct Lado));
-    ( G ->_lados )[index] -> x = x;
-    ( G ->_lados )[index] -> y = y;
-    u32 vertex_key = ObtenerVertexKey(x, G);
-    ( G -> _vertices )[vertex_key] -> grado = ( G -> _vertices )[vertex_key] -> grado + 1;
+void AgregarLado(Grafo G, u32 x, u32 y) {
+    (G->_lados)[G->nextLado] = (lado)malloc(sizeof(struct Lado));
+    (G->_lados)[G->nextLado]->x = x;
+    (G->_lados)[G->nextLado]->y = y;
+    G->nextLado++;
+
+    // OLD
+    // (G->_lados)[index] = (lado)malloc(sizeof(struct Lado));
+    // (G->_lados)[index]->x = x;
+    // (G->_lados)[index]->y = y;
+    // u32 vertex_key = ObtenerVertexKey(x, G);
+    // (G->_vertices)[vertex_key]->grado = (G->_vertices)[vertex_key]->grado + 1;
 }
 
-Grafo ConstruirGrafo(){
+// TODO
+// void IncremetarGrado(Grafo G, ) {
+//     G->
+// }
+
+/**
+ * Dado un grafo `G` y nombres de vertices `x` e `y`,
+ * agrega a ambos vertices sus correspondiente vecino.
+*/
+void AgregarVecino(Grafo G, u32 x, u32 y) {
+    // TODO AgregarVecino()
+    // (G->_vertices)[]
+}
+
+Grafo ConstruirGrafo() {
     char filename[100];
-    FILE *file;
+    FILE* file;
     // Ingresar nombre del archivo
     printf("Nombre del archivo a leer (dejelo vacío por ahora!): ");
     fgets(filename, sizeof(filename), stdin);
 
-    // Abrir el archivo (notar que por ahora abre un archivo constante, 
+    // Abrir el archivo (notar que por ahora abre un archivo constante,
     // a modo de testeo).
-    file = fopen("2gb.txt", "r");
+    file = fopen("K5.txt", "r");
     if (file == NULL) {
         printf("Error opening file.\n");
         return NULL;
@@ -134,79 +160,60 @@ Grafo ConstruirGrafo(){
     // Read and print the contents of the file
     char line[100];
     u32 n, m;
-    u32 n_key = 0, m_key = 0;
+    // u32 n_key = 0, m_key = 0;  // OLD
     Grafo G;
     while (fgets(line, sizeof(line), file) != NULL) {
         printf("%s", line);
         // Extraer n y m de la línea de la forma "p edge n m".
         if (sscanf(line, "p edge %d %d", &n, &m) == 2) {
             G = InicializarGrafo(n, m);
-        } 
+        }
         if (sscanf(line, "e %d %d", &n, &m) == 2) {
-            AgregarVertice(G, n);
-            AgregarVertice(G, m);
+            // AgregarVertice(G, n);  // OLD
+            // AgregarVertice(G, m);  // OLD
             AgregarLado(G, n, m);
             AgregarLado(G, m, n);
-            n_key = ObtenerVertexKey(n, G);
-            m_key = ObtenerVertexKey(m, G);
-            G -> delta = max( max(G -> _vertices[n_key] -> grado, 
-                                  G -> _vertices[m_key] -> grado),
-                              G -> delta);
-        } 
+
+            // OLD
+            // n_key = ObtenerVertexKey(n, G);
+            // m_key = ObtenerVertexKey(m, G);
+            // G->delta =
+            //     max(max(G->_vertices[n_key]->grado, G->_vertices[m_key]->grado),
+            //         G->delta);
+        }
     }
     fclose(file);
-    qsort(G -> _lados, 2 * ( G -> m ), sizeof(lado), CompararLados);
+
+    // Ordenamos el array de lados
+    qsort(G->_lados, 2 * (G->m), sizeof(lado), CompararLados);
+
+    // Una vez tenemos ordenado lados, procedemos a crear los vertices
+    // NOTA: Los vertices van a ser guardados ordenados.
+    // TODO Agregar leer lados y generar vertices
 
     return G;
 }
 
-u32 NumeroDeVertices(Grafo G) {
-    return 0;
-}
+void DestruirGrafo(Grafo G) {}
 
-u32 NumeroDeLados(Grafo G) {
-    return G->m;
-}
+u32 NumeroDeVertices(Grafo G) { return G->n; }
 
-u32 Delta(Grafo G) {
-    return G->delta;
-}
+u32 NumeroDeLados(Grafo G) { return G->m; }
 
-u32 Grado(u32 i, Grafo G){
+u32 Delta(Grafo G) { return G->delta; }
+
+u32 Grado(u32 i, Grafo G) {
     int res = 0;
     if (i < G->n) {
-    // TODO change i if it's the name of the vertex, not the hash
+        // TODO change i if it's the name of the vertex, not the hash
         res = G->_vertices[i]->grado;
     }
     return res;
 }
 
-color Color(u32 i, Grafo G){
-    return 0;
-}
+color Color(u32 i, Grafo G) { return 0; }
 
-u32 Vecino(u32 j, u32 i, Grafo G){
-    return 0;
-}
-
-u32 Hashv(u32 x) {
-    x = ((x >> 16) ^ x) * 0x45d9f3b;
-    x = ((x >> 16) ^ x) * 0x45d9f3b;
-    x = (x >> 16) ^ x;
-    return(x);
-}
-
-// u32 UnHashv() {
-//     x = ((x >> 16) ^ x) * 0x119de1f3;
-//     x = ((x >> 16) ^ x) * 0x119de1f3;
-//     x = (x >> 16) ^ x;
-//     return x;
-// }
-
-u32 Hashl(u32 x, u32 y) {
-    return 0;
-}
-
+u32 Vecino(u32 j, u32 i, Grafo G) { return 0; }
 
 void ImprimirGrafo(Grafo G) {
     printf("\nn = %d\n", G -> n);

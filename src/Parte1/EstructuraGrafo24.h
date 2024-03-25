@@ -15,15 +15,16 @@ struct GrafoSt {
     u32 delta;          // Max de grados
     u32 sigma;          // Min de grados
     vertice* _vertices; // Arreglo de punteros a Vertice
+    u32 nextVertice;    // Contiene el siguiente espacio vacio
     lado* _lados;
+    u32 nextLado;       // Contiene el siguiente espacio vacio
 };
 
 struct Vertice {
-    u32 nombre; // Nombre del vertice
-    u32 grado;  // Numero de vecinos
+    u32 nombre;         // Nombre del vertice
+    u32 grado;          // Numero de vecinos
     color color_;
-    // Modificar
-    u32* Vecinos; // Puntero al indice del primer vecino
+    u32 primerVecino;       // Indice del primer vecino del arreglo de lados
 };
 
 struct Lado {
