@@ -20,16 +20,26 @@ struct GrafoSt {
     u32 nextLado;       // Contiene el siguiente espacio vacio
 };
 
+/**
+ * Size: `n`
+*/
 struct Vertice {
     u32 nombre;         // Nombre del vertice
     u32 grado;          // Numero de vecinos
-    color color_;
-    u32 primerVecino;       // Indice del primer vecino del arreglo de lados
+    color color_;       // Color del vertice
+    u32 primerVecino;   // Indice del primer vecino del arreglo de lados
 };
 
+/**
+ * Contiene los lados `xy` e `ye`.
+ *
+ * Size: `m * 2`
+*/
 struct Lado {
-    u32 x;
-    u32 y;
+    u32 xN;              // Nombre del vertice `x` del lado `xy`
+    u32 yN;              // Nombre del vertice `y` del lado `yx`
+    vertice xV;          // Vertice `x` del lado `xy`
+    vertice yV;          // Vertice `y` del lado `yx`
 };
 
 #endif

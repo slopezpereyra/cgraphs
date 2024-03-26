@@ -57,7 +57,16 @@ u32 Delta(Grafo G);
 
 // *Funciones de extraccion de informacion de vertices
 
+/**
+ * Si i es menor que el numero de vertices, devuelve el grado del vertice i.
+ * Si i es mayor o igual que el numero de vertices, devuelve 0. (Esto nunca puede ser un grado en los grafos que testeeemos, pues no habra vertices aislados).
+*/
 u32 Grado(u32 i, Grafo G);
+
+/**
+ * Si i es menor que el numero de vertices, la funcion devuelve el color del vertice i.
+ * Si i es mayor o igual que el numero de vertices, devuelve 232 − 1.
+*/
 color Color(u32 i, Grafo G);
 
 /**
