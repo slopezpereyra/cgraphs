@@ -47,13 +47,13 @@ compilado sin esa flag, dado que esa flag provoca una gran demora en la ejecuciÂ
 
 - [ ] ConstruirGrafo()
 - [ ] DestruirGrafo()
-- [ ] NumeroDeVertices()
-- [ ] NumeroDeLados()
-- [ ] Delta()
+- [x] NumeroDeVertices()
+- [x] NumeroDeLados()
+- [x] Delta()
 - [ ] Grado()
-- [ ] Color()
+- [x] Color()
 - [ ] Vecino()
-- [ ] AsignarColor()
+- [x] AsignarColor()
 - [ ] ExtraerColores() - Ver 6.2 del [PDF](PDFs/Parte1ProyectoMDII2024.pdf)
 - [ ] ImportarColores() - Ver 6.3 del [PDF](PDFs/Parte1ProyectoMDII2024.pdf)
 
