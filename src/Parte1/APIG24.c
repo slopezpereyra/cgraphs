@@ -129,12 +129,17 @@ void AgregarVecino(Grafo G, u32 x, u32 y) {
     // (G->_vertices)[]
 }
 
+// FIXME Esta mal el tipo del argumento
+// void ImprimirLinea(char line) {
+//     printf("%s", line);
+// }
+
 Grafo ConstruirGrafo() {
     char filename[100];
     FILE* file;
     // Ingresar nombre del archivo
-    printf("Nombre del archivo a leer (dejelo vacío por ahora!): ");
-    fgets(filename, sizeof(filename), stdin);
+    printf("Nombre del archivo a leer (dejelo vacío por ahora!): ");  // FIXME Input
+    fgets(filename, sizeof(filename), stdin);  // FIXME Input
 
     // Abrir el archivo (notar que por ahora abre un archivo constante,
     // a modo de testeo).
@@ -149,7 +154,9 @@ Grafo ConstruirGrafo() {
     u32 n, m;
     Grafo G;
     while (fgets(line, sizeof(line), file) != NULL) {
-        printf("%s", line);
+        // ImprimirLinea(line);  // NOTE PrintConsole
+        // printf("%s", line);  // NOTE PrintConsole
+
         // Extraer n y m de la línea de la forma "p edge n m".
         if (sscanf(line, "p edge %d %d", &n, &m) == 2) {
             G = InicializarGrafo(n, m);
@@ -231,9 +238,6 @@ void ExtraerColores(Grafo G, color* Color) {}
 
 void ImportarColores(color* Color, Grafo G) {}
 
-void ImprimirVertices() {
-
-}
 
 void ImprimirVertices(Grafo G) {
     printf("Vertices:\n");
@@ -268,7 +272,7 @@ int main() {
     Grafo G = ConstruirGrafo();
     if (G != NULL) {
         printf("Comenzando descripción del grafo.\n");
-        ImprimirGrafo(G);
+        // ImprimirGrafo(G);  // NOTE PrintConsole
     } else {
         printf("Error construyendo el grafo.\n");
     }
