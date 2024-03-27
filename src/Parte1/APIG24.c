@@ -63,11 +63,56 @@ int CompararLados(const void* a, const void* b) {
  */
 // u32 ObtenerVertexKey(u32 v, Grafo G) {
 //     u32 vertex_key = Hashv(v) % G->n;
-//     while ((G->_vertices)[vertex_key]->nombre != v) {
+//     while (G->_vertices[vertex_key]->nombre != v) {
 //         vertex_key++;
 //     }
 //     return (vertex_key);
 // }
+
+vertice ObtenerVertice(u32 v, Grafo G) {
+    u32 inf = 0;
+    u32 sup = NumeroDeVertices(G);
+    u32 j = 0;
+    u32 mid = sup / 2;
+
+    char band = 'F';
+
+    // if (G->_vertices[NumeroDeVertices(G)/2]->nombre = i) {
+    //     return (G->_vertices[NumeroDeVertices(G)/2])->grado;
+    // }
+
+    while ((inf < sup) && (j < NumeroDeVertices(G))) {
+        if (G->_vertices[mid]->nombre == v) {
+            band = 'V';
+            return G->_vertices[mid];
+            break; // FIXME Esta de mas
+        }
+        if (G->_vertices[mid]->nombre > v) {
+            printf("%s", "\nestoy entre : ");
+            printf("%d", G->_vertices[inf]->nombre);
+            printf("%s", " y ");
+            printf("%d", G->_vertices[mid]->nombre);
+            sup = mid;
+            mid = (inf + sup) / 2;
+            if (sup == mid) {
+                return NULL; // FIXME
+                break;
+            }
+        } else if (G->_vertices[mid]->nombre < v) {
+            printf("%s", "\nestoy entre : ");        // FIXME
+            printf("%d", G->_vertices[inf]->nombre); // FIXME
+            printf("%s", " y ");                     // FIXME
+            printf("%d", G->_vertices[mid]->nombre); // FIXME
+            inf = mid;
+            mid = (inf + sup) / 2;
+            if (inf == mid) {
+                return NULL; // FIXME
+                break;
+            }
+        }
+        j++;
+    }
+}
 
 /**
  * Inicializa un grafo de n vértices y m lados.
@@ -84,6 +129,30 @@ Grafo InicializarGrafo(u32 n, u32 m) {
     return (G);
 }
 
+// TODO Mejorar el nombre
+/**
+ * Actualiza delta y sigma del grafo en caso de ser necesario.
+*/
+void ActualizarGradosGrafo(Grafo G, u32 grado) {
+    if (G->sigma < grado) {
+        G->sigma = grado;
+        return;
+    }
+
+    if (G->delta > grado) {
+        G->delta = grado;
+    }
+}
+
+/**
+ * Actualiza el grado de un vertice incrementandolo en 1.
+*/
+void IncrementarGradoVertice(Grafo G, u32 nombre) {
+    vertice v = ObtenerVertice(nombre, G);
+    v->grado++;
+    ActualizarGradosGrafo(G, v->grado);
+}
+
 /**
  * Comprueba si un vértice de nombre `nombre` ya existe en el grafo `G`.
  * De ser así no hace nada. De no ser así, lo agrega a `G -> _vertices` en la
@@ -92,15 +161,42 @@ Grafo InicializarGrafo(u32 n, u32 m) {
 
 /**
  * Agrega un vertice a partir de la lectura de un lado.
+ *
+ * `i` es el indice del array de lados.
 */
-void AgregarVertice(Grafo G, u32 nombre) {
+void AgregarVertice(Grafo G, u32 i, u32 nombre) {
     // NOTE: No hace falta chequear que si ya existe,
     // dado que es utilizado despues de ordenar los lados.
-    (G->_vertices)[G->nextVertice] = (vertice)malloc(sizeof(struct Vertice));
-    (G->_vertices)[G->nextVertice]->nombre = nombre;
-    (G->_vertices)[G->nextVertice]->grado = 0;      // TODO Mejorar
-    (G->_vertices)[G->nextVertice]->grado++;        // TODO Mejorar
-    G->nextVertice++;
+    // Y solo se guarda el primer vertice.
+    printf("\n---->AgregarVertice\n");
+    printf("X %d, i: %d\n", nombre, i);
+    if (G->_vertices[G->nextVertice] != NULL) { // FIXME
+        printf("Vertice x %d i %d IGNORADO\n", nombre, i);
+        return;
+    }
+
+    // Aca deberiamos estar seguros que no existe este vertice...
+    // Deberia ser seguro inicializarlo
+    printf("MALLOC de %d\n", nombre);
+    G->_vertices[G->nextVertice] = (vertice)malloc(sizeof(struct Vertice));
+    G->_vertices[G->nextVertice]->nombre = nombre;
+    G->_vertices[G->nextVertice]->grado = 0; // TODO Mejorar
+    G->_vertices[G->nextVertice]->color_ = 0;
+    G->_vertices[G->nextVertice]->primerVecino = i;
+    // printf("");
+
+    // Agrego el vertice x del lado
+    (G->_lados)[i]->xV = G->_vertices[G->nextVertice]; // FIXME
+
+    // NOTE: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
+    if (G->_vertices[G->nextVertice]->grado) {
+        printf("Se aumenta el grado");
+        G->_vertices[G->nextVertice]->grado++; // TODO Mejorar
+    }
+
+    ActualizarGradosGrafo(G, G->_vertices[G->nextVertice]->grado);
+    // G->nextVertice++;
+    printf("End AgregarVertice---\n\n");
 }
 
 /**
@@ -115,19 +211,14 @@ void AgregarLado(Grafo G, u32 x, u32 y) {
     G->nextLado++;
 }
 
-// TODO
-// void IncremetarGrado(Grafo G, ) {
-//     G->
-// }
-
 /**
  * Dado un grafo `G` y nombres de vertices `x` e `y`,
  * agrega a ambos vertices sus correspondiente vecino.
 */
-void AgregarVecino(Grafo G, u32 x, u32 y) {
-    // TODO AgregarVecino()
-    // (G->_vertices)[]
-}
+// void AgregarVecino(Grafo G, u32 x, u32 y) {
+//     // TODO AgregarVecino()
+//     // G->_vertices[]
+// }
 
 // FIXME Esta mal el tipo del argumento
 // void ImprimirLinea(char line) {
@@ -138,12 +229,15 @@ Grafo ConstruirGrafo() {
     char filename[100];
     FILE* file;
     // Ingresar nombre del archivo
-    printf("Nombre del archivo a leer (dejelo vacío por ahora!): ");  // FIXME Input
-    fgets(filename, sizeof(filename), stdin);  // FIXME Input
+    // printf(
+    // "Nombre del archivo a leer (dejelo vacío por ahora!): "); // FIXME Input
+    // char sfilename[] =
+    fgets(filename, sizeof(filename), stdin); // FIXME Input
 
     // Abrir el archivo (notar que por ahora abre un archivo constante,
     // a modo de testeo).
     file = fopen("K5.txt", "r");
+    // file = fopen(sfilename, "r");
     if (file == NULL) {
         printf("Error opening file.\n");
         return NULL;
@@ -174,9 +268,37 @@ Grafo ConstruirGrafo() {
     // Una vez tenemos ordenado lados, procedemos a crear los vertices
     // NOTA: Los vertices van a ser guardados ordenados.
     // TODO Agregar leer lados y generar vertices
-    for (u32 i=0; i < G->m*2; i++) {
-        AgregarVertice(G, (G->_lados[i])->xN);
-        AgregarVertice(G, (G->_lados[i])->yN);
+    int currentVx = -1; // Vertice x
+    for (u32 i = 0; i < G->m * 2; i++) {
+        // Si xV != xN Significa que tenemos un x diferente.
+        printf("cx: %d, currentVx: %d\n", (G->_lados[i])->xN, currentVx);
+        if (currentVx != (G->_lados[i])->xN) { // FIXME
+            printf("if");
+            // currentVx = i;
+
+            // Entonces debo inicializar este nuevo vertice.
+            AgregarVertice(G, i, (G->_lados[i])->xN);
+            fflush(stdout);
+            printf("NE\n");
+            // Vamos al siguiente espacio, para agregar el siguiente vertice x
+            currentVx = G->_lados[i]->xN;  // FIXME Hay un problemita :D
+            printf("NextVert");  // FIXME
+            // G->nextVertice++;  // FIXME
+            fflush(stdout);
+        } else {
+            //(currentVx == (G->_lados[i])->xN)
+            IncrementarGradoVertice(G, G->_lados[i]->xN);
+        }
+
+        // No es necesario realizar la siguiente linea, porque vamos iterando
+        // xy
+        // xw
+        // xz
+        // yx // Este si lo queremos usar!
+        // AgregarVertice(G, i, (G->_lados[i])->yN);
+
+        // Pero siempre agregamos el nuevo vecino del vertice.
+        // AgregarVecino();
     }
 
     return G;
@@ -184,16 +306,16 @@ Grafo ConstruirGrafo() {
 
 void DestruirGrafo(Grafo G) {
     if (G != NULL) {
-        for (u32 i = 0; i < G->m * 2; i++) {
-            free(G->_lados[i]);
-        }
+        // for (u32 i = 0; i < G->m * 2; i++) {
+        //     free(G->_lados[i]);
+        // }
 
-        for (u32 i = 0; i < G->n; i++) {
-            free(G->_vertices[i]);
-        }
+        // for (u32 i = 0; i < G->n; i++) {
+        //     free(G->_vertices[i]);
+        // }
 
-        free(G->_lados);
-        free(G->_vertices);
+        // free(G->_lados);
+        // freeG->_vertices;
         free(G);
     }
 }
@@ -207,8 +329,10 @@ u32 Delta(Grafo G) { return G->delta; }
 u32 Grado(u32 i, Grafo G) {
     int res = 0;
     if (i < G->n) {
-        // TODO change i if it's the name of the vertex, not the hash
-        res = G->_vertices[i]->grado;
+        // res = G->_vertices[i]->grado;
+        // TODO Cambiar por una busqueda.
+        vertice v = ObtenerVertice(i, G);
+        return v->grado;
     }
     return res;
 }
@@ -231,27 +355,26 @@ void AsignarColor(color x, u32 i, Grafo G) {
     }
 
     // Asigno el color `x` al vertice `i`
-    (G->_vertices)[i]->color_ = x;
+    G->_vertices[i]->color_ = x;
 }
 
 void ExtraerColores(Grafo G, color* Color) {}
 
 void ImportarColores(color* Color, Grafo G) {}
 
-
 void ImprimirVertices(Grafo G) {
     printf("Vertices:\n");
     for (u32 i = 0; i < G->n; i++) {
         if (G->_vertices[i] != NULL) {
-            printf("Vertice %d de grado %d \n", G->_vertices[i]->nombre, 
-                                                G->_vertices[i] -> grado);
+            printf("Vertice %d de grado %d \n", G->_vertices[i]->nombre,
+                   G->_vertices[i]->grado);
         }
     }
 }
 
 void ImprimirLados(Grafo G) {
     printf("\nLados:\n");
-    for (u32 i = 0; i < 2*( G->m ); i++) {
+    for (u32 i = 0; i < 2 * (G->m); i++) {
         if (G->_lados[i] != NULL) {
             printf("%d ~ %d\n", G->_lados[i]->xN, G->_lados[i]->yN);
         }
@@ -259,9 +382,9 @@ void ImprimirLados(Grafo G) {
 }
 
 void ImprimirGrafo(Grafo G) {
-    printf("\nn = %d\n", G -> n);
-    printf("\nm = %d\n", G -> m);
-    printf("\nΔ = %d\n", G -> delta);
+    printf("\nn = %d\n", G->n);
+    printf("\nm = %d\n", G->m);
+    printf("\nΔ = %d\n", G->delta);
 
     ImprimirVertices(G);
 
@@ -271,8 +394,11 @@ void ImprimirGrafo(Grafo G) {
 int main() {
     Grafo G = ConstruirGrafo();
     if (G != NULL) {
-        printf("Comenzando descripción del grafo.\n");
-        // ImprimirGrafo(G);  // NOTE PrintConsole
+        // printf("Comenzando descripción del grafo.\n"); // NOTE PrintConsole
+        // ImprimirGrafo(G);                              // NOTE PrintConsole
+        printf("Grado= %d\n", Grado(1, G)); // NOTE PrintConsole
+        // printf("Destruyendo grafo...\n");              // NOTE PrintConsole
+        // DestruirGrafo(G);
     } else {
         printf("Error construyendo el grafo.\n");
     }
