@@ -5,5 +5,13 @@ PointerAlignment: Left
 ReflowComments: false
 ColumnLimit: 80
 UseTab: Never
+SpacesInSquareBrackets: false
+AlignAfterOpenBracket: true
+Align: BAS_BlockIndent
+AlignTrailingComments:
+    Kind: Always
+    OverEmptyLines: 2
+    MaxEmptyLinesToKeep: 2
+
 
 # https://clang.llvm.org/docs/ClangFormatStyleOptions.html

@@ -35,7 +35,10 @@ compilado sin esa flag, dado que esa flag provoca una gran demora en la ejecuciÂ
 
 ### Proyecto
 
+#### Correr parte 1
+
 ```bash
+make clean && make final && valgrind ./final
 ```
 
 ### Tests
@@ -45,12 +48,12 @@ compilado sin esa flag, dado que esa flag provoca una gran demora en la ejecuciÂ
 
 ## Features
 
-- [ ] ConstruirGrafo()
-- [ ] DestruirGrafo()
+- [x] ConstruirGrafo()
+- [x] DestruirGrafo()
 - [x] NumeroDeVertices()
 - [x] NumeroDeLados()
 - [x] Delta()
-- [ ] Grado()
+- [x] Grado()
 - [x] Color()
 - [ ] Vecino()
 - [x] AsignarColor()
