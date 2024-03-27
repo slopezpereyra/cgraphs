@@ -121,7 +121,7 @@ Grafo InicializarGrafo(u32 n, u32 m) {
     Grafo G = (Grafo)malloc(sizeof(struct GrafoSt));
     G->n = n;
     G->m = m;
-    G->_vertices = (vertice*)malloc(n * sizeof(vertice));  // TODO Cambiar a calloc
+    G->_vertices = (vertice*)calloc(n, sizeof(vertice));
     G->nextVertice = 0;
     G->_lados = (lado*)malloc(2 * m * sizeof(lado));
     G->nextLado = 0;
@@ -164,36 +164,37 @@ void IncrementarGradoVertice(Grafo G, u32 nombre) {
  *
  * `i` es el indice del array de lados.
 */
-void AgregarVertice(Grafo G, u32 i, u32 nombre) {
+void AgregarVertice(Grafo G, u32 i, u32 vIndex, u32 nombre) {
     // NOTE: No hace falta chequear que si ya existe,
     // dado que es utilizado despues de ordenar los lados.
     // Y solo se guarda el primer vertice.
-    printf("\n---->AgregarVertice\n");
-    printf("X %d, i: %d\n", nombre, i);
-    if (G->_vertices[G->nextVertice] != NULL) { // FIXME
+    printf("\n---->AgregarVertice\n"); // FIXME
+    printf("X %d, i: %d\n", nombre, i); // FIXME
+    if (G->_vertices[vIndex] != NULL) { // FIXME
         printf("Vertice x %d i %d IGNORADO\n", nombre, i);
+        (G->_vertices[vIndex]->grado)++;
         return;
     }
 
     // Aca deberiamos estar seguros que no existe este vertice...
     // Deberia ser seguro inicializarlo
     printf("MALLOC de %d\n", nombre);
-    G->_vertices[G->nextVertice] = (vertice)malloc(sizeof(struct Vertice));
-    G->_vertices[G->nextVertice]->nombre = nombre;
-    G->_vertices[G->nextVertice]->grado = 1;
-    G->_vertices[G->nextVertice]->color_ = 0;
-    G->_vertices[G->nextVertice]->primerVecino = i;
+    G->_vertices[vIndex] = (vertice)malloc(sizeof(struct Vertice));
+    G->_vertices[vIndex]->nombre = nombre;
+    G->_vertices[vIndex]->grado = 1;
+    G->_vertices[vIndex]->color_ = 0;
+    G->_vertices[vIndex]->primerVecino = i;
 
     // Agrego el vertice x del lado
-    (G->_lados)[i]->xV = G->_vertices[G->nextVertice]; // FIXME
+    (G->_lados)[i]->xV = G->_vertices[vIndex]; // FIXME
 
     // NOTE: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
-    if (G->_vertices[G->nextVertice]->grado) {
-        printf("Se aumenta el grado");
-        G->_vertices[G->nextVertice]->grado++; // TODO Mejorar
-    }
+    // if (G->_vertices[vIndex]->grado) {
+    //     printf("Se aumenta el grado");
+    //     G->_vertices[vIndex]->grado++; // TODO Mejorar
+    // }
 
-    ActualizarGradosGrafo(G, G->_vertices[G->nextVertice]->grado);
+    ActualizarGradosGrafo(G, G->_vertices[vIndex]->grado);
     // G->nextVertice++;
     printf("End AgregarVertice---\n\n");
 }
@@ -268,15 +269,15 @@ Grafo ConstruirGrafo() {
     // NOTA: Los vertices van a ser guardados ordenados.
     // TODO Agregar leer lados y generar vertices
     int currentVx = -1; // Vertice x
+    u32 vIndex = 0;
     for (u32 i = 0; i < G->m * 2; i++) {
         // Si xV != xN Significa que tenemos un x diferente.
         printf("cx: %d, currentVx: %d\n", (G->_lados[i])->xN, currentVx);
         if (currentVx != (G->_lados[i])->xN) { // FIXME
             printf("if");
-            // currentVx = i;
 
             // Entonces debo inicializar este nuevo vertice.
-            AgregarVertice(G, i, (G->_lados[i])->xN);
+            AgregarVertice(G, i, vIndex, (G->_lados[i])->xN);
             fflush(stdout);
             printf("NE\n");
             // Vamos al siguiente espacio, para agregar el siguiente vertice x
@@ -285,8 +286,10 @@ Grafo ConstruirGrafo() {
             // G->nextVertice++;  // FIXME
             fflush(stdout);
         } else {
+            printf("Sig");
+
             //(currentVx == (G->_lados[i])->xN)
-            IncrementarGradoVertice(G, G->_lados[i]->xN);
+            // IncrementarGradoVertice(G, G->_lados[i]->xN);
         }
 
         // No es necesario realizar la siguiente linea, porque vamos iterando
