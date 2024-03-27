@@ -15,7 +15,7 @@ struct GrafoSt {
     u32 delta;          // Max de grados
     u32 sigma;          // Min de grados
     vertice* _vertices; // Arreglo de punteros a Vertice
-    u32 nextVertice;    // Contiene el siguiente espacio vacio
+    // u32 nextVertice;    // Contiene el siguiente espacio vacio
     lado* _lados;
     u32 nextLado;       // Contiene el siguiente espacio vacio
 };

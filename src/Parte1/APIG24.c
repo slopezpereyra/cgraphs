@@ -122,7 +122,7 @@ Grafo InicializarGrafo(u32 n, u32 m) {
     G->n = n;
     G->m = m;
     G->_vertices = (vertice*)calloc(n, sizeof(vertice));
-    G->nextVertice = 0;
+    // G->nextVertice = 0;
     G->_lados = (lado*)malloc(2 * m * sizeof(lado));
     G->nextLado = 0;
 
@@ -165,37 +165,21 @@ void IncrementarGradoVertice(Grafo G, u32 nombre) {
  * `i` es el indice del array de lados.
 */
 void AgregarVertice(Grafo G, u32 i, u32 vIndex, u32 nombre) {
-    // NOTE: No hace falta chequear que si ya existe,
-    // dado que es utilizado despues de ordenar los lados.
-    // Y solo se guarda el primer vertice.
     printf("\n---->AgregarVertice\n"); // FIXME
-    printf("X %d, i: %d\n", nombre, i); // FIXME
-    if (G->_vertices[vIndex] != NULL) { // FIXME
-        printf("Vertice x %d i %d IGNORADO\n", nombre, i);
-        (G->_vertices[vIndex]->grado)++;
-        return;
-    }
-
-    // Aca deberiamos estar seguros que no existe este vertice...
-    // Deberia ser seguro inicializarlo
+        // NOTE: No hace falta chequear que si ya existe,
+        // dado que es utilizado despues de ordenar los lados.
+        // Y solo se guarda el primer vertice.
+    // Si no fue creado...
+    // Es seguro inicializarlo
     printf("MALLOC de %d\n", nombre);
     G->_vertices[vIndex] = (vertice)malloc(sizeof(struct Vertice));
     G->_vertices[vIndex]->nombre = nombre;
-    G->_vertices[vIndex]->grado = 1;
+    G->_vertices[vIndex]->grado = 1; // Porque es un lado, tiene un vecino.
     G->_vertices[vIndex]->color_ = 0;
     G->_vertices[vIndex]->primerVecino = i;
 
     // Agrego el vertice x del lado
     (G->_lados)[i]->xV = G->_vertices[vIndex]; // FIXME
-
-    // NOTE: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
-    // if (G->_vertices[vIndex]->grado) {
-    //     printf("Se aumenta el grado");
-    //     G->_vertices[vIndex]->grado++; // TODO Mejorar
-    // }
-
-    ActualizarGradosGrafo(G, G->_vertices[vIndex]->grado);
-    // G->nextVertice++;
     printf("End AgregarVertice---\n\n");
 }
 
@@ -268,36 +252,86 @@ Grafo ConstruirGrafo() {
     // Una vez tenemos ordenado lados, procedemos a crear los vertices
     // NOTA: Los vertices van a ser guardados ordenados.
     // TODO Agregar leer lados y generar vertices
-    int currentVx = -1; // Vertice x
+    // int currentVx = -1; // Vertice x
     u32 vIndex = 0;
-    for (u32 i = 0; i < G->m * 2; i++) {
+
+    AgregarVertice(G, 0, 0, G->_lados[0]->xN); // Agregamos el primer vertice.
+
+    for (u32 i = 1; i < G->m * 2; i++) {
         // Si xV != xN Significa que tenemos un x diferente.
-        printf("cx: %d, currentVx: %d\n", (G->_lados[i])->xN, currentVx);
-        if (currentVx != (G->_lados[i])->xN) { // FIXME
-            printf("if");
+        // printf("cx: %d, currentVx: %d\n", (G->_lados[i])->xN, currentVx);
 
-            // Entonces debo inicializar este nuevo vertice.
-            AgregarVertice(G, i, vIndex, (G->_lados[i])->xN);
-            fflush(stdout);
-            printf("NE\n");
-            // Vamos al siguiente espacio, para agregar el siguiente vertice x
-            currentVx = G->_lados[i]->xN;  // FIXME Hay un problemita :D
-            printf("NextVert");  // FIXME
-            // G->nextVertice++;  // FIXME
-            fflush(stdout);
+        u32 nombre = G->_lados[i]->xN;      // Nombre del vertice `x`.
+                                            // u32 cV =
+
+        printf("X %d, i: %d\n", nombre, i); // FIXME
+        // if (G->_vertices[vIndex] != NULL) { // FIXME
+        //     printf("Vertice x %d i %d IGNORADO\n", nombre, i);
+        //     (G->_vertices[vIndex]->grado)++;
+        //     return;
+        // }
+
+        printf("index: %d", vIndex);
+        // Como agregamos el primero, el primero nunca es NULL
+        // a pesar de utilizar calloc.
+        if (G->_vertices[vIndex]->nombre == nombre) {
+            // Tenemos un lado con el mismo xV
+            // Entonces tiene un vecino mas
+            (G->_vertices[vIndex]->grado)++;
         } else {
-            printf("Sig");
-
-            //(currentVx == (G->_lados[i])->xN)
-            // IncrementarGradoVertice(G, G->_lados[i]->xN);
+            vIndex++;
+            printf("index: %d", vIndex);
+            AgregarVertice(G, i, vIndex, nombre);
         }
 
-        // No es necesario realizar la siguiente linea, porque vamos iterando
-        // xy
-        // xw
-        // xz
-        // yx // Este si lo queremos usar!
-        // AgregarVertice(G, i, (G->_lados[i])->yN);
+        ///
+
+        // if (G->_vertices[vIndex] == NULL) {
+
+        //     // vIndex++;
+        // } else {
+        //     if (G->_vertices[vIndex]->nombre == nombre) {
+        //         // No es necesario realizar la siguiente linea, porque vamos iterando
+        //         // xy
+        //         // xw -> estariamos aca
+        //         // xz -> o aca
+        //         // yx
+        //         (G->_vertices[vIndex]->grado)++;
+        //         // vIndex++;
+        //     } else {
+        //         vIndex++;
+        //     }
+        // }
+
+        // NOTE: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
+        // if (G->_vertices[vIndex]->grado) {
+        //     printf("Se aumenta el grado");
+        //     G->_vertices[vIndex]->grado++; // TODO Mejorar
+        // }
+
+        // ActualizarGradosGrafo(G, G->_vertices[vIndex]->grado);
+        // G->nextVertice++;
+
+        // AgregarVertice(G, i, vIndex, (G->_lados[i])->xN);
+
+        // if (currentVx != (G->_lados[i])->xN) { // FIXME
+        //     printf("if");
+
+        //     // Entonces debo inicializar este nuevo vertice.
+        //     AgregarVertice(G, i, vIndex, (G->_lados[i])->xN);
+        //     fflush(stdout);
+        //     printf("NE\n");
+        //     // Vamos al siguiente espacio, para agregar el siguiente vertice x
+        //     currentVx = G->_lados[i]->xN;  // FIXME Hay un problemita :D
+        //     printf("NextVert");  // FIXME
+        //     // G->nextVertice++;  // FIXME
+        //     fflush(stdout);
+        // } else {
+        //     printf("Sig");
+
+        //     //(currentVx == (G->_lados[i])->xN)
+        //     // IncrementarGradoVertice(G, G->_lados[i]->xN);
+        // }
 
         // Pero siempre agregamos el nuevo vecino del vertice.
         // AgregarVecino();
@@ -398,7 +432,7 @@ int main() {
     if (G != NULL) {
         // printf("Comenzando descripción del grafo.\n"); // NOTE PrintConsole
         // ImprimirGrafo(G);                              // NOTE PrintConsole
-        printf("Grado= %d\n", Grado(1, G)); // NOTE PrintConsole
+        printf("\nGrado= %d\n", Grado(4, G)); // NOTE PrintConsole
         // printf("Destruyendo grafo...\n");              // NOTE PrintConsole
         // DestruirGrafo(G);
     } else {
