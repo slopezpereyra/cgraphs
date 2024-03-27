@@ -75,19 +75,16 @@ vertice ObtenerVertice(u32 v, Grafo G) {
     u32 j = 0;
     u32 mid = sup / 2;
 
-    // char band = 'F';
-
     while ((inf < sup) && (j < NumeroDeVertices(G))) {
         if (G->_vertices[mid]->nombre == v) {
-            // band = 'V';
             return G->_vertices[mid];
-            break; // FIXME Esta de mas
+            break;                                   // FIXME Esta de mas
         }
         if (G->_vertices[mid]->nombre > v) {
-            printf("%s", "\nestoy entre : ");
-            printf("%d", G->_vertices[inf]->nombre);
-            printf("%s", " y ");
-            printf("%d", G->_vertices[mid]->nombre);
+            // printf("%s", "\nestoy entre : ");        // FIXME
+            // printf("%d", G->_vertices[inf]->nombre); // FIXME
+            // printf("%s", " y ");                     // FIXME
+            // printf("%d", G->_vertices[mid]->nombre); // FIXME
             sup = mid;
             mid = (inf + sup) / 2;
             if (sup == mid) {
@@ -95,10 +92,10 @@ vertice ObtenerVertice(u32 v, Grafo G) {
                 break;
             }
         } else if (G->_vertices[mid]->nombre < v) {
-            printf("%s", "\nestoy entre : ");        // FIXME
-            printf("%d", G->_vertices[inf]->nombre); // FIXME
-            printf("%s", " y ");                     // FIXME
-            printf("%d", G->_vertices[mid]->nombre); // FIXME
+            // printf("%s", "\nestoy entre : ");        // FIXME
+            // printf("%d", G->_vertices[inf]->nombre); // FIXME
+            // printf("%s", " y ");                     // FIXME
+            // printf("%d", G->_vertices[mid]->nombre); // FIXME
             inf = mid;
             mid = (inf + sup) / 2;
             if (inf == mid) {
@@ -139,15 +136,6 @@ void ActualizarGradosGrafo(Grafo G, u32 grado) {
 }
 
 /**
- * Actualiza el grado de un vertice incrementandolo en 1.
-*/
-void IncrementarGradoVertice(Grafo G, u32 nombre) {
-    vertice v = ObtenerVertice(nombre, G);
-    v->grado++;
-    ActualizarGradosGrafo(G, v->grado);
-}
-
-/**
  * Agrega un vertice a partir de la lectura de un lado.
  *
  * `i` es el indice del array de lados.
@@ -169,6 +157,15 @@ void AgregarVertice(Grafo G, u32 i, u32 vIndex, u32 nombre) {
     (G->_lados)[i]->xV = G->_vertices[vIndex];
 
     ActualizarGradosGrafo(G, G->_vertices[vIndex]->grado);
+}
+
+/**
+ * Actualiza el grado de un vertice incrementandolo en 1.
+*/
+void IncrementarGradoVertice(Grafo G, u32 nombre) {
+    vertice v = ObtenerVertice(nombre, G);
+    v->grado++;
+    ActualizarGradosGrafo(G, v->grado);
 }
 
 /**
@@ -304,7 +301,7 @@ color Color(u32 i, Grafo G) {
     return 4294967295; // 2^32 - 1 Revisar tipo para devolver! :)
 }
 
-u32 Vecino(u32 j, u32 i, Grafo G) { return 0; }
+// u32 Vecino(u32 j, u32 i, Grafo G) { return 0; }
 
 void AsignarColor(color x, u32 i, Grafo G) {
     if (i >= NumeroDeVertices(G)) {
