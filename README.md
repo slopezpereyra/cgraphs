@@ -37,6 +37,14 @@ compilado sin esa flag, dado que esa flag provoca una gran demora en la ejecuciÂ
 
 #### Correr parte 1
 
+#### Time
+
+```bash
+make clean && make final && time ./final
+```
+
+#### Valgrind
+
 ```bash
 make clean && make final && valgrind ./final
 ```

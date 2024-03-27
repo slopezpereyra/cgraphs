@@ -118,14 +118,12 @@ Grafo InicializarGrafo(u32 n, u32 m) {
     G->n = n;
     G->m = m;
     G->_vertices = (vertice*)calloc(n, sizeof(vertice));
-    // G->nextVertice = 0;
     G->_lados = (lado*)malloc(2 * m * sizeof(lado));
     G->nextLado = 0;
 
     return (G);
 }
 
-// TODO Mejorar el nombre
 /**
  * Actualiza delta y sigma del grafo en caso de ser necesario.
 */
@@ -150,12 +148,6 @@ void IncrementarGradoVertice(Grafo G, u32 nombre) {
 }
 
 /**
- * Comprueba si un vértice de nombre `nombre` ya existe en el grafo `G`.
- * De ser así no hace nada. De no ser así, lo agrega a `G -> _vertices` en la
- * posición correspondiente a su hash code.
- */
-
-/**
  * Agrega un vertice a partir de la lectura de un lado.
  *
  * `i` es el indice del array de lados.
@@ -174,7 +166,7 @@ void AgregarVertice(Grafo G, u32 i, u32 vIndex, u32 nombre) {
     G->_vertices[vIndex]->primerVecino = i;
 
     // Agrego el vertice x del lado
-    (G->_lados)[i]->xV = G->_vertices[vIndex]; // FIXME
+    (G->_lados)[i]->xV = G->_vertices[vIndex];
 
     ActualizarGradosGrafo(G, G->_vertices[vIndex]->grado);
 }
@@ -206,14 +198,14 @@ Grafo ConstruirGrafo() {
     char filename[100];
     FILE* file;
     // Ingresar nombre del archivo
-    // printf(
-    // "Nombre del archivo a leer (dejelo vacío por ahora!): "); // FIXME Input
+    printf(
+        "Nombre del archivo a leer (dejelo vacío por ahora!): "); // FIXME Input
     // char sfilename[] =
     fgets(filename, sizeof(filename), stdin); // FIXME Input
 
     // Abrir el archivo (notar que por ahora abre un archivo constante,
     // a modo de testeo).
-    file = fopen("K5.txt", "r");
+    file = fopen("K5.txt", "r"); // NOTE FILENAME
     // file = fopen(sfilename, "r");
     if (file == NULL) {
         printf("Error opening file.\n");
@@ -323,9 +315,9 @@ void AsignarColor(color x, u32 i, Grafo G) {
     G->_vertices[i]->color_ = x;
 }
 
-void ExtraerColores(Grafo G, color* Color) {}
+// void ExtraerColores(Grafo G, color* Color) {}
 
-void ImportarColores(color* Color, Grafo G) {}
+// void ImportarColores(color* Color, Grafo G) {}
 
 void ImprimirVertices(Grafo G) {
     printf("Vertices:\n");
