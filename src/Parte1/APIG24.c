@@ -121,7 +121,7 @@ Grafo InicializarGrafo(u32 n, u32 m) {
     Grafo G = (Grafo)malloc(sizeof(struct GrafoSt));
     G->n = n;
     G->m = m;
-    G->_vertices = (vertice*)malloc(n * sizeof(vertice));
+    G->_vertices = (vertice*)malloc(n * sizeof(vertice));  // TODO Cambiar a calloc
     G->nextVertice = 0;
     G->_lados = (lado*)malloc(2 * m * sizeof(lado));
     G->nextLado = 0;
@@ -180,10 +180,9 @@ void AgregarVertice(Grafo G, u32 i, u32 nombre) {
     printf("MALLOC de %d\n", nombre);
     G->_vertices[G->nextVertice] = (vertice)malloc(sizeof(struct Vertice));
     G->_vertices[G->nextVertice]->nombre = nombre;
-    G->_vertices[G->nextVertice]->grado = 0; // TODO Mejorar
+    G->_vertices[G->nextVertice]->grado = 1;
     G->_vertices[G->nextVertice]->color_ = 0;
     G->_vertices[G->nextVertice]->primerVecino = i;
-    // printf("");
 
     // Agrego el vertice x del lado
     (G->_lados)[i]->xV = G->_vertices[G->nextVertice]; // FIXME
