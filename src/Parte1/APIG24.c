@@ -105,6 +105,7 @@ vertice ObtenerVertice(u32 v, Grafo G) {
         }
         j++;
     }
+    return;
 }
 
 /**
@@ -114,6 +115,8 @@ Grafo InicializarGrafo(u32 n, u32 m) {
     Grafo G = (Grafo)malloc(sizeof(struct GrafoSt));
     G->n = n;
     G->m = m;
+    G->delta = 0;
+    G->sigma = m+1;
     G->_vertices = (vertice*)calloc(n, sizeof(vertice));
     G->_lados = (lado*)malloc(2 * m * sizeof(lado));
     G->nextLado = 0;
