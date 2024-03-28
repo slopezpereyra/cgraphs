@@ -3,8 +3,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-
+//#include <time.h>
 
 u32 max(u32 x, u32 y) {
     if (x > y) {
@@ -68,13 +67,12 @@ Grafo InicializarGrafo(u32 n, u32 m) {
     G->n = n;
     G->m = m;
     G->delta = 0;
-    G-> _primerVecino = (u32*)calloc(n, sizeof(u32));
+    G->_primerVecino = (u32*)calloc(n, sizeof(u32));
     G->_grados = (u32*)calloc(n, sizeof(u32));
     G->_colores = (u32*)calloc(n, sizeof(u32));
     G->_lados = (Lado)calloc(2 * m, sizeof(struct LadoSt));
     return (G);
 }
-
 
 /**
  * Dado un grafo `G` y nombres de vértices `x` e `y`, agrega en  `G -> _lados`
@@ -83,73 +81,52 @@ Grafo InicializarGrafo(u32 n, u32 m) {
  */
 void AgregarLados(Grafo G, u32 i, u32 x, u32 y) {
     // Setear el lado x ~ y
-    (G -> _lados)[i].x = x;
-    (G -> _lados)[i].y = y;
+    (G->_lados)[i].x = x;
+    (G->_lados)[i].y = y;
     // Setear el lado y ~ x
-    (G -> _lados)[i + G -> m].x = y;
-    (G -> _lados)[i + G -> m].y = x;
-    (G -> _grados)[x]++;
-    (G -> _grados)[y]++;
-    (G -> delta) = max( max((G -> _grados)[x], (G -> _grados)[y]), G -> delta );
+    (G->_lados)[i + G->m].x = y;
+    (G->_lados)[i + G->m].y = x;
+    (G->_grados)[x]++;
+    (G->_grados)[y]++;
+    (G->delta) = max(max((G->_grados)[x], (G->_grados)[y]), G->delta);
 }
 
 // TODO: Agregar asserts correspondientes
 Grafo ConstruirGrafo() {
-    char filename[100];
-    FILE* file;
-    // Ingresar nombre del archivo
-    printf(
-        "Nombre del archivo a leer (dejelo vacío por ahora!): "); // FIXME Input
-    // char sfilename[] =
-    fgets(filename, sizeof(filename), stdin); // FIXME Input
-
-    // Abrir el archivo (notar que por ahora abre un archivo constante,
-    // a modo de testeo).
-    file = fopen("2gb.txt", "r"); // NOTE FILENAME
-    // file = fopen(sfilename, "r");
-    if (file == NULL) {
-        printf("Error opening file.\n");
-        return NULL;
-    }
-
-    // Read and print the contents of the file
-    char line[100];
     u32 n, m;
-    u32 i = 0;
-    Grafo G;
-    while (fgets(line, sizeof(line), file) != NULL) {
-        // ImprimirLinea(line); // NOTE PrintConsole
-        // printf("%s", line);  // NOTE PrintConsole
 
-        // Extraer n y m de la línea de la forma "p edge n m".
-        if (sscanf(line, "p edge %d %d", &n, &m) == 2) {
-            G = InicializarGrafo(n, m);
-        }
-        if (sscanf(line, "e %d %d", &n, &m) == 2) {
-            AgregarLados(G, i, n, m);
-            i++;
-        }
+    if (scanf("p edge %u %u\n", &n, &m) == 2) {
+        Grafo G = InicializarGrafo(n, m);
+        for (u32 i = 0; i < m; i++) {
+            u32 x, y;
+            if (scanf("e %u %u\n", &x, &y) == 2) {
+                AgregarLados(G, i, x, y);
+            } else {
+                printf("Error leyendo los lados del grafo.\n");
+                return NULL; // Caso de error devuelvo NULL
+            }
+        };
+
+        // Ordenamos el array de lados
+        qsort(G->_lados, 2 * (G->m), sizeof(struct LadoSt), CompararLados);
+
+        for (u32 j = 1; j < (G->n); j++) {
+            (G->_primerVecino)[j] =
+                (G->_primerVecino[j - 1]) + (G->_grados)[j - 1];
+        };
+        return G;
+    } else {
+        printf("Error leyendo la descripción del grafo.\n");
     }
-    
-    fclose(file);
-
-    // Ordenamos el array de lados
- 
-    qsort(G->_lados, 2 * (G->m), sizeof(struct LadoSt), CompararLados);
-   
-    for (u32 j = 1; j < (G -> n); j++) {
-        (G -> _primerVecino)[j] = (G -> _primerVecino[j - 1]) + (G -> _grados)[j-1];
-    }
-
-    return(G);
+    return NULL; // Caso de error devuelvo NULL
 }
 
 void DestruirGrafo(Grafo G) {
     if (G != NULL) {
-        free(G -> _lados);
-        free(G -> _grados);
-        free(G -> _colores);
-        free(G -> _primerVecino);
+        free(G->_lados);
+        free(G->_grados);
+        free(G->_colores);
+        free(G->_primerVecino);
         free(G);
     }
 }
@@ -162,7 +139,7 @@ u32 Delta(Grafo G) { return G->delta; }
 
 u32 Grado(u32 i, Grafo G) {
     if (i < G->n) {
-        return (G -> _grados)[i];
+        return (G->_grados)[i];
     }
     return 0;
 }
@@ -180,11 +157,13 @@ u32 Vecino(u32 j, u32 i, Grafo G) {
     // NOTE: Empieza en 0 los vecinos.
 
     if (j >= Grado(i, G) || i >= NumeroDeVertices(G)) {
-        printf("Index out of bounds en Vecino(): devolviendo 2^32 -1; Arguments were: j = %d, i = %d\n", j, i);
-        return 4294967295; // 2^32 - 1 
+        printf("Index out of bounds en Vecino(): devolviendo 2^32 -1; "
+               "Arguments were: j = %d, i = %d\n",
+               j, i);
+        return 4294967295; // 2^32 - 1
     }
-    u32 indexDei = (G -> _primerVecino)[i];
-    return( ( G -> _lados )[j + indexDei ].y );
+    u32 indexDei = (G->_primerVecino)[i];
+    return ((G->_lados)[j + indexDei].y);
 }
 
 void AsignarColor(color x, u32 i, Grafo G) {
@@ -192,38 +171,34 @@ void AsignarColor(color x, u32 i, Grafo G) {
         printf("Index out of bounds en AsignarColor\n");
         return;
     }
-    (G -> _colores)[i] = x;
+    (G->_colores)[i] = x;
 }
 
 void ExtraerColores(Grafo G, color* Color) {
-    for (u32 i = 0; i < NumeroDeVertices(G); i++){
-        Color[i] = (G -> _colores)[i];
-    }
+    for (u32 i = 0; i < NumeroDeVertices(G); i++) {
+        Color[i] = (G->_colores)[i];
+    };
 }
 
 void ImportarColores(color* Color, Grafo G) {
-    for (u32 i = 0; i < NumeroDeVertices(G); i++){
-        (G -> _colores)[i] = Color[i];
-    }
+    for (u32 i = 0; i < NumeroDeVertices(G); i++) {
+        (G->_colores)[i] = Color[i];
+    };
 }
-
-
 
 void ImprimirLados(Grafo G) {
     printf("\nLados:\n");
     for (u32 i = 0; i < 2 * (G->m); i++) {
-        printf("%d ~ %d\n", 
-                G->_lados[i].x, 
-                G->_lados[i].y);
-    }
+        printf("%d ~ %d\n", G->_lados[i].x, G->_lados[i].y);
+    };
 }
 
 void ImprimirVertices(Grafo G) {
     printf("\nLados:\n");
-    for (u32 i = 0; i < G -> n; i++) {
-        printf("Vértice %d: Grado %d - Índice en lista de lados %d \n", 
-              i, (G -> _grados)[i], (G -> _primerVecino)[i]);
-    }
+    for (u32 i = 0; i < G->n; i++) {
+        printf("Vértice %d: Grado %d - Índice en lista de lados %d \n", i,
+               (G->_grados)[i], (G->_primerVecino)[i]);
+    };
 }
 
 void ImprimirGrafo(Grafo G) {
@@ -235,10 +210,13 @@ void ImprimirGrafo(Grafo G) {
 }
 
 int main() {
+    // clock_t t;
+    // t = clock();
+    printf("Comenzando la creacion del grafo.\n");     // NOTE PrintConsole
     Grafo G = ConstruirGrafo();
     if (G != NULL) {
         printf("Comenzando descripción del grafo.\n"); // NOTE PrintConsole
-        ImprimirGrafo(G);                      // NOTE PrintConsole
+        //ImprimirGrafo(G);                              // NOTE PrintConsole
 
         // PRUEBAS VECINO //
         // u32 j = 3; // y
@@ -246,10 +224,13 @@ int main() {
         // ProbarVecino(j, i, G);
         // END PRUEBAS //
 
-        // printf("Destruyendo grafo...\n");              // NOTE PrintConsole
+        printf("Destruyendo grafo...\n"); // NOTE PrintConsole
         DestruirGrafo(G);
     } else {
         printf("Error construyendo el grafo.\n");
     }
+    // t = clock() - t;
+    // double time_taken = ((double)t) / CLOCKS_PER_SEC; // in seconds
+    // printf("main() took %f seconds to execute \n", time_taken);
     return 0;
 }
