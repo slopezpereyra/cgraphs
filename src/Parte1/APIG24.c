@@ -105,7 +105,7 @@ vertice ObtenerVertice(u32 v, Grafo G) {
         }
         j++;
     }
-    return;
+    return 0;
 }
 
 /**
@@ -116,7 +116,6 @@ Grafo InicializarGrafo(u32 n, u32 m) {
     G->n = n;
     G->m = m;
     G->delta = 0;
-    G->sigma = m+1;
     G->_vertices = (vertice*)calloc(n, sizeof(vertice));
     G->_lados = (lado*)malloc(2 * m * sizeof(lado));
     G->nextLado = 0;
@@ -125,17 +124,13 @@ Grafo InicializarGrafo(u32 n, u32 m) {
 }
 
 /**
- * Actualiza delta y sigma del grafo en caso de ser necesario.
+ * Actualiza delta del grafo en caso de ser necesario.
 */
 void ActualizarGradosGrafo(Grafo G, u32 grado) {
     if (G->delta < grado) {
         G->delta = grado;
     }
 
-    if (G->sigma > grado) {
-        G->sigma = grado;
-        return;
-    }
 }
 
 /**
@@ -194,6 +189,7 @@ void AgregarLado(Grafo G, u32 x, u32 y) {
 
 void ImprimirLinea(char* line) { printf("%s", line); }
 
+// TODO: Agregar asserts correspondientes
 Grafo ConstruirGrafo() {
     char filename[100];
     FILE* file;
