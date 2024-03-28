@@ -82,7 +82,6 @@ Grafo InicializarGrafo(u32 n, u32 m) {
  * del lado.
  */
 void AgregarLados(Grafo G, u32 i, u32 x, u32 y) {
-    printf("Poniendo lado %d ~ %d\n", x, y);
     // Setear el lado x ~ y
     (G -> _lados)[i].x = x;
     (G -> _lados)[i].y = y;
@@ -138,12 +137,9 @@ Grafo ConstruirGrafo() {
  
     qsort(G->_lados, 2 * (G->m), sizeof(struct LadoSt), CompararLados);
    
-    printf("N = %d\n", G -> n);
     for (u32 j = 1; j < (G -> n); j++) {
-        printf("Setting primer vecino de %d\n", j);
         (G -> _primerVecino)[j] = (G -> _primerVecino[j - 1]) + (G -> _grados)[j-1];
     }
-    printf("Exiting!");
 
     return(G);
 }
@@ -153,6 +149,7 @@ void DestruirGrafo(Grafo G) {
         free(G -> _lados);
         free(G -> _grados);
         free(G -> _colores);
+        free(G -> _primerVecino);
         free(G);
     }
 }
@@ -170,30 +167,26 @@ u32 Grado(u32 i, Grafo G) {
     return 0;
 }
 
-//color Color(u32 i, Grafo G) {
-//    if (i < G->n) {
-//        // NOTE: `i` es el nombre, y coincide con el indice.
-//        return G->_vertices[i]->color_;
-//    }
+color Color(u32 i, Grafo G) {
+    if (i < G->n) {
+        // NOTE: `i` es el nombre, y coincide con el indice.
+        return G->_colores[i];
+    }
 
-//    printf("NO CUMPLE! :( Revisar Grafo");
-//    return 4294967295; // 2^32 - 1 Revisar tipo para devolver! :)
-//}
+    printf("Index out of bounds en Color(): Devolviendo 2^32  -1");
+    return 4294967295; // 2^32 - 1 Revisar tipo para devolver! :)
+}
 
-//u32 Vecino(u32 j, u32 i, Grafo G) {
-//    // NOTE: Empieza en 0 los vecinos.
-//    vertice v = ( G->_vertices[i] );
-//    u32 grado = v->grado; // Grado del vertice `i`
-//
-//    if (j >= grado || i >= NumeroDeVertices(G)) {
-//        printf("IndexError en Vecino() con j = %d, i = %d, n = %d, grado = %d\n", 
-//                j, i, G -> n, grado);
-//        return 4294967295; // 2^32 - 1 
-//    }
-//
-//    u32 pV = v->primerVecino;
-//    return G->_lados[pV + j]->yN;
-//}
+u32 Vecino(u32 j, u32 i, Grafo G) {
+    // NOTE: Empieza en 0 los vecinos.
+
+    if (j >= Grado(i, G) || i >= NumeroDeVertices(G)) {
+        printf("Index out of bounds en Vecino(): devolviendo 2^32 -1; Arguments were: j = %d, i = %d\n", j, i);
+        return 4294967295; // 2^32 - 1 
+    }
+    u32 indexDei = (G -> _primerVecino)[i];
+    return( ( G -> _lados )[j + indexDei ].y );
+}
 
 //void AsignarColor(color x, u32 i, Grafo G) {
 //    if (i >= NumeroDeVertices(G)) {
@@ -204,20 +197,20 @@ u32 Grado(u32 i, Grafo G) {
 //    G->_vertices[i]->color_ = x;
 //}
 
-//void ExtraerColores(Grafo G, color* Color) {
-//    for (u32 i = 0; i < NumeroDeVertices(G); i++){
-//        vertice v = ObtenerVertice(i, G);
-//        Color[i] = v -> color_;
-//    }
-//}
-//
-//void ImportarColores(color* Color, Grafo G) {
-//    for (u32 i = 0; i < NumeroDeVertices(G); i++){
-//        vertice v = ObtenerVertice(i, G);
-//        v -> color_ = Color[i];
-//    }
-//}
-//
+void ExtraerColores(Grafo G, color* Color) {
+    for (u32 i = 0; i < NumeroDeVertices(G); i++){
+        vertice v = ObtenerVertice(i, G);
+        Color[i] = v -> color_;
+    }
+}
+
+void ImportarColores(color* Color, Grafo G) {
+    for (u32 i = 0; i < NumeroDeVertices(G); i++){
+        vertice v = ObtenerVertice(i, G);
+        v -> color_ = Color[i];
+    }
+}
+
 
 
 void ImprimirLados(Grafo G) {
@@ -250,8 +243,6 @@ int main() {
     if (G != NULL) {
         printf("Comenzando descripción del grafo.\n"); // NOTE PrintConsole
         ImprimirGrafo(G);                      // NOTE PrintConsole
-        // vertice v = ObtenerVertice(3, G);      // NOTE Vertice
-        // ImprimirInfoVertice(v);                // NOTE PrintConsole
 
         // PRUEBAS VECINO //
         // u32 j = 3; // y
