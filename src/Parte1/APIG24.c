@@ -172,7 +172,6 @@ color Color(u32 i, Grafo G) {
         // NOTE: `i` es el nombre, y coincide con el indice.
         return G->_colores[i];
     }
-
     printf("Index out of bounds en Color(): Devolviendo 2^32  -1");
     return 4294967295; // 2^32 - 1 Revisar tipo para devolver! :)
 }
