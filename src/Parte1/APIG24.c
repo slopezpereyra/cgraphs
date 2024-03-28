@@ -383,7 +383,7 @@ int main() {
         // vertice v = ObtenerVertice(3, G);      // NOTE Vertice
         // ImprimirInfoVertice(v);                // NOTE PrintConsole
 
-        // PRUEBAS //
+        // PRUEBAS VECINO //
         u32 j = 3; // y
         u32 i = 3; // x
         ProbarVecino(j, i, G);
