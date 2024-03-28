@@ -10,6 +10,9 @@
 PGJ10_500.txt
 PGJ10_500(1).txt
 
+# Create Graphs
+src/Parte1/createGraphs.py
+
 # Object files
 *.o
 *.ko

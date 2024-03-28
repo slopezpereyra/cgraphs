@@ -15,9 +15,11 @@
 
 # Grafos que estan OK
 
+## K5.txt
+
 ## K5masunoslados.txt
 
-```
+```txt
 p edge 9 14
 e 1 5
 e 2 6
@@ -109,6 +111,14 @@ Nota: este grafo tiene muchos menos vertices que el anterior "grafo grande", per
 2000000 vertices, 7196008 lados
 
 vertices 0-1999999
+
+# Grafos con casos raros
+
+## 2Graphs.txt o 2 Grafos
+
+Deberia cargar el grafo descripto en K5.txt y K5masunoslados.txt correctamente.
+
+Este sirve para corroborar el caso descripto en el PDF en el cual se solicita construir 2 grafos.
 
 # Grafos que son para los asserts
 
