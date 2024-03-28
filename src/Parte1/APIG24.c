@@ -125,9 +125,6 @@ void AgregarVertice(Grafo G, u32 i, u32 vIndex, u32 nombre) {
         G->_vertices[vIndex]->primerVecino = i;
     }
 
-    // // Agrego el vertice x del lado
-    // (G->_lados)[i]->xV = G->_vertices[vIndex];
-
     ActualizarGradosGrafo(G, G->_vertices[vIndex]->grado);
 }
 
@@ -144,7 +141,7 @@ void AgregarLado(Grafo G, u32 x, u32 y) {
     // Sabemos que los nombres de los vertices van de
     // 0 a n-1, por eso podemos
     AgregarVertice(G, G->nextLado, x, x);
-    AgregarVertice(G, G->nextLado, y, y); // FIXME
+    AgregarVertice(G, G->nextLado, y, y); // TODO Revisar
 
     // Entonces podemos agregar los vertices
     // por el nombre como indice
