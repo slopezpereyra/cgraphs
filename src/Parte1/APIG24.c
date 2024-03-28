@@ -20,11 +20,12 @@ u32 min(u32 x, u32 y) {
 }
 
 /**
-* Esta función establece una relación de orden estricto entre `struct Lado`s.
+* Esta función establece una relación de orden ⪯ entre elementos de tipo 
+* `struct Lado`s.
 * Un `Lado` A con valores x = a₁, y = a₂ y un `Lado` B con valores
 * x = b₁, y = b₂ se ordenan bajo esta relación de la siguiente forma:
 *
-* A menor o igual a B ⟺  a₁ < b₁ o bien (a₁ = b₁ ∧ a₂ ≤ b₂)
+* A ≼ B ⟺  a₁ < b₁ o bien (a₁ = b₁ ∧ a₂ ≤ b₂)
 *
 * De este modo, si denotamos a un `Lado` simplemente con el par (x, y) de sus
 * valores, la siguiente lista de lados:
@@ -75,9 +76,10 @@ Grafo InicializarGrafo(u32 n, u32 m) {
 }
 
 /**
- * Dado un grafo `G` y nombres de vértices `x` e `y`, agrega en  `G -> _lados`
- * el puntero al `Lado` x ~ y. Lo agrega en la posición dada por el hash code
- * del lado.
+ * Dado un grafo `G` y nombres de vértices `x` e `y`, agrega en la 
+ * i-écima posición de `G -> _lados` el x ~ y. Posteriormente, 
+ * agrega en la "posición espejo" al lado y ~ x. Finalmente, aumenta 
+ * los grados de los lados involcurados en uno y recalcula Δ.
  */
 void AgregarLados(Grafo G, u32 i, u32 x, u32 y) {
     // Setear el lado x ~ y
@@ -92,6 +94,14 @@ void AgregarLados(Grafo G, u32 i, u32 x, u32 y) {
 }
 
 // TODO: Agregar asserts correspondientes
+/**
+ * Construye un grafo desde una .txt file dada en standard input. Hace los 
+ * siguientes pasos: 
+ *    - Inicialización del grafo.
+ *    - Scaneo línea por línea, agregando los lados al grafo.
+ *    - Quick sort sobre los lados. 
+ *    - Setea el primerVecino de cada vértice. 
+ */
 Grafo ConstruirGrafo() {
     u32 n, m;
 
