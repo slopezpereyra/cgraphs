@@ -60,23 +60,11 @@ int CompararLados(const void* a, const void* b) {
     return (ladoA->yN - ladoB->yN);
 }
 
-<<<<<<< HEAD
 vertice ObtenerVertice(u32 v, Grafo G) { return G->_vertices[v]; }
 
 vertice ObtenerVerticeOld(u32 v, Grafo G) {
     u32 inf = 0;
     u32 sup = NumeroDeVertices(G);
-=======
-/**
- * Usa búsqueda binaria para hallar al vértice de nombre `v`. 
- * Devuelve NULL si no existe - OJO, esto puede conducir a 
- * segmentation faults si se hacen operaciones con un vértice 
- * inexistente!! 
- */
-vertice ObtenerVertice(u32 v, Grafo G) {
-    u32 low = 0;
-    u32 high = NumeroDeVertices(G);
->>>>>>> eb04324 (Fix binary search in ObtenerVertice and complete Vecino(...) function)
     u32 j = 0;
     u32 mid;
 
@@ -84,10 +72,6 @@ vertice ObtenerVertice(u32 v, Grafo G) {
         mid = low + (high - low) / 2;
         if (G->_vertices[mid]->nombre == v) {
             return G->_vertices[mid];
-<<<<<<< HEAD
-            break; // FIXME Esta de mas
-=======
->>>>>>> eb04324 (Fix binary search in ObtenerVertice and complete Vecino(...) function)
         }
         if (G->_vertices[mid]->nombre < v) {
             low = mid + 1;
@@ -95,12 +79,8 @@ vertice ObtenerVertice(u32 v, Grafo G) {
             high = mid - 1;
         }
     }
-<<<<<<< HEAD
-    return 0;
-=======
     printf("Returnign NULL en ObtenerVertice!\n");
     return NULL;
->>>>>>> eb04324 (Fix binary search in ObtenerVertice and complete Vecino(...) function)
 }
 
 /**
@@ -368,7 +348,6 @@ void ImprimirGrafo(Grafo G) {
 int main() {
     Grafo G = ConstruirGrafo();
     if (G != NULL) {
-<<<<<<< HEAD
         // printf("Comenzando descripción del grafo.\n"); // NOTE PrintConsole
         // ImprimirGrafo(G);                      // NOTE PrintConsole
         // vertice v = ObtenerVertice(3, G);      // NOTE Vertice
@@ -381,12 +360,6 @@ int main() {
         // END PRUEBAS //
 
         // printf("Destruyendo grafo...\n");              // NOTE PrintConsole
-=======
-        printf("Comenzando descripción del grafo.\n"); // NOTE PrintConsole
-         ImprimirGrafo(G); // NOTE PrintConsole
-         printf("\nGrado= %d\n", Grado(4, G)); // NOTE PrintConsole
-         printf("Destruyendo grafo...\n");              // NOTE PrintConsole
->>>>>>> eb04324 (Fix binary search in ObtenerVertice and complete Vecino(...) function)
         DestruirGrafo(G);
     } else {
         printf("Error construyendo el grafo.\n");
