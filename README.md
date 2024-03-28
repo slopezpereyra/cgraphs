@@ -68,6 +68,11 @@ make clean && make final && valgrind ./final
 - [ ] ExtraerColores() - Ver 6.2 del [PDF](PDFs/Parte1ProyectoMDII2024.pdf)
 - [ ] ImportarColores() - Ver 6.3 del [PDF](PDFs/Parte1ProyectoMDII2024.pdf)
 
+## Unit Testing
+
+[Check](https://libcheck.github.io/check/doc/check_html/check_3.html)
+[Install Check](https://libcheck.github.io/check/web/install.html)
+
 ## Extensiones Visual Studio Code:
 
 - C/C++
