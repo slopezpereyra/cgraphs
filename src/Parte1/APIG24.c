@@ -79,7 +79,6 @@ vertice ObtenerVertice(u32 v, Grafo G) {
 >>>>>>> eb04324 (Fix binary search in ObtenerVertice and complete Vecino(...) function)
     u32 j = 0;
     u32 mid;
-    printf("Tratando de hallar %d\n", v);
 
     while (low <= high) {
         mid = low + (high - low) / 2;
