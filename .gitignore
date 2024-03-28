@@ -1,6 +1,15 @@
 # Prerequisites
 *.d
 
+# Graphs
+2gb.txt
+8suCBQ10.txt
+8suCBQ10v2.txt
+8suPGJ.txt
+64gb.txt
+PGJ10_500.txt
+PGJ10_500(1).txt
+
 # Object files
 *.o
 *.ko
