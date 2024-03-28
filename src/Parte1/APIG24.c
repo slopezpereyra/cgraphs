@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
+
 u32 max(u32 x, u32 y) {
     if (x > y) {
         return (x);
@@ -58,45 +60,48 @@ int CompararLados(const void* a, const void* b) {
     return (ladoA->yN - ladoB->yN);
 }
 
+<<<<<<< HEAD
 vertice ObtenerVertice(u32 v, Grafo G) { return G->_vertices[v]; }
 
 vertice ObtenerVerticeOld(u32 v, Grafo G) {
     u32 inf = 0;
     u32 sup = NumeroDeVertices(G);
+=======
+/**
+ * Usa búsqueda binaria para hallar al vértice de nombre `v`. 
+ * Devuelve NULL si no existe - OJO, esto puede conducir a 
+ * segmentation faults si se hacen operaciones con un vértice 
+ * inexistente!! 
+ */
+vertice ObtenerVertice(u32 v, Grafo G) {
+    u32 low = 0;
+    u32 high = NumeroDeVertices(G);
+>>>>>>> eb04324 (Fix binary search in ObtenerVertice and complete Vecino(...) function)
     u32 j = 0;
-    u32 mid = sup / 2;
+    u32 mid;
+    printf("Tratando de hallar %d\n", v);
 
-    while ((inf < sup) && (j < NumeroDeVertices(G))) {
+    while (low <= high) {
+        mid = low + (high - low) / 2;
         if (G->_vertices[mid]->nombre == v) {
             return G->_vertices[mid];
+<<<<<<< HEAD
             break; // FIXME Esta de mas
+=======
+>>>>>>> eb04324 (Fix binary search in ObtenerVertice and complete Vecino(...) function)
         }
-        if (G->_vertices[mid]->nombre > v) {
-            // printf("%s", "\nestoy entre : ");        // FIXME
-            // printf("%d", G->_vertices[inf]->nombre); // FIXME
-            // printf("%s", " y ");                     // FIXME
-            // printf("%d", G->_vertices[mid]->nombre); // FIXME
-            sup = mid;
-            mid = (inf + sup) / 2;
-            if (sup == mid) {
-                return NULL; // FIXME
-                break;
-            }
-        } else if (G->_vertices[mid]->nombre < v) {
-            // printf("%s", "\nestoy entre : ");        // FIXME
-            // printf("%d", G->_vertices[inf]->nombre); // FIXME
-            // printf("%s", " y ");                     // FIXME
-            // printf("%d", G->_vertices[mid]->nombre); // FIXME
-            inf = mid;
-            mid = (inf + sup) / 2;
-            if (inf == mid) {
-                return NULL; // FIXME
-                break;
-            }
+        if (G->_vertices[mid]->nombre < v) {
+            low = mid + 1;
+        } else{
+            high = mid - 1;
         }
-        j++;
     }
+<<<<<<< HEAD
     return 0;
+=======
+    printf("Returnign NULL en ObtenerVertice!\n");
+    return NULL;
+>>>>>>> eb04324 (Fix binary search in ObtenerVertice and complete Vecino(...) function)
 }
 
 /**
@@ -283,8 +288,6 @@ u32 Vecino(u32 j, u32 i, Grafo G) {
     vertice v = G->_vertices[i];
     u32 grado = v->grado; // Grado del vertice `i`
 
-    // printf("\nGRADO = %d Nombre %d\n", grado, v->nombre); // NOTE PrintConsole
-
     // NOTE: If expression evaluates to TRUE, assert() does nothing. If expression evaluates to FALSE, assert() displays an error message on stderr (standard error stream to display error messages and diagnostics) and aborts program execution.
     // assert(grado - 1 > j);  // FIXME Debe tirar un assert??
     if (grado - 1 < j) {
@@ -293,13 +296,9 @@ u32 Vecino(u32 j, u32 i, Grafo G) {
         return NULL;
     }
 
-    // printf("\nPrimer Indice = %d", v->primerVecino); // NOTE PrintConsole
-
     u32 pV = v->primerVecino;
-    // printf("\n\nPrimer Vy = %d Vecino j-esimo = %d\n", pV, j);                         // NOTE PrintConsole
 
     if (j < grado) {
-        // printf("\npV+j = %d", pV + j); // NOTE PrintConsole
         return G->_lados[pV + j]->yN;
     }
 }
@@ -349,7 +348,10 @@ void ImprimirGrafo(Grafo G) {
     printf("\nn = %d\n", G->n);
     printf("m = %d\n", G->m);
     printf("Δ = %d\n\n", G->delta);
-
+    printf("3er vecino del vértice 0: %d\n", Vecino(3, 0, G));
+    printf("1er vecino del vértice 1: %d\n", Vecino(1, 1, G));
+    printf("2do vecino del vértice 4: %d\n", Vecino(2, 4, G));
+    printf("0 vecino del vértice 3: %d\n", Vecino(0, 3, G));
     ImprimirVertices(G);
     ImprimirLados(G);
 }
@@ -357,6 +359,7 @@ void ImprimirGrafo(Grafo G) {
 int main() {
     Grafo G = ConstruirGrafo();
     if (G != NULL) {
+<<<<<<< HEAD
         // printf("Comenzando descripción del grafo.\n"); // NOTE PrintConsole
         // ImprimirGrafo(G);                      // NOTE PrintConsole
         // vertice v = ObtenerVertice(3, G);      // NOTE Vertice
@@ -369,6 +372,12 @@ int main() {
         // END PRUEBAS //
 
         // printf("Destruyendo grafo...\n");              // NOTE PrintConsole
+=======
+        printf("Comenzando descripción del grafo.\n"); // NOTE PrintConsole
+         ImprimirGrafo(G); // NOTE PrintConsole
+         printf("\nGrado= %d\n", Grado(4, G)); // NOTE PrintConsole
+         printf("Destruyendo grafo...\n");              // NOTE PrintConsole
+>>>>>>> eb04324 (Fix binary search in ObtenerVertice and complete Vecino(...) function)
         DestruirGrafo(G);
     } else {
         printf("Error construyendo el grafo.\n");
