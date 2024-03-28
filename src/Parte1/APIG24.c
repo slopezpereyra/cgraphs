@@ -170,15 +170,13 @@ u32 Grado(u32 i, Grafo G) {
     return 0;
 }
 
-//color Color(u32 i, Grafo G) {
-//    if (i < G->n) {
-//        // NOTE: `i` es el nombre, y coincide con el indice.
-//        return G->_vertices[i]->color_;
-//    }
-
-//    printf("NO CUMPLE! :( Revisar Grafo");
-//    return 4294967295; // 2^32 - 1 Revisar tipo para devolver! :)
-//}
+color Color(u32 i, Grafo G) {
+    if (i < G->n) {
+        return G->_colores[i];
+    } else {
+        return 4294967295; 
+    }
+}
 
 //u32 Vecino(u32 j, u32 i, Grafo G) {
 //    // NOTE: Empieza en 0 los vecinos.
