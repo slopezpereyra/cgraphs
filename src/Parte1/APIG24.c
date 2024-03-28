@@ -312,9 +312,19 @@ void AsignarColor(color x, u32 i, Grafo G) {
     G->_vertices[i]->color_ = x;
 }
 
-// void ExtraerColores(Grafo G, color* Color) {}
+void ExtraerColores(Grafo G, color* Color) {
+    for (u32 i = 0; i < NumeroDeVertices(G); i++){
+        vertice v = ObtenerVertice(i, G);
+        Color[i] = v -> color_;
+    }
+}
 
-// void ImportarColores(color* Color, Grafo G) {}
+void ImportarColores(color* Color, Grafo G) {
+    for (u32 i = 0; i < NumeroDeVertices(G); i++){
+        vertice v = ObtenerVertice(i, G);
+        v -> color_ = Color[i];
+    }
+}
 
 void ProbarVecino(u32 j, u32 i, Grafo G) {
     printf("\nVecino(%d, %d) = %d\n", j, i, Vecino(j, i, G));
