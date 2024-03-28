@@ -187,26 +187,23 @@ u32 Vecino(u32 j, u32 i, Grafo G) {
     return( ( G -> _lados )[j + indexDei ].y );
 }
 
-//void AsignarColor(color x, u32 i, Grafo G) {
-//    if (i >= NumeroDeVertices(G)) {
-//        return;
-//    }
-//
-//    // Asigno el color `x` al vertice `i`
-//    G->_vertices[i]->color_ = x;
-//}
+void AsignarColor(color x, u32 i, Grafo G) {
+    if (i >= NumeroDeVertices(G)) {
+        printf("Index out of bounds en AsignarColor\n");
+        return;
+    }
+    (G -> _colores)[i] = x;
+}
 
 void ExtraerColores(Grafo G, color* Color) {
     for (u32 i = 0; i < NumeroDeVertices(G); i++){
-        vertice v = ObtenerVertice(i, G);
-        Color[i] = v -> color_;
+        Color[i] = (G -> _colores)[i];
     }
 }
 
 void ImportarColores(color* Color, Grafo G) {
     for (u32 i = 0; i < NumeroDeVertices(G); i++){
-        vertice v = ObtenerVertice(i, G);
-        v -> color_ = Color[i];
+        (G -> _colores)[i] = Color[i];
     }
 }
 
