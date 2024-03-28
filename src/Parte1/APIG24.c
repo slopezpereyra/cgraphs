@@ -319,7 +319,6 @@ u32 Vecino(u32 j, u32 i, Grafo G) {
     printf("\nPrimer Indice = %d", v->primerVecino); // NOTE PrintConsole
 
     u32 pV = v->primerVecino;
-    // u32 index = 0; // Como j debe empezar en 0
     printf("\n\nPrimer Vy = %d Vecino j-esimo = %d\n", pV,
            j);                         // NOTE PrintConsole
 
