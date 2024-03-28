@@ -148,15 +148,6 @@ void AgregarVertice(Grafo G, u32 i, u32 vIndex, u32 nombre) {
 }
 
 /**
- * Actualiza el grado de un vertice incrementandolo en 1.
-*/
-void IncrementarGradoVertice(Grafo G, u32 nombre) {
-    vertice v = ObtenerVertice(nombre, G);
-    v->grado++;
-    ActualizarGradosGrafo(G, v->grado);
-}
-
-/**
  * Dado un grafo `G` y nombres de vértices `x` e `y`, agrega en  `G -> _lados`
  * el puntero al `Lado` x ~ y. Lo agrega en la posición dada por el hash code
  * del lado.
@@ -178,15 +169,6 @@ void AgregarLado(Grafo G, u32 x, u32 y) {
 
     G->nextLado++;
 }
-
-/**
- * Dado un grafo `G` y nombres de vertices `x` e `y`,
- * agrega a ambos vertices sus correspondiente vecino.
-*/
-// void AgregarVecino(Grafo G, u32 x, u32 y) {
-//     // TODO AgregarVecino()
-//     // G->_vertices[]
-// }
 
 void ImprimirLinea(char* line) { printf("%s", line); }
 
@@ -234,12 +216,9 @@ Grafo ConstruirGrafo() {
     // Una vez tenemos ordenado lados, procedemos a crear los vertices
     // NOTA: Los vertices van a ser guardados ordenados.
     u32 vIndex = 0;
-    // Agregamos el primer vertice.
-    // AgregarVertice(G, 0, 0, G->_lados[0]->xN);
 
     for (u32 i = 1; i < G->m * 2; i++) {
         // Si xV != xN Significa que tenemos un x diferente.
-        // printf("cx: %d, currentVx: %d\n", (G->_lados[i])->xN, currentVx);
 
         u32 nombre = G->_lados[i]->xN; // Nombre del vertice `x`.
 
@@ -384,9 +363,9 @@ int main() {
         // ImprimirInfoVertice(v);                // NOTE PrintConsole
 
         // PRUEBAS VECINO //
-        u32 j = 3; // y
-        u32 i = 3; // x
-        ProbarVecino(j, i, G);
+        // u32 j = 3; // y
+        // u32 i = 3; // x
+        // ProbarVecino(j, i, G);
         // END PRUEBAS //
 
         // printf("Destruyendo grafo...\n");              // NOTE PrintConsole
