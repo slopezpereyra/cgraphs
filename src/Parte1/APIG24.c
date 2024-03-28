@@ -284,9 +284,7 @@ u32 Delta(Grafo G) { return G->delta; }
 u32 Grado(u32 i, Grafo G) {
     int res = 0;
     if (i < G->n) {
-        // NOTE: Corroborar
-        vertice v = ObtenerVertice(i, G);
-        return v->grado;
+        return ObtenerVertice(i, G)->grado;
     }
     return res;
 }
@@ -306,7 +304,7 @@ u32 Vecino(u32 j, u32 i, Grafo G) {
     vertice v = G->_vertices[i];
     u32 grado = v->grado; // Grado del vertice `i`
 
-    printf("\nGRADO = %d Nombre %d\n", grado, v->nombre); // NOTE PrintConsole
+    // printf("\nGRADO = %d Nombre %d\n", grado, v->nombre); // NOTE PrintConsole
 
     // NOTE: If expression evaluates to TRUE, assert() does nothing. If expression evaluates to FALSE, assert() displays an error message on stderr (standard error stream to display error messages and diagnostics) and aborts program execution.
     // assert(grado - 1 > j);  // FIXME Debe tirar un assert??
@@ -316,14 +314,13 @@ u32 Vecino(u32 j, u32 i, Grafo G) {
         return NULL;
     }
 
-    printf("\nPrimer Indice = %d", v->primerVecino); // NOTE PrintConsole
+    // printf("\nPrimer Indice = %d", v->primerVecino); // NOTE PrintConsole
 
     u32 pV = v->primerVecino;
-    printf("\n\nPrimer Vy = %d Vecino j-esimo = %d\n", pV,
-           j);                         // NOTE PrintConsole
+    // printf("\n\nPrimer Vy = %d Vecino j-esimo = %d\n", pV, j);                         // NOTE PrintConsole
 
     if (j < grado) {
-        printf("\npV+j = %d", pV + j); // NOTE PrintConsole
+        // printf("\npV+j = %d", pV + j); // NOTE PrintConsole
         return G->_lados[pV + j]->yN;
     }
 }
