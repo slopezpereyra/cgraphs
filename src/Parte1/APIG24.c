@@ -62,27 +62,6 @@ int CompararLados(const void* a, const void* b) {
 
 vertice ObtenerVertice(u32 v, Grafo G) { return G->_vertices[v]; }
 
-vertice ObtenerVerticeOld(u32 v, Grafo G) {
-    u32 inf = 0;
-    u32 sup = NumeroDeVertices(G);
-    u32 j = 0;
-    u32 mid;
-
-    while (low <= high) {
-        mid = low + (high - low) / 2;
-        if (G->_vertices[mid]->nombre == v) {
-            return G->_vertices[mid];
-        }
-        if (G->_vertices[mid]->nombre < v) {
-            low = mid + 1;
-        } else{
-            high = mid - 1;
-        }
-    }
-    printf("Returnign NULL en ObtenerVertice!\n");
-    return NULL;
-}
-
 /**
  * Inicializa un grafo de n vértices y m lados.
  */
@@ -101,7 +80,7 @@ Grafo InicializarGrafo(u32 n, u32 m) {
 /**
  * Actualiza delta del grafo en caso de ser necesario.
 */
-void ActualizarGradosGrafo(Grafo G, u32 grado) {
+void ActualizarGradoGrafo(Grafo G, u32 grado) {
     if (G->delta < grado) {
         G->delta = grado;
     }
@@ -112,23 +91,18 @@ void ActualizarGradosGrafo(Grafo G, u32 grado) {
  *
  * `i` es el indice del array de lados.
  *
- * `vIndex` es el indice del array de vertices.
- *
  * `nombre` es el nombre del vertice xN del array de lados.
 */
-void AgregarVertice(Grafo G, u32 i, u32 vIndex, u32 nombre) {
-    if (G->_vertices[vIndex] == NULL) {
-        G->_vertices[vIndex] = (vertice)malloc(sizeof(struct Vertice));
-        G->_vertices[vIndex]->nombre = nombre;
-        G->_vertices[vIndex]->grado = 1; // Porque es un lado, tiene un vecino.
-        G->_vertices[vIndex]->color_ = 0;
-        G->_vertices[vIndex]->primerVecino = i;
+void AgregarVertice(Grafo G, u32 nombre) {
+    if (G->_vertices[nombre] == NULL) {
+        G->_vertices[nombre] = (vertice)malloc(sizeof(struct Vertice));
+        G->_vertices[nombre]->nombre = nombre;
+        G->_vertices[nombre]->grado = 1; // Porque es un lado, tiene un vecino.
+        G->_vertices[nombre]->color_ = 0;
+        G->_vertices[nombre]->primerVecino = 0;
+    }else{
+        (G -> _vertices[nombre] -> grado)++;
     }
-
-    // // Agrego el vertice x del lado
-    // (G->_lados)[i]->xV = G->_vertices[vIndex];
-
-    ActualizarGradosGrafo(G, G->_vertices[vIndex]->grado);
 }
 
 /**
@@ -140,14 +114,6 @@ void AgregarLado(Grafo G, u32 x, u32 y) {
     (G->_lados)[G->nextLado] = (lado)malloc(sizeof(struct Lado));
     (G->_lados)[G->nextLado]->xN = x;
     (G->_lados)[G->nextLado]->yN = y;
-
-    // Sabemos que los nombres de los vertices van de
-    // 0 a n-1, por eso podemos
-    AgregarVertice(G, G->nextLado, x, x);
-    AgregarVertice(G, G->nextLado, y, y); // FIXME
-
-    // Entonces podemos agregar los vertices
-    // por el nombre como indice
     (G->_lados)[G->nextLado]->xV = G->_vertices[x];
     (G->_lados)[G->nextLado]->xV = G->_vertices[y];
 
@@ -168,7 +134,7 @@ Grafo ConstruirGrafo() {
 
     // Abrir el archivo (notar que por ahora abre un archivo constante,
     // a modo de testeo).
-    file = fopen("K5.txt", "r"); // NOTE FILENAME
+    file = fopen("GrafoMuyGrande.txt", "r"); // NOTE FILENAME
     // file = fopen(sfilename, "r");
     if (file == NULL) {
         printf("Error opening file.\n");
@@ -188,38 +154,29 @@ Grafo ConstruirGrafo() {
             G = InicializarGrafo(n, m);
         }
         if (sscanf(line, "e %d %d", &n, &m) == 2) {
+            AgregarVertice(G, n);
+            AgregarVertice(G, m); // TODO Revisar
             AgregarLado(G, n, m);
             AgregarLado(G, m, n);
+            ( G -> delta ) = max( 
+                        max((G -> _vertices)[n] -> grado, (G -> _vertices)[m] -> grado),
+                        G -> delta
+                    );
         }
+    }
+    
+     for (u32 i = 1; i < G->n; i++) {
+        vertice v = (G -> _vertices)[i];
+        vertice v_anterior = (G -> _vertices)[i - 1];
+        v -> primerVecino = (v_anterior -> primerVecino) + ( v_anterior -> grado );
+
     }
     fclose(file);
 
     // Ordenamos el array de lados
+ 
     qsort(G->_lados, 2 * (G->m), sizeof(lado), CompararLados);
-
-    // Una vez tenemos ordenado lados, procedemos a crear los vertices
-    // NOTA: Los vertices van a ser guardados ordenados.
-    u32 vIndex = 0;
-
-    for (u32 i = 1; i < G->m * 2; i++) {
-        // Si xV != xN Significa que tenemos un x diferente.
-
-        u32 nombre = G->_lados[i]->xN; // Nombre del vertice `x`.
-
-        // Como agregamos el primero, el primero nunca es NULL
-        // a pesar de utilizar calloc.
-        if (G->_vertices[vIndex]->nombre == nombre) {
-            // Tenemos un lado con el mismo xV
-            // Entonces tiene un vecino mas
-            (G->_vertices[vIndex]->grado)++;
-            ActualizarGradosGrafo(G, G->_vertices[vIndex]->grado);
-        } else {
-            vIndex++;
-            G->_vertices[vIndex]->primerVecino = i;
-            ActualizarGradosGrafo(G, G->_vertices[vIndex]->grado);
-        }
-    }
-    return G;
+    return(G);
 }
 
 void DestruirGrafo(Grafo G) {
@@ -264,22 +221,17 @@ color Color(u32 i, Grafo G) {
 
 u32 Vecino(u32 j, u32 i, Grafo G) {
     // NOTE: Empieza en 0 los vecinos.
-    vertice v = G->_vertices[i];
+    vertice v = ( G->_vertices[i] );
     u32 grado = v->grado; // Grado del vertice `i`
 
-    // NOTE: If expression evaluates to TRUE, assert() does nothing. If expression evaluates to FALSE, assert() displays an error message on stderr (standard error stream to display error messages and diagnostics) and aborts program execution.
-    // assert(grado - 1 > j);  // FIXME Debe tirar un assert??
-    if (grado - 1 < j) {
-        printf(
-            ">>>>>>>>>>>>>>>> ERROR en Vecino()"); // NOTE Revisar formato que debe devolver!
-        return NULL;
+    if (j >= grado || i >= NumeroDeVertices(G)) {
+        printf("IndexError en Vecino() con j = %d, i = %d, n = %d, grado = %d\n", 
+                j, i, G -> n, grado);
+        return 4294967295; // 2^32 - 1 
     }
 
     u32 pV = v->primerVecino;
-
-    if (j < grado) {
-        return G->_lados[pV + j]->yN;
-    }
+    return G->_lados[pV + j]->yN;
 }
 
 void AsignarColor(color x, u32 i, Grafo G) {
@@ -320,6 +272,11 @@ void ImprimirVertices(Grafo G) {
         if (G->_vertices[i] != NULL) {
             printf("Vertice %d de grado %d \n", G->_vertices[i]->nombre,
                    G->_vertices[i]->grado);
+            printf("Vecinos del vértice: "); 
+            for (u32 j = 0; j < (G -> _vertices[i]) -> grado; j++){
+                printf("%d ", (G -> _lados)[((G -> _vertices)[i] -> primerVecino) + j] -> yN);
+            }
+            printf("\n");
         }
     }
 }
@@ -337,19 +294,15 @@ void ImprimirGrafo(Grafo G) {
     printf("\nn = %d\n", G->n);
     printf("m = %d\n", G->m);
     printf("Δ = %d\n\n", G->delta);
-    printf("3er vecino del vértice 0: %d\n", Vecino(3, 0, G));
-    printf("1er vecino del vértice 1: %d\n", Vecino(1, 1, G));
-    printf("2do vecino del vértice 4: %d\n", Vecino(2, 4, G));
-    printf("0 vecino del vértice 3: %d\n", Vecino(0, 3, G));
-    ImprimirVertices(G);
-    ImprimirLados(G);
+    //ImprimirVertices(G);
+    //ImprimirLados(G);
 }
 
 int main() {
     Grafo G = ConstruirGrafo();
     if (G != NULL) {
-        // printf("Comenzando descripción del grafo.\n"); // NOTE PrintConsole
-        // ImprimirGrafo(G);                      // NOTE PrintConsole
+        printf("Comenzando descripción del grafo.\n"); // NOTE PrintConsole
+        ImprimirGrafo(G);                      // NOTE PrintConsole
         // vertice v = ObtenerVertice(3, G);      // NOTE Vertice
         // ImprimirInfoVertice(v);                // NOTE PrintConsole
 
