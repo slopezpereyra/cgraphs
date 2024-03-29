@@ -27,12 +27,15 @@ test_graphs: $(OBJS_P1)
 		./final < K5.txt
 		@echo "\n\tCorriendo F.txt"
 		./final < F.txt
-		# @echo "\n\tCorriendo 10_20.txt"
-		# ./final < 10_20.txt
 		@echo "\n\tCorriendo ErrorG.txt"
 		./final < ErrorG.txt
 		@echo "\n\tCorriendo NoEdge.txt"
 		./final < NoEdge.txt
+
+test_graphs_2: $(OBJS_P1)
+		$(CC) $(CFLAGS) -o final $(OBJS_P1)
+		@echo "\n\tCorriendo 10_20.txt"
+		./final < 10_20.txt
 
 # Necesario, no tocar.
 APIG24.o: APIG24.h EstructuraGrafo24.h
