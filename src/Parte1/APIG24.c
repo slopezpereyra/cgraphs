@@ -4,8 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <stdbool.h>
-//#include <time.h>
 
 u32 max(u32 x, u32 y) {
     if (x > y) {
@@ -130,7 +128,7 @@ Grafo ConstruirGrafo() {
 
     // Esta mal el formato del archivo.
     if (c != 'p') {
-        printf("\nMal formato de archivo.\n"); // NOTE PrintConsole
+        // printf("\nMal formato de archivo.\n"); // NOTE PrintConsole
         return NULL;
     }
 
@@ -139,16 +137,16 @@ Grafo ConstruirGrafo() {
     char edge_str[6];
     int matched_format; // Por el ret de fscanf
 
-    /* Lectura del FILE hasta p edge */
+    // Lectura del FILE hasta p edge
     matched_format = fscanf(file, "%s %u %u", edge_str, &n, &m);
 
     if (matched_format < 3) {
-        printf("ERROR: No hay match.\n"); // NOTE PrintConsole
+        // printf("ERROR: No hay match.\n"); // NOTE PrintConsole
     }
 
     Saltear_linea(file);
     if (strcmp("edge", edge_str) != 0) {
-        printf("ERROR: No hay match en edge.\n"); // NOTE PrintConsole
+        // printf("ERROR: No hay match en edge.\n"); // NOTE PrintConsole
         return NULL;
     }
 
@@ -160,7 +158,7 @@ Grafo ConstruirGrafo() {
         if (scanf("e %u %u\n", &x, &y) == 2) {
             AgregarLados(G, i, x, y);
         } else {
-            printf("Error leyendo los lados del grafo.\n"); // NOTE PrintConsole
+            // printf("Error leyendo los lados del grafo.\n"); // NOTE PrintConsole
             return NULL; // Caso de error devuelvo NULL
         }
     };
@@ -213,8 +211,7 @@ color Color(u32 i, Grafo G) {
         // NOTE: `i` es el nombre, y coincide con el indice.
         return G->_colores[i];
     }
-    printf(
-        "Index out of bounds en Color(): Devolviendo 2^32  -1"); // NOTE PrintConsole
+    // printf("Index out of bounds en Color(): Devolviendo 2^32  -1"); // NOTE PrintConsole
     return 4294967295; // 2^32 - 1 Revisar tipo para devolver! :)
 }
 
@@ -223,9 +220,10 @@ u32 Vecino(u32 j, u32 i, Grafo G) {
     // NOTE: Empieza en 0 los vecinos.
 
     if (j >= Grado(i, G) || i >= NumeroDeVertices(G)) {
-        printf("Index out of bounds en Vecino(): devolviendo 2^32 -1; "
-               "Arguments were: j = %d, i = %d\n",
-               j, i);      // NOTE PrintConsole
+        // printf(
+            // "Index out of bounds en Vecino(): devolviendo 2^32 -1; "
+            //    "Arguments were: j = %d, i = %d\n",
+            //    j, i);      // NOTE PrintConsole
         return 4294967295; // 2^32 - 1
     }
     u32 indexDei = (G->_primerVecino)[i];
@@ -235,7 +233,7 @@ u32 Vecino(u32 j, u32 i, Grafo G) {
 void AsignarColor(color x, u32 i, Grafo G) {
     assert(G != NULL);
     if (i >= NumeroDeVertices(G)) {
-        printf("Index out of bounds en AsignarColor\n");// NOTE PrintConsole
+        // printf("Index out of bounds en AsignarColor\n");// NOTE PrintConsole
         return;
     }
     (G->_colores)[i] = x;

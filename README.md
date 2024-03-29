@@ -40,13 +40,17 @@ compilado sin esa flag, dado que esa flag provoca una gran demora en la ejecuciÂ
 #### Time
 
 ```bash
-make clean && make final && time ./final
+make clean && make parte1 && time ./final
+```
+
+```bash
+make clean && time make parte1
 ```
 
 #### Valgrind
 
 ```bash
-make clean && make final && valgrind ./final
+make clean && make parte1 && valgrind ./parte1
 ```
 
 ### Tests
@@ -63,10 +67,10 @@ make clean && make final && valgrind ./final
 - [x] Delta()
 - [x] Grado()
 - [x] Color()
-- [ ] Vecino()
+- [x] Vecino()
 - [x] AsignarColor()
-- [ ] ExtraerColores() - Ver 6.2 del [PDF](PDFs/Parte1ProyectoMDII2024.pdf)
-- [ ] ImportarColores() - Ver 6.3 del [PDF](PDFs/Parte1ProyectoMDII2024.pdf)
+- [x] ExtraerColores() - Ver 6.2 del [PDF](PDFs/Parte1ProyectoMDII2024.pdf)
+- [x] ImportarColores() - Ver 6.3 del [PDF](PDFs/Parte1ProyectoMDII2024.pdf)
 
 ## Unit Testing
 
