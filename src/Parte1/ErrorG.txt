@@ -1,0 +1,3 @@
+c Este grafo esta roto :D
+c Salteame!
+edge p 0 0

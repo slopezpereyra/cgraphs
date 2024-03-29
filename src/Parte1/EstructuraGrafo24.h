@@ -10,13 +10,13 @@ typedef struct LadoSt* Lado;     // Puntero al Lado
 typedef struct GrafoSt* Grafo;
 
 struct GrafoSt {
-    u32 n;              // Numero de vertices del grafo
-    u32 m;              // Numero de lados del grafo
-    u32 delta;          // Max de grados
-    u32* _grados;       // Max de grados
-    Lado _lados;        // Arreglo de lados
-    color* _colores;    // Arreglo de colores
-    u32* _primerVecino; // Indice al primer vecino
+    u32 n;              // Numero de vertices del grafo.
+    u32 m;              // Numero de lados del grafo.
+    u32 delta;          // Max de grados. Size `n`.
+    u32* _grados;       // Arreglo de grados. Size `n`.
+    Lado _lados;        // Arreglo de lados. Size `m*2`.
+    color* _colores;    // Arreglo de colores. Size `n`.
+    u32* _primerVecino; // Indice al primer vecino.
 };
 
 /**
@@ -25,8 +25,8 @@ struct GrafoSt {
  * Size: `m * 2`
 */
 struct LadoSt {
-    u32 x; // Nombre del vertice `x` del lado `xy`
-    u32 y; // Nombre del vertice `y` del lado `yx`
+    u32 x; // Nombre del vertice `x` del lado `xy`.
+    u32 y; // Nombre del vertice `y` del lado `yx`.
 };
 
 #endif

@@ -23,12 +23,16 @@ main.o:
 # Correr con make
 test_graphs: $(OBJS_P1)
 		$(CC) $(CFLAGS) -o final $(OBJS_P1)
-		@echo "\t----Corriendo K5.txt"
+		@echo "\n\tCorriendo K5.txt"
 		./final < K5.txt
-		@echo "\t----Corriendo F.txt"
+		@echo "\n\tCorriendo F.txt"
 		./final < F.txt
-		@echo "\t----Corriendo 10_20.txt"
-		./final < 10_20.txt
+		# @echo "\n\tCorriendo 10_20.txt"
+		# ./final < 10_20.txt
+		@echo "\n\tCorriendo ErrorG.txt"
+		./final < ErrorG.txt
+		@echo "\n\tCorriendo NoEdge.txt"
+		./final < NoEdge.txt
 
 # Necesario, no tocar.
 APIG24.o: APIG24.h EstructuraGrafo24.h
