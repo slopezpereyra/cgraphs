@@ -1,27 +1,41 @@
 CC=gcc
 CFLAGS = -Wall -Wextra -O3 -std=c99
 # PATH_P1 = src/Parte1/
-# OBJS_P1 = $(PATH_P1)main.o
-# $(PATH_P1)main.o $(PATH_P1)APIG24.o $(PATH_P1)EstructuraGrafo24.o
+OBJS_P1 = main.o APIG24.o
+
+VALGRIND = valgrind --leak-check=full --show-reachable=yes
 
 .PHONY: clean
 
 # main: main.c
 # 		$(CC) $(CFLAGS) -o main main.c
 
-all: apig24
+parte1: test_graphs
 
 final:
-		$(CC) $(CFLAGS) APIG24.c -o final
+		$(CC) $(CFLAGS) -c main.c -o final
 
-apig24: APIG24.o EstructuraGrafo24.h
-		$(CC) $(CFLAGS) -o LABP1
+# Necesario, no tocar.
+main.o:
+		$(CC) $(CFLAGS) -c main.c
 
-APIG24.o: APIG24.c
+# Realiza pruebas cortas sobre casos que deben funcionar.
+# Correr con make
+test_graphs: $(OBJS_P1)
+		$(CC) $(CFLAGS) -o final $(OBJS_P1)
+		@echo "\t----Corriendo K5.txt"
+		./final < K5.txt
+		@echo "\t----Corriendo F.txt"
+		./final < F.txt
+		@echo "\t----Corriendo 10_20.txt"
+		./final < 10_20.txt
+
+# Necesario, no tocar.
+APIG24.o: APIG24.h EstructuraGrafo24.h
 		$(CC) $(CFLAGS) -c APIG24.c
 
 clean:
-	rm -f *.o LABP1 final main a.out
+	rm -f *.o final main a.out
 
 # include all dependencies
 # -include $(OBJS:%.o=%.d)
