@@ -241,16 +241,12 @@ void AsignarColor(color x, u32 i, Grafo G) {
 
 void ExtraerColores(Grafo G, color* Color) {
     assert(G != NULL);
-    for (u32 i = 0; i < NumeroDeVertices(G); i++) {
-        Color[i] = (G->_colores)[i];
-    };
+    memcpy(Color, G -> _colores, (G -> n) * sizeof(color));
 }
 
 void ImportarColores(color* Color, Grafo G) {
     assert(G != NULL);
-    for (u32 i = 0; i < NumeroDeVertices(G); i++) {
-        (G->_colores)[i] = Color[i];
-    };
+    memcpy(G -> _colores, Color, (G -> n) * sizeof(color));
 }
 
 void ImprimirLados(Grafo G) {
@@ -278,3 +274,4 @@ void ImprimirGrafo(Grafo G) {
     ImprimirVertices(G);
     ImprimirLados(G);
 }
+
