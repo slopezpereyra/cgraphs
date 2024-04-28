@@ -6,29 +6,27 @@
 typedef uint32_t u32;
 typedef u32 color;
 typedef struct Vertice* vertice; // Puntero al Vertice
-typedef struct Lado* lado;       // Puntero al Lado
+typedef struct LadoSt* Lado;     // Puntero al Lado
 typedef struct GrafoSt* Grafo;
 
 struct GrafoSt {
-    u32 n;              // Numero de vertices del grafo
-    u32 m;              // Numero de lados del grafo
-    u32 delta;          // Max de grados
-    u32 sigma;          // Min de grados
-    vertice* _vertices; // Arreglo de punteros a Vertice
-    lado* _lados;
+    u32 n;              // Numero de vertices del grafo.
+    u32 m;              // Numero de lados del grafo.
+    u32 delta;          // Max de grados. Size `n`.
+    u32* _grados;       // Arreglo de grados. Size `n`.
+    Lado _lados;        // Arreglo de lados. Size `m*2`.
+    color* _colores;    // Arreglo de colores. Size `n`.
+    u32* _primerVecino; // Indice al primer vecino.
 };
 
-struct Vertice {
-    u32 nombre; // Nombre del vertice
-    u32 grado;  // Numero de vecinos
-    color color_;
-    // Modificar
-    u32* Vecinos; // Puntero al indice del primer vecino
-};
-
-struct Lado {
-    u32 x;
-    u32 y;
+/**
+ * Contiene los lados `xy` e `ye`.
+ *
+ * Size: `m * 2`
+*/
+struct LadoSt {
+    u32 x; // Nombre del vertice `x` del lado `xy`.
+    u32 y; // Nombre del vertice `y` del lado `yx`.
 };
 
 #endif

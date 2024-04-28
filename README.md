@@ -35,7 +35,22 @@ compilado sin esa flag, dado que esa flag provoca una gran demora en la ejecuciÂ
 
 ### Proyecto
 
+#### Correr parte 1
+
+#### Time
+
 ```bash
+make clean && make parte1 && time ./final
+```
+
+```bash
+make clean && time make parte1
+```
+
+#### Valgrind
+
+```bash
+make clean && make parte1 && valgrind ./parte1
 ```
 
 ### Tests
@@ -45,17 +60,22 @@ compilado sin esa flag, dado que esa flag provoca una gran demora en la ejecuciÂ
 
 ## Features
 
-- [ ] ConstruirGrafo()
-- [ ] DestruirGrafo()
-- [ ] NumeroDeVertices()
-- [ ] NumeroDeLados()
-- [ ] Delta()
-- [ ] Grado()
-- [ ] Color()
-- [ ] Vecino()
-- [ ] AsignarColor()
-- [ ] ExtraerColores() - Ver 6.2 del [PDF](PDFs/Parte1ProyectoMDII2024.pdf)
-- [ ] ImportarColores() - Ver 6.3 del [PDF](PDFs/Parte1ProyectoMDII2024.pdf)
+- [x] ConstruirGrafo()
+- [x] DestruirGrafo()
+- [x] NumeroDeVertices()
+- [x] NumeroDeLados()
+- [x] Delta()
+- [x] Grado()
+- [x] Color()
+- [x] Vecino()
+- [x] AsignarColor()
+- [x] ExtraerColores() - Ver 6.2 del [PDF](PDFs/Parte1ProyectoMDII2024.pdf)
+- [x] ImportarColores() - Ver 6.3 del [PDF](PDFs/Parte1ProyectoMDII2024.pdf)
+
+## Unit Testing
+
+[Check](https://libcheck.github.io/check/doc/check_html/check_3.html)
+[Install Check](https://libcheck.github.io/check/web/install.html)
 
 ## Extensiones Visual Studio Code:
 
