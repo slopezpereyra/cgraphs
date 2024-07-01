@@ -1,6 +1,8 @@
 # Prerequisites
 *.d
 
+*.txt
+
 # Graphs
 2gb.txt
 8suCBQ10.txt
