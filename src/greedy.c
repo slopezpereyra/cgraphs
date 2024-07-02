@@ -8,7 +8,6 @@
 
 u32* NaturalOrder(Graph G){
 
-
     u32* order = (u32*)calloc(NumberOfVertices(G), sizeof(u32));
     for (u32 i = 0; i < NumberOfVertices(G); i++){
         order[i] = i;

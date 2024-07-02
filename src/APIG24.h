@@ -33,6 +33,7 @@ Edge newEdge(u32 x, u32 y);
 void AddEdges(Graph G, u32 i, u32 x, u32 y);
 void FormatEdges(Graph G);
 int CompareEdges(const void* a, const void* b);
+void PrintEdges(Graph G);
 
 /**
  * Destruye G y libera la memoria alocada.

@@ -3,7 +3,8 @@ CFLAGS = -Wall -Wextra -O3 -std=c99
 # PATH_P1 = src/Parte1/
 OBJS_P1 = main.o APIG24.o greedy.o queue.o search.o
 
-VALGRIND = valgrind --leak-check=full --show-reachable=yes
+VALGRIND_FLAGS = --leak-check=full --show-reachable=yes
+VALGRIND_CMD = $(if $(VALGRIND),valgrind $(VALGRIND_FLAGS),)
 
 .PHONY: clean
 
@@ -12,10 +13,8 @@ VALGRIND = valgrind --leak-check=full --show-reachable=yes
 
 parte1: test_graphs
 
-
 final: $(OBJS_P1)
 		$(CC) $(CFLAGS) -o final $(OBJS_P1)
-
 
 # Necesario, no tocar.
 main.o:
@@ -26,20 +25,20 @@ main.o:
 test_graphs: $(OBJS_P1)
 		$(CC) $(CFLAGS) -o final $(OBJS_P1)
 		@echo "\n\tCorriendo K5.txt"
-		./final < graphs/K5.txt
+		$(VALGRIND_CMD) ./final < graphs/K5.txt
 		@echo "\n\tCorriendo F.txt"
-		./final < graphs/F.txt
+		$(VALGRIND_CMD) ./final < graphs/F.txt
 		@echo "\n\tCorriendo ErrorG.txt"
-		./final < graphs/ErrorG.txt
+		$(VALGRIND_CMD) ./final < graphs/ErrorG.txt
 		@echo "\n\tCorriendo NoEdge.txt"
-		./final < graphs/NoEdge.txt
-		@echo "\n\tCorriendo NoEdge.txt"
-		./final < graphs/Golomb.txt
+		$(VALGRIND_CMD) ./final < graphs/NoEdge.txt
+		@echo "\n\tCorriendo Golomb.txt"
+		$(VALGRIND_CMD) ./final < graphs/Golomb.txt
 
 test_graphs_2: $(OBJS_P1)
 		$(CC) $(CFLAGS) -o final $(OBJS_P1)
 		@echo "\n\tCorriendo 10_20.txt"
-		./final < graphs/10_20.txt
+		$(VALGRIND_CMD) ./final < graphs/10_20.txt
 
 # Necesario, no tocar.
 APIG24.o: src/APIG24.h src/EstructuraGrafo24.h 

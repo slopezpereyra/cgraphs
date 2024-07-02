@@ -12,6 +12,7 @@ int main() {
         printf("Coloreando el grafo con orden natural.\n");
         u32* order = NaturalOrder(G);
         u32 gr = Greedy(G, order);
+        free(order);
         printf("Comenzando descripción del grafo.\n"); // NOTE PrintConsole
         PrintGraph(G);                              // NOTE PrintConsole
         printf("\nA coloring with χ(G) = %d was found\n", gr);
@@ -20,9 +21,15 @@ int main() {
         Graph B = BFS(G, 3);
         printf("\nDescribing BFS graph.\n");
         PrintGraph(B);                              // NOTE PrintConsole
+        printf("\nDFS:\n");
+
+        Graph D = DFS(G, 2);
+        PrintGraph(D);                              // NOTE PrintConsole
+                                                    //
         printf("Destruyendo grafos...\n"); // NOTE PrintConsole
         DumpGraph(G);
         DumpGraph(B);
+        DumpGraph(D);
     } else {
         printf("Error construyendo el grafo.\n");
     }
