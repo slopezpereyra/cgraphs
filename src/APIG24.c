@@ -97,6 +97,32 @@ void AddEdges(Graph G, u32 i, u32 x, u32 y) {
     (G->δ) = min(min((G->_degrees)[x], (G->_degrees)[y]), G->δ);
 }
 
+void removeEdge(Graph G, int x, int y) {
+    assert(x < y);
+    (G->_degrees)[x]--;
+    (G->_degrees)[y]--;
+    
+    u32 index1 = (G -> _firstNeighbor)[x];
+    for (u32 i = 0; i < Degree(x, G); i++){
+        if (Neighbor(i, x, G) == y){
+            break;
+        }index1++;
+    }
+    u32 index2 = index1 + (G -> m);
+    // Shift elements to the left to overwrite the elements at index1 and index2
+    for (int i = index2; i < 2*(G -> m); i++) {
+            (G->_edges)[i] = (G->_edges)[i + 1];
+    }
+    (G->m)--;
+    for (int i = index1; i < 2*(G -> m); i++) {
+            (G->_edges)[i] = (G->_edges)[i + 1];
+    }
+    G->_edges = (Edge)realloc(G->_edges, 2*(G->m) * sizeof(struct EdgeSt));
+    if ((G->_edges) == NULL) {
+        printf("Error: Realloc failed\n");
+        exit(1);
+    }
+}
 
 /**
  * Lee un file hasta encontrar un `\n`.
@@ -157,7 +183,6 @@ Graph BuildGraph() {
     Graph G = InitGraph(n, m);
 
     for (u32 i = 0; i < m; i++) {
-        // No hay comentarios dentro de lados
         u32 x, y;
         if (scanf("e %u %u\n", &x, &y) == 2) {
             AddEdges(G, i, x, y);
@@ -217,7 +242,7 @@ u32 Degree(u32 i, Graph G) {
     return 0;
 }
 
-color Color(u32 i, Graph G) {
+color getColor(u32 i, Graph G) {
     assert(G != NULL);
     if (i < G->n) {
         // NOTE: `i` es el nombre, y coincide con el indice.
@@ -225,6 +250,17 @@ color Color(u32 i, Graph G) {
     }
     // printf("Index out of bounds en Color(): Devolviendo 2^32  -1"); // NOTE PrintConsole
     return 4294967295; // 2^32 - 1 Revisar tipo para devolver! :)
+}
+
+struct EdgeSt getEdge(u32 i, Graph G) {
+    assert(G != NULL && i < 2* NumberOfEdges(G));
+    return ( G->_edges )[i];
+}
+
+void removeColors(Graph G) {
+    for (u32 i = 0; i < G -> n; i++){
+        (G -> _colors)[i] = 0;
+    }
 }
 
 u32 Neighbor(u32 j, u32 i, Graph G) {
@@ -242,23 +278,18 @@ u32 Neighbor(u32 j, u32 i, Graph G) {
     return ((G->_edges)[j + indexDei].y);
 }
 
-void AsignColor(color x, u32 i, Graph G) {
+void setColor(color x, u32 i, Graph G) {
     assert(G != NULL);
     if (i >= NumberOfVertices(G)) {
-        // printf("Index out of bounds en AsignColor\n");// NOTE PrintConsole
+        // printf("Index out of bounds en setColor\n");// NOTE PrintConsole
         return;
     }
     (G->_colors)[i] = x;
 }
 
-void ExtractColors(Graph G, color* Color) {
+void extractColors(Graph G, color* Color) {
     assert(G != NULL);
     memcpy(Color, G -> _colors, (G -> n) * sizeof(color));
-}
-
-void ImportarColors(color* Color, Graph G) {
-    assert(G != NULL);
-    memcpy(G -> _colors, Color, (G -> n) * sizeof(color));
 }
 
 void PrintEdges(Graph G) {

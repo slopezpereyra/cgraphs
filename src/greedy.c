@@ -1,10 +1,30 @@
-#include "greedy.h"
-
-#include "APIG24.h"
+#include <stdbool.h>
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "greedy.h"
+#include "APIG24.h"
+#include "queue.h"
+
+
+
+// Comparison function for qsort to sort in descending order by color
+int compareColor(const void *a, const void *b, void *arg) {
+    u32 index_a = *(const u32 *)a;
+    u32 index_b = *(const u32 *)b;
+    Graph graph = (Graph )arg;
+
+    // Sort by color in descending order
+    if (graph->_colors[index_a] < graph->_colors[index_b]) {
+        return 1;
+    } else if (graph->_colors[index_a] > graph->_colors[index_b]) {
+        return -1;
+    } else {
+        return 0;
+    }
+}
 
 u32* NaturalOrder(Graph G){
 
@@ -13,8 +33,6 @@ u32* NaturalOrder(Graph G){
         order[i] = i;
     }
     return(order);
-
-
 }
 
 // The Greedy part of the algorithm (deciding the coloring) is done 
@@ -76,5 +94,137 @@ u32 Greedy(Graph G, u32 *Order){
     free(usedColorsStatic);
     return(colorsUsed);
 }
+
+bool twoColorable(Graph G){
+
+    struct Queue* Q = createQueue();
+    enQueue(Q, 0);
+    setColor(1, 0, G);
+
+    while (!isEmpty(Q)){
+        u32 pivot = pop(Q);
+        u32 pivotColor = getColor(pivot, G);
+        u32 degree = Degree(pivot, G);
+        for (u32 i = 0; i < degree; i++){
+            u32 iNeighbor = Neighbor(i, pivot, G);
+            if (getColor(iNeighbor, G) == 0){
+                enQueue(Q, iNeighbor);
+                setColor(3 - pivotColor, iNeighbor, G);
+            }
+            if (getColor(iNeighbor, G) == pivotColor){
+                dumpQueue(Q);
+                return false;
+            }
+        }
+    }
+    dumpQueue(Q);
+    return true;
+}
+
+struct Queue** genColorQueues(Graph G, u32 nColorsUsed){
+    struct Queue** D = (struct Queue**) calloc(nColorsUsed, sizeof(struct Queue**));
+
+    for (u32 i = 0; i < nColorsUsed; i++){
+        D[i] = createQueue();
+    }
+
+    for (u32 i = 0; i < NumberOfVertices(G); i++){
+        color c = getColor(i, G);
+        struct Queue * q = D[c-1];
+        enQueue(q, i);
+    }
+
+    return D;
+}
+
+u32* unfoldColorQueues(Graph G, u32 nColorsUsed, struct Queue** D){
+    u32* order = (u32*)calloc(NumberOfVertices(G), sizeof(u32));
+    u32 j = NumberOfVertices(G) - 1;
+    for (u32 i = 0; i < nColorsUsed; i++){
+        struct Queue * q = D[i];
+        while (q -> front != NULL){
+            u32 x = pop(q);
+            order[j] = x;
+            j--;
+        }
+        free(q);
+    }
+
+    free(D);
+    return(order);
+}
+
+
+u32* cardinalityOrder(Graph G, u32 nColorsUsed){
+    struct Queue** D = genColorQueues(G, nColorsUsed);
+    qsort(D, nColorsUsed, sizeof(struct Queue*), compareQueue);
+    return ( unfoldColorQueues(G, nColorsUsed, D) );
+}
+
+u32* reverseOrder(Graph G, u32 nColorsUsed){
+
+    struct Queue** D = genColorQueues(G, nColorsUsed);
+    return( unfoldColorQueues(G, nColorsUsed, D) );
+
+
+}
+
+u32* divisibilityOrder(Graph G, u32 nColorsUsed){
+
+    struct Queue** D = genColorQueues(G, nColorsUsed);
+    u32 nColorsDivisibleByFour = 0;
+    u32 nColorsDivisibleByTwo = 0;
+
+    for (u32 i = 0; i < nColorsUsed; i++){
+        struct Queue * q = D[i];
+        if (( i+1 ) % 4 == 0){
+           nColorsDivisibleByFour += q->count; 
+        }else if (( i+1 ) % 2 == 0 ){
+           nColorsDivisibleByTwo += q->count; 
+        }
+    }
+
+    u32* order = (u32*)calloc(NumberOfVertices(G), sizeof(u32));
+    u32 u = 0, v = 0, w = 0;
+    for (u32 i = 0; i < nColorsUsed; i++){
+        struct Queue * q = D[i];
+        u32 color = i + 1;
+        while (q -> front != NULL){
+            u32 x = pop(q);
+            u32 index;
+            if (color % 4 == 0){
+                index = u;
+                u++;
+            }
+            else if (color % 2 == 0){
+                index = nColorsDivisibleByFour + v;
+                v++;
+            }
+            else{
+                index = nColorsDivisibleByFour + nColorsDivisibleByTwo + w;
+                w++;
+            }
+            order[index] = x;
+        }
+        dumpQueue(q);
+    }
+
+    free(D);
+    return(order);
+    
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 

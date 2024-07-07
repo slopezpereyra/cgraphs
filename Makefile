@@ -1,7 +1,7 @@
 CC=gcc
-CFLAGS = -Wall -Wextra -O3 -std=c99
+CFLAGS = -Wall -Wextra -O3 -std=c99 -g
 # PATH_P1 = src/Parte1/
-OBJS_P1 = main.o APIG24.o greedy.o queue.o search.o
+OBJS_P1 = main.o APIG24.o greedy.o queue.o search.o generator.o
 
 VALGRIND_FLAGS = --leak-check=full --show-reachable=yes
 VALGRIND_CMD = $(if $(VALGRIND),valgrind $(VALGRIND_FLAGS),)
@@ -34,11 +34,22 @@ test_graphs: $(OBJS_P1)
 		$(VALGRIND_CMD) ./final < graphs/NoEdge.txt
 		@echo "\n\tCorriendo Golomb.txt"
 		$(VALGRIND_CMD) ./final < graphs/Golomb.txt
+		@echo "\n\tCorriendo C5.txt"
+		$(VALGRIND_CMD) ./final < graphs/C5.txt
 
 test_graphs_2: $(OBJS_P1)
 		$(CC) $(CFLAGS) -o final $(OBJS_P1)
 		@echo "\n\tCorriendo 10_20.txt"
 		$(VALGRIND_CMD) ./final < graphs/10_20.txt
+
+test_64_graph: $(OBJS_P1)
+		$(CC) $(CFLAGS) -o final $(OBJS_P1)
+		@echo "\n\tCorriendo 64gb.txt"
+		$(VALGRIND_CMD) ./final < graphs/64gb.txt
+
+gdb_run_64_graph: $(OBJS_P1)
+		$(CC) $(CFLAGS) -o final $(OBJS_P1)
+		gdb ./final
 
 # Necesario, no tocar.
 APIG24.o: src/APIG24.h src/EstructuraGrafo24.h 
@@ -50,6 +61,8 @@ queue.o: src/queue.h
 		$(CC) $(CFLAGS) -c src/queue.c
 search.o: src/APIG24.h src/search.h
 		$(CC) $(CFLAGS) -c src/search.c
+generator.o: src/APIG24.h src/generator.h
+		$(CC) $(CFLAGS) -c src/generator.c
 
 clean:
 	rm -f *.o final main a.out

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdbool.h>
 typedef uint32_t u32;
 
 // A linked list (LL) node to store a queue entry
@@ -12,6 +13,7 @@ struct QNode {
 // The queue, front stores the front node of LL and rear
 // stores the last node of LL
 struct Queue {
+    u32 count;
     struct QNode *front, *rear;
 };
  
@@ -29,3 +31,12 @@ void enQueue(struct Queue* q, u32 k);
 void deQueue(struct Queue* q);
 
 u32 pop(struct Queue* q);
+
+bool isEmpty(struct Queue* q);
+
+void dumpQueue(struct Queue* q);
+
+
+int compareQueue(const void* a, const void* b);
+int compareQueueDescending(const void* a, const void* b);
+

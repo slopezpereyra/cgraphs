@@ -1,4 +1,5 @@
 #include "queue.h"
+#include <stdbool.h>
 // A C program to demonstrate linked list based
 // implementation of queue
 //
@@ -19,6 +20,7 @@ struct Queue* createQueue()
     struct Queue* q
         = (struct Queue*)malloc(sizeof(struct Queue));
     q->front = q->rear = NULL;
+    q -> count = 0;
     return q;
 }
  
@@ -27,7 +29,8 @@ void enQueue(struct Queue* q, u32 k)
 {
     // Create a new LL node
     struct QNode* temp = newNode(k);
- 
+    ( q -> count )++;
+
     // If queue is empty, then new node is front and rear
     // both
     if (q->rear == NULL) {
@@ -43,6 +46,7 @@ void enQueue(struct Queue* q, u32 k)
 // Function to remove a key from given queue q
 void deQueue(struct Queue* q)
 {
+    ( q -> count )--;
     // If queue is empty, return NULL.
     if (q->front == NULL)
         return;
@@ -62,4 +66,29 @@ u32 pop(struct Queue* q){
     u32 front = q -> front -> key;
     deQueue(q);
     return(front);
+}
+
+bool isEmpty(struct Queue* q){
+    return(q -> front == NULL);
+}
+
+void dumpQueue(struct Queue* q){
+    while (q -> front != NULL){
+        deQueue(q);
+    }
+    free(q);
+}
+
+int compareQueue(const void* a, const void* b) {
+    struct Queue** queueA = (struct Queue**)a;
+    struct Queue** queueB = (struct Queue**)b;
+
+    return ((*queueA)->count - (*queueB)->count );
+}
+
+int compareQueueDescending(const void* a, const void* b) {
+    struct Queue** queueA = (struct Queue**)a;
+    struct Queue** queueB = (struct Queue**)b;
+
+    return ((*queueB)->count - (*queueA)->count );
 }

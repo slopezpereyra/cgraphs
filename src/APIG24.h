@@ -7,6 +7,13 @@
 // El .h de abajo debe tener definida GraphSt, u32 y color.
 #include "EstructuraGrafo24.h"
 
+
+u32 max(u32 x, u32 y);
+
+u32 min(u32 x, u32 y);
+
+void removeEdge(Graph G, int x, int y);
+
 // Graph es un puntero a una estructura GraphSt,
 // la cual debe estar definida en el .h de arriba
 
@@ -73,8 +80,12 @@ u32 Degree(u32 i, Graph G);
  * Si i es menor que el numero de vertices, la funcion devuelve el color del vertice i.
  * Si i es mayor o igual que el numero de vertices, devuelve 232 − 1.
 */
-color Color(u32 i, Graph G);
+color getColor(u32 i, Graph G);
 
+struct EdgeSt getEdge(u32 i, Graph G);
+
+
+void removeColors(Graph G);
 /**
  * Si i es menor que el numero de vertices y j es menor que el degree del vertice i y el vecino j-esimo del vertice i es el vertice k entonces Neighbor(j,i,G) es igual a k.
  *
@@ -88,7 +99,7 @@ u32 Neighbor(u32 j, u32 i, Graph G);
  * Si i es mayor o igual que el numero de vertices, esta funcion no hace nada.
  * Si i es menor que el numero de vertices, la funcion asigna el color x al vertice i.
 */
-void AsignColor(color x, u32 i, Graph G);
+void setColor(color x, u32 i, Graph G);
 
 /**
  * Si n es el numero de vertices de G, esta funcion asigna a Color[i] el color que tiene el vertice i en G, para cada i entre 0 y n − 1.
@@ -100,7 +111,7 @@ esta funcion).
  *
  * Por lo tanto, el usuario de esta funcion debe tener en cuenta esto.
 */
-void ExtractColors(Graph G, color* Color);
+void extractColors(Graph G, color* Color);
 
 /**
  * Si n es el n´umero de v´ertices de G, esta funcion asigna al v´ertice i de G el color Color[i], para cada i entre 0 y
@@ -113,7 +124,6 @@ llamar a esta funcion, el array Color puede tener cualquier cosa. (dependiendo d
  *
  * Por lo tanto, el usuario de esta funcion debe tener en cuenta esto
 */
-void ImportarColors(color* Color, Graph G);
 
 void PrintGraph(Graph G);
 #endif
