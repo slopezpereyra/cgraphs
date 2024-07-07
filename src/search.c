@@ -29,6 +29,7 @@ Graph constructTreeFromArray(u32* insertionArray, u32 insertionArrayLength, u32 
 // BFS : Graph ↦  Graph maps a graph G to its BFS tree 
 // ℬ.. 
 Graph BFS(Graph G, u32 s){
+//    PrintGraph(G);
 
     u32 n = NumberOfVertices(G);
     // An array s.t. insertionArray[i] = (k+1) iff vertex i was enqueued
@@ -108,6 +109,9 @@ bool BFSSearch(Graph G, u32 s, u32 target){
 
         for (u32 i = 0; i < d; i++){
             u32 iNeighbor = Neighbor(i, v, G);
+            if (visited[iNeighbor] != 0 || iNeighbor == s){
+                continue;
+            }
             if (iNeighbor == target && v == s){
                 continue;
             }
@@ -115,9 +119,6 @@ bool BFSSearch(Graph G, u32 s, u32 target){
                 dumpQueue(Q);
                 free(visited);
                 return true;
-            }
-            if (visited[iNeighbor] != 0 || iNeighbor == s){
-                continue;
             }
             visited[iNeighbor] = 1; 
             enQueue(Q, iNeighbor);

@@ -11,6 +11,23 @@
 #include <time.h>
 #include <stdlib.h>
 
+void removeElement(u32 *array, u32 *size, u32 index) {
+    if (*size == 0 || index >= *size) {
+        return; // If array is empty or index is out of bounds, do nothing
+    }
+
+    // Shift elements to the left starting from index
+    for (u32 i = index; i < *size - 1; i++) {
+        (array)[i] = (array)[i + 1];
+    }
+
+    // Decrease the size of the array
+    *size -= 1;
+
+    // Reallocate memory to shrink the array
+    array = (u32*)realloc(array, (*size) * sizeof(u32));
+}
+
 u32 generate_random_u32() {
     u32 random_num = ((u32)rand() << 16) | (u32)rand();
     return random_num;
@@ -53,16 +70,24 @@ Graph genConnectedGraph(u32 n, u32 m){
     u32 M = n*(n-1)/2; 
     Graph Kn = genCompleteGraph(n);
     u32 *chosen = (u32*)calloc(M, sizeof(u32));
+    u32 edgesToChoseFrom = M;
+
+    for (u32 i = 0; i < M; i++){
+        chosen[i] = i;
+    }
 
     while (NumberOfEdges(Kn) > m){
-        u32 v = generate_random_u32_in_range(0, n), w = generate_random_u32_in_range(0, n);
+        if (edgesToChoseFrom == 0){
+            printf("No more edges to choose from, failed to create connected graph from the choices made\n");
+            break;
+        } 
+        u32 choice = generate_random_u32_in_range(0, edgesToChoseFrom);
+        removeElement(chosen, &edgesToChoseFrom, choice);
+        u32 v = (Kn ->_edges)[choice].x, w = (Kn ->_edges)[choice].y;
         u32 x = min(v, w), y = max(v, w);
-        u32 edgeIndex = edgeToIndex(x, y, n);
-        if (v == w || (Degree(x, Kn) == 1 || Degree(w, Kn) == 1) || chosen[edgeIndex] != 0){
+        if ((Degree(x, Kn) == 1 || Degree(w, Kn) == 1)){
             continue;
         }
-
-        chosen[edgeIndex] = 1;
 
         if (!BFSSearch(Kn, x, y)){
             continue;

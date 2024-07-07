@@ -97,31 +97,37 @@ void AddEdges(Graph G, u32 i, u32 x, u32 y) {
     (G->δ) = min(min((G->_degrees)[x], (G->_degrees)[y]), G->δ);
 }
 
-void removeEdge(Graph G, int x, int y) {
-    assert(x < y);
-    (G->_degrees)[x]--;
-    (G->_degrees)[y]--;
-    
-    u32 index1 = (G -> _firstNeighbor)[x];
+u32 edgeIndex(Graph G, int x, int y){
+    u32 index = (G -> _firstNeighbor)[x];
     for (u32 i = 0; i < Degree(x, G); i++){
         if (Neighbor(i, x, G) == y){
             break;
-        }index1++;
+        }index++;
     }
-    u32 index2 = index1 + (G -> m);
-    // Shift elements to the left to overwrite the elements at index1 and index2
-    for (int i = index2; i < 2*(G -> m); i++) {
+    return(index);
+
+}
+
+void removeEdge(Graph G, int x, int y) {
+    assert(x < y);
+   
+    u32 index1 = edgeIndex(G, x, y);
+    u32 index2 = edgeIndex(G, y, x) - 1;
+    for (int i = index1; i < 2*(G -> m)-1; i++) {
+        (G->_edges)[i] = (G->_edges)[i + 1];
+    }
+    for (int i = index2; i < 2*(G -> m) - 1; i++) {
             (G->_edges)[i] = (G->_edges)[i + 1];
     }
     (G->m)--;
-    for (int i = index1; i < 2*(G -> m); i++) {
-            (G->_edges)[i] = (G->_edges)[i + 1];
-    }
     G->_edges = (Edge)realloc(G->_edges, 2*(G->m) * sizeof(struct EdgeSt));
+    (G->_degrees)[x]--;
+    (G->_degrees)[y]--;
     if ((G->_edges) == NULL) {
         printf("Error: Realloc failed\n");
         exit(1);
     }
+    FormatEdges(G);
 }
 
 /**

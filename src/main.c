@@ -12,20 +12,21 @@ int main() {
     // t = clock();
     printf("Comenzando la creacion del grafo.\n");     // NOTE PrintConsole
     Graph G = BuildGraph();
+   // Graph C = genConnectedGraph(10, 30);
     if (G != NULL) {
-        for (u32 i = 0; i < 100; i++){
-            Graph C = genConnectedGraph(30, 30);
-            Graph B = BFS(C, 0);
-            assert(C->n == B->n);
-        }
-        printf("Passed\n");
+        Graph C = genConnectedGraph(300, 1000);
+//        printf("Passed\n");
 //        PrintGraph(C);
 
-//        Graph K = genCompleteGraph(10);
+ //       Graph K = genCompleteGraph(10);
+ //       PrintGraph(K);
 //        Graph B = BFS(K, 0);
 //        PrintGraph(B);
 //        removeEdge(K, 5, 6);
 //        removeEdge(K, 0, 3);
+//        removeEdge(K, 0, 9);
+//        removeEdge(K, 5, 9);
+//        removeEdge(K, 4, 9);
 //        B = BFS(K, 0);
 //        PrintGraph(B);
 //        PrintGraph(K);
