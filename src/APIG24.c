@@ -20,6 +20,15 @@ Edge newEdge(u32 x, u32 y){
     return(e);
 }
 
+bool isNeighbor(u32 x, u32 y, Graph G){
+    for (u32 i = 0; i < Degree(x, G); i++){
+        if (Neighbor(i,x, G) == y){
+            return(true);
+        }
+    }
+    return(false);
+}
+
 /**
 * Esta función establece una relación de orden ⪯ entre elementos de tipo
 * `struct Edge`s.
@@ -108,6 +117,25 @@ u32 edgeIndex(Graph G, int x, int y){
 
 }
 
+void addEdge(Graph G, int x, int y) {
+    assert(x < y);
+    
+    (G->m)++;
+    G->_edges = (Edge)realloc(G->_edges, 2*(G->m) * sizeof(struct EdgeSt));
+    (G->_edges)[2*( G->m )-2].x = x;
+    (G->_edges)[2*( G->m )-2].y = y;
+    (G->_edges)[2*( G->m )-1].x = y;
+    (G->_edges)[2*( G->m )-1].y = x;
+   
+    (G->_degrees)[x]++;
+    (G->_degrees)[y]++;
+    if ((G->_edges) == NULL) {
+        printf("Error: Realloc failed\n");
+        exit(1);
+    }
+    FormatEdges(G);
+}
+
 void removeEdge(Graph G, int x, int y) {
     assert(x < y);
    
@@ -120,7 +148,11 @@ void removeEdge(Graph G, int x, int y) {
             (G->_edges)[i] = (G->_edges)[i + 1];
     }
     (G->m)--;
-    G->_edges = (Edge)realloc(G->_edges, 2*(G->m) * sizeof(struct EdgeSt));
+    Edge temp = (Edge)realloc(G->_edges, 2 * (G->m) * sizeof(struct EdgeSt));
+    if (temp == NULL && 2 * (G->m) > 0) {
+        exit(1);
+    }
+    G->_edges = temp;
     (G->_degrees)[x]--;
     (G->_degrees)[y]--;
     if ((G->_edges) == NULL) {

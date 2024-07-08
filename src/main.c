@@ -14,11 +14,16 @@ int main() {
     Graph G = BuildGraph();
    // Graph C = genConnectedGraph(10, 30);
     if (G != NULL) {
-        Graph C = genConnectedGraph(300, 1000);
+        Graph T = genConnectedGraphFromST(500, 19900);
+        printf("%d\n", T->n);
+        printf("%d\n", T->m);
+        printf("%d\n", T->Δ);
+//        PrintGraph(T);
+//        PrintGraph(C);
 //        printf("Passed\n");
 //        PrintGraph(C);
 
- //       Graph K = genCompleteGraph(10);
+//       Graph K = genCompleteGraph(10);
  //       PrintGraph(K);
 //        Graph B = BFS(K, 0);
 //        PrintGraph(B);

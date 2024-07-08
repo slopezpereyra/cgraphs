@@ -1,7 +1,8 @@
 import random
 import networkx as nx
 import matplotlib.pyplot as plt
-from collections import deque
+from collections import deque, Counter
+from itertools import chain
 
 def gen_kn(n):
     
@@ -76,7 +77,6 @@ def gen_graph(n, m):
         raise(ValueError)
     
     E = gen_kn(n)
-    print("Generated...")
     M = len(E)
     degrees = [(n-1) for _ in range(n)]
     chosen = []
@@ -85,8 +85,6 @@ def gen_graph(n, m):
 
     while M > m:
         k+=1 
-        if (k % 100 == 0):
-            print(M)
         v, w, = 0, 0
         # Select an edge
         while v == w or (degrees[v] == 1 or degrees[w] == 1) or [v, w] in chosen:
@@ -117,18 +115,45 @@ def gen_graph(n, m):
 
     return E
 
+def from_prufer_sequence(sequence):
+    E = []
+    n = len(sequence) + 2
+    degree = Counter(chain(sequence, range(n)))
+    T = nx.empty_graph(n)
+    # `not_orphaned` is the set of nodes that have a parent in the
+    # tree. After the loop, there should be exactly two nodes that are
+    # not in this set.
+    not_orphaned = set()
+    index = u = next(k for k in range(n) if degree[k] == 1)
+    for v in sequence:
+        # check the validity of the prufer sequence
+        E.append( (u, v) )
+        not_orphaned.add(u)
+        degree[v] -= 1
+        if v < index and degree[v] == 1:
+            u = v
+        else:
+            index = u = next(k for k in range(index + 1, n) if degree[k] == 1)
+    # At this point, there must be exactly two orphaned nodes; join them.
+    orphans = set(T) - not_orphaned
+    u, v = orphans
+    E.append( (u, v) )
+    return(E)
+
+
+E = from_prufer_sequence([0, 6, 2, 6, 4])
     
-E = gen_graph(500, 600)
+#E = gen_graph(50, 500)
 G = nx.Graph()
 for e in E:
     G.add_edge(e[0], e[1])
-
-
-
+#
+#
+#
 #subax1 = plt.subplot(121)
 nx.draw(G, with_labels=True, font_weight='bold')
 plt.show()
-
+#
 #nx.draw(G)
 #plt.show()
 

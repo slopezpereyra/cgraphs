@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <stdbool.h>
 // El .h de abajo debe tener definida GraphSt, u32 y color.
 #include "EstructuraGrafo24.h"
 
@@ -14,6 +15,9 @@ u32 min(u32 x, u32 y);
 
 void removeEdge(Graph G, int x, int y);
 
+void addEdge(Graph G, int x, int y);
+
+bool isNeighbor(u32 x, u32 y, Graph G);
 // Graph es un puntero a una estructura GraphSt,
 // la cual debe estar definida en el .h de arriba
 
