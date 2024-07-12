@@ -8,6 +8,10 @@
 struct QNode* newNode(u32 k)
 {
     struct QNode* temp = (struct QNode*)malloc(sizeof(struct QNode));
+    if (temp == NULL){
+        printf("Error: malloc failed\n");
+        exit(1);
+    }
     temp->key = k;
     temp->next = NULL;
     return temp;
@@ -17,8 +21,11 @@ struct QNode* newNode(u32 k)
 // A utility function to create an empty queue
 struct Queue* createQueue()
 {
-    struct Queue* q
-        = (struct Queue*)malloc(sizeof(struct Queue));
+    struct Queue* q = (struct Queue*)malloc(sizeof(struct Queue));
+    if (q == NULL){
+        printf("Error: malloc failed\n");
+        exit(1);
+    }
     q->front = q->rear = NULL;
     q -> count = 0;
     return q;

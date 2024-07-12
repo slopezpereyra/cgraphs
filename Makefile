@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS = -Wall -Wextra -O3 -std=c99 -g
 # PATH_P1 = src/Parte1/
-OBJS_P1 = main.o APIG24.o greedy.o queue.o search.o generator.o
+OBJS_P1 = main.o APIG24.o greedy.o queue.o search.o generator.o utils.o
 
 VALGRIND_FLAGS = --leak-check=full --show-reachable=yes
 VALGRIND_CMD = $(if $(VALGRIND),valgrind $(VALGRIND_FLAGS),)
@@ -63,6 +63,8 @@ search.o: src/APIG24.h src/search.h
 		$(CC) $(CFLAGS) -c src/search.c
 generator.o: src/APIG24.h src/generator.h
 		$(CC) $(CFLAGS) -c src/generator.c
+utils.o: src/APIG24.h src/utils.h
+		$(CC) $(CFLAGS) -c src/utils.c
 
 clean:
 	rm -f *.o final main a.out

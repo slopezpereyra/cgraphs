@@ -7,7 +7,8 @@
 #include "greedy.h"
 #include "APIG24.h"
 #include "queue.h"
-
+#include "utils.h"
+#include <stdbool.h>
 
 
 // Comparison function for qsort to sort in descending order by color
@@ -26,10 +27,10 @@ int compareColor(const void *a, const void *b, void *arg) {
     }
 }
 
-u32* NaturalOrder(Graph G){
+u32* naturalOrder(Graph G){
 
-    u32* order = (u32*)calloc(NumberOfVertices(G), sizeof(u32));
-    for (u32 i = 0; i < NumberOfVertices(G); i++){
+    u32* order = genArray(numberOfVertices(G));
+    for (u32 i = 0; i < numberOfVertices(G); i++){
         order[i] = i;
     }
     return(order);
@@ -54,19 +55,18 @@ u32* NaturalOrder(Graph G){
 //                      O(m + n) + O(m) = O(m+n)
 //
 //
-u32 Greedy(Graph G, u32 *Order){
-        
-    u32* usedColorsDyn = (u32*)calloc(Δ(G) + 1, sizeof(u32));
-    u32* usedColorsStatic = (u32*)calloc(Δ(G) + 1, sizeof(u32));
+u32 greedy(Graph G, u32 *Order){
+    u32* usedColorsDyn = genArray(Δ(G) + 1);
+    u32* usedColorsStatic = genArray(Δ(G) + 1);
     u32 colorsUsed = 0;
 
-    for (u32 i = 0; i < NumberOfVertices(G); i++) {
+    for (u32 i = 0; i < numberOfVertices(G); i++) {
 
         u32 v = Order[i];
-        u32 d = Degree(v, G);
+        u32 d = degree(v, G);
 
         for (u32 j = 0; j < d; j++){
-            u32 jNeighbour = Neighbor(j, v, G);
+            u32 jNeighbour = neighbour(j, v, G);
             color jNeighbourColor = (G -> _colors)[jNeighbour];
             if (jNeighbourColor != 0){
                 usedColorsDyn[jNeighbourColor - 1] = 1; // color j is the (j-1)th color 
@@ -75,14 +75,14 @@ u32 Greedy(Graph G, u32 *Order){
             }
         }
 
-        int colored = 0;
+        bool colored = false;
         for (u32 j = 0; j < Δ(G) + 1; j++){
-            if (usedColorsDyn[j] == 0 && colored != 1){
+            if (usedColorsDyn[j] == 0 && !colored){
                 (G -> _colors)[v] = j + 1;
                 if (usedColorsStatic[j] == 0){
                     usedColorsStatic[j] = 1; 
                 }
-                colored = 1;
+                colored = true;
             }
             usedColorsDyn[j] = 0;
         }
@@ -104,14 +104,14 @@ bool twoColorable(Graph G){
     while (!isEmpty(Q)){
         u32 pivot = pop(Q);
         u32 pivotColor = getColor(pivot, G);
-        u32 degree = Degree(pivot, G);
-        for (u32 i = 0; i < degree; i++){
-            u32 iNeighbor = Neighbor(i, pivot, G);
-            if (getColor(iNeighbor, G) == 0){
-                enQueue(Q, iNeighbor);
-                setColor(3 - pivotColor, iNeighbor, G);
+        u32 d = degree(pivot, G);
+        for (u32 i = 0; i < d; i++){
+            u32 iNeighbour = neighbour(i, pivot, G);
+            if (getColor(iNeighbour, G) == 0){
+                enQueue(Q, iNeighbour);
+                setColor(3 - pivotColor, iNeighbour, G);
             }
-            if (getColor(iNeighbor, G) == pivotColor){
+            if (getColor(iNeighbour, G) == pivotColor){
                 dumpQueue(Q);
                 return false;
             }
@@ -123,12 +123,16 @@ bool twoColorable(Graph G){
 
 struct Queue** genColorQueues(Graph G, u32 nColorsUsed){
     struct Queue** D = (struct Queue**) calloc(nColorsUsed, sizeof(struct Queue**));
+    if (D == NULL){
+        printf("Error: calloc failed\n");
+        exit(1);
+    }
 
     for (u32 i = 0; i < nColorsUsed; i++){
         D[i] = createQueue();
     }
 
-    for (u32 i = 0; i < NumberOfVertices(G); i++){
+    for (u32 i = 0; i < numberOfVertices(G); i++){
         color c = getColor(i, G);
         struct Queue * q = D[c-1];
         enQueue(q, i);
@@ -138,8 +142,8 @@ struct Queue** genColorQueues(Graph G, u32 nColorsUsed){
 }
 
 u32* unfoldColorQueues(Graph G, u32 nColorsUsed, struct Queue** D){
-    u32* order = (u32*)calloc(NumberOfVertices(G), sizeof(u32));
-    u32 j = NumberOfVertices(G) - 1;
+    u32* order = genArray(numberOfVertices(G));
+    u32 j = numberOfVertices(G) - 1;
     for (u32 i = 0; i < nColorsUsed; i++){
         struct Queue * q = D[i];
         while (q -> front != NULL){
@@ -184,7 +188,7 @@ u32* divisibilityOrder(Graph G, u32 nColorsUsed){
         }
     }
 
-    u32* order = (u32*)calloc(NumberOfVertices(G), sizeof(u32));
+    u32* order = genArray(numberOfVertices(G));
     u32 u = 0, v = 0, w = 0;
     for (u32 i = 0; i < nColorsUsed; i++){
         struct Queue * q = D[i];

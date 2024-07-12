@@ -1,64 +1,33 @@
 #include "APIG24.h"
+#include "utils.h"
 
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-u32 max(u32 x, u32 y) {
-    return ( x > y ? x : y );
-}
-
-u32 min(u32 x, u32 y) {
-    return ( x > y ? y : x );
-}
 
 Edge newEdge(u32 x, u32 y){
     Edge e = (Edge) malloc(sizeof(struct EdgeSt));
+    if (e == NULL){
+        printf("Error: malloc failed\n");
+        exit(1);
+    }
     e -> x = x;
     e -> y = y;
     return(e);
 }
 
-bool isNeighbor(u32 x, u32 y, Graph G){
-    for (u32 i = 0; i < Degree(x, G); i++){
-        if (Neighbor(i,x, G) == y){
+bool isNeighbour(u32 x, u32 y, Graph G){
+    for (u32 i = 0; i < degree(x, G); i++){
+        if (neighbour(i,x, G) == y){
             return(true);
         }
     }
     return(false);
 }
 
-/**
-* Esta función establece una relación de orden ⪯ entre elementos de tipo
-* `struct Edge`s.
-* Un `Edge` A con valores x = a₁, y = a₂ y un `Edge` B con valores
-* x = b₁, y = b₂ se ordenan bajo esta relación de la siguiente forma:
-*
-* A ≼ B ⟺  a₁ < b₁ o bien (a₁ = b₁ ∧ a₂ ≤ b₂)
-*
-* De este modo, si denotamos a un `Edge` simplemente con el par (x, y) de sus
-* valores, la siguiente lista de lados:
-*
-* (1, 0)
-* (0, 1)
-* (2, 1)
-* (1, 2)
-*
-* se ordenaría
-*
-* (0, 1)
-* (1, 0)
-* (1, 2)
-* (2, 1)
-*
-* El propósito de esta función es poder ejecutar quicksort sobre la lista de
-* lados de un grafo.
-*
-* Para una referencia acerca de cómo construimos esta función,
-* consulte: http://arantxa.ii.uam.es/~swerc/ejemplos/csorting.html
-*/
-int CompareEdges(const void* a, const void* b) {
+int compareEdges(const void* a, const void* b) {
     Edge ladoA = (Edge)a;
     Edge ladoB = (Edge)b;
 
@@ -73,13 +42,17 @@ int CompareEdges(const void* a, const void* b) {
 /**
  * Inicializa un grafo de n vértices y m lados.
  */
-Graph InitGraph(u32 n, u32 m) {
+Graph initGraph(u32 n, u32 m) {
     Graph G = (Graph)malloc(sizeof(struct GraphSt));
+    if (G == NULL){
+        printf("Error: malloc failed\n");
+        exit(1);
+    }
     G->n = n;
     G->m = m;
     G->Δ = 0;
     G->δ = 1024;
-    G->_firstNeighbor = (u32*)calloc(n, sizeof(u32));
+    G->_firstneighbour = (u32*)calloc(n, sizeof(u32));
     G->_degrees = (u32*)calloc(n, sizeof(u32));
     G->_colors = (u32*)calloc(n, sizeof(u32));
     G->_edges = (Edge)calloc(2 * m, sizeof(struct EdgeSt));
@@ -106,10 +79,10 @@ void AddEdges(Graph G, u32 i, u32 x, u32 y) {
     (G->δ) = min(min((G->_degrees)[x], (G->_degrees)[y]), G->δ);
 }
 
-u32 edgeIndex(Graph G, int x, int y){
-    u32 index = (G -> _firstNeighbor)[x];
-    for (u32 i = 0; i < Degree(x, G); i++){
-        if (Neighbor(i, x, G) == y){
+u32 edgeIndex(Graph G, u32 x, u32 y){
+    u32 index = (G -> _firstneighbour)[x];
+    for (u32 i = 0; i < degree(x, G); i++){
+        if (neighbour(i, x, G) == y){
             break;
         }index++;
     }
@@ -117,7 +90,7 @@ u32 edgeIndex(Graph G, int x, int y){
 
 }
 
-void addEdge(Graph G, int x, int y) {
+void addEdge(Graph G, u32 x, u32 y) {
     assert(x < y);
     
     (G->m)++;
@@ -129,22 +102,23 @@ void addEdge(Graph G, int x, int y) {
    
     (G->_degrees)[x]++;
     (G->_degrees)[y]++;
+    (G -> Δ) = max( G -> Δ, max((G->_degrees)[x], (G->_degrees)[y])  );
     if ((G->_edges) == NULL) {
         printf("Error: Realloc failed\n");
         exit(1);
     }
-    FormatEdges(G);
+    formatEdges(G);
 }
 
-void removeEdge(Graph G, int x, int y) {
+void removeEdge(Graph G, u32 x, u32 y) {
     assert(x < y);
    
     u32 index1 = edgeIndex(G, x, y);
     u32 index2 = edgeIndex(G, y, x) - 1;
-    for (int i = index1; i < 2*(G -> m)-1; i++) {
+    for (u32 i = index1; i < 2*(G -> m)-1; i++) {
         (G->_edges)[i] = (G->_edges)[i + 1];
     }
-    for (int i = index2; i < 2*(G -> m) - 1; i++) {
+    for (u32 i = index2; i < 2*(G -> m) - 1; i++) {
             (G->_edges)[i] = (G->_edges)[i + 1];
     }
     (G->m)--;
@@ -159,13 +133,13 @@ void removeEdge(Graph G, int x, int y) {
         printf("Error: Realloc failed\n");
         exit(1);
     }
-    FormatEdges(G);
+    formatEdges(G);
 }
 
 /**
  * Lee un file hasta encontrar un `\n`.
  */
-static void SkipLine(FILE* file) {
+static void skipLine(FILE* file) {
     while (getc(file) != '\n') {
         continue;
     }
@@ -177,9 +151,9 @@ static void SkipLine(FILE* file) {
  *    - Inicialización del grafo.
  *    - Scaneo línea por línea, agregando los lados al grafo.
  *    - Quick sort sobre los lados.
- *    - Setea el firstNeighbor de cada vértice.
+ *    - Setea el firstneighbour de cada vértice.
  */
-Graph BuildGraph() {
+Graph buildGraph() {
     u32 n;              // Cant. Vertices
     u32 m;              // Cant. Edges
     FILE* file = stdin; // Standard input
@@ -188,7 +162,7 @@ Graph BuildGraph() {
     while (1) {
         c = getc(file);
         if (c == 'c') {
-            SkipLine(file);
+            skipLine(file);
         } else {
             break;
         }
@@ -196,7 +170,7 @@ Graph BuildGraph() {
 
     // Esta mal el formato del archivo.
     if (c != 'p') {
-        // printf("\nMal formato de archivo.\n"); // NOTE PrintConsole
+        // printf("\nMal formato de archivo.\n"); // NOTE printConsole
         return NULL;
     }
 
@@ -209,55 +183,55 @@ Graph BuildGraph() {
     matched_format = fscanf(file, "%s %u %u", edge_str, &n, &m);
 
     if (matched_format < 3) {
-        printf("ERROR: No hay match.\n"); // NOTE PrintConsole
+        printf("ERROR: No hay match.\n"); // NOTE printConsole
     }
 
-    SkipLine(file);
+    skipLine(file);
     if (strcmp("edge", edge_str) != 0) {
-        // printf("ERROR: No hay match en edge.\n"); // NOTE PrintConsole
+        // printf("ERROR: No hay match en edge.\n"); // NOTE printConsole
         return NULL;
     }
 
-    Graph G = InitGraph(n, m);
+    Graph G = initGraph(n, m);
 
     for (u32 i = 0; i < m; i++) {
         u32 x, y;
         if (scanf("e %u %u\n", &x, &y) == 2) {
             AddEdges(G, i, x, y);
         } else {
-            // printf("Error leyendo los lados del grafo.\n"); // NOTE PrintConsole
+            // printf("Error leyendo los lados del grafo.\n"); // NOTE printConsole
             return NULL; // Caso de error devuelvo NULL
         }
     };
 
-    FormatEdges(G);
+    formatEdges(G);
 
     return G;
 }
 
-void FormatEdges(Graph G){
-    qsort(G->_edges, 2 * (G->m), sizeof(struct EdgeSt), CompareEdges);
+void formatEdges(Graph G){
+    qsort(G->_edges, 2 * (G->m), sizeof(struct EdgeSt), compareEdges);
     for (u32 j = 1; j < (G->n); j++) {
-        (G->_firstNeighbor)[j] = (G->_firstNeighbor[j - 1]) + (G->_degrees)[j - 1];
+        (G->_firstneighbour)[j] = (G->_firstneighbour[j - 1]) + (G->_degrees)[j - 1];
     };
 }
 
-void DumpGraph(Graph G) {
+void dumpGraph(Graph G) {
     if (G != NULL) {
         free(G->_edges);
         free(G->_degrees);
         free(G->_colors);
-        free(G->_firstNeighbor);
+        free(G->_firstneighbour);
         free(G);
     }
 }
 
-u32 NumberOfVertices(Graph G) {
+u32 numberOfVertices(Graph G) {
     assert(G != NULL);
     return G->n;
 }
 
-u32 NumberOfEdges(Graph G) {
+u32 numberOfEdges(Graph G) {
     assert(G != NULL);
     return G->m;
 }
@@ -272,7 +246,7 @@ u32 δ(Graph G) {
     return G->δ;
 }
 
-u32 Degree(u32 i, Graph G) {
+u32 degree(u32 i, Graph G) {
     assert(G != NULL);
     if (i < G->n) {
         return (G->_degrees)[i];
@@ -286,12 +260,12 @@ color getColor(u32 i, Graph G) {
         // NOTE: `i` es el nombre, y coincide con el indice.
         return G->_colors[i];
     }
-    // printf("Index out of bounds en Color(): Devolviendo 2^32  -1"); // NOTE PrintConsole
+    // printf("Index out of bounds en Color(): Devolviendo 2^32  -1"); // NOTE printConsole
     return 4294967295; // 2^32 - 1 Revisar tipo para devolver! :)
 }
 
 struct EdgeSt getEdge(u32 i, Graph G) {
-    assert(G != NULL && i < 2* NumberOfEdges(G));
+    assert(G != NULL && i < 2* numberOfEdges(G));
     return ( G->_edges )[i];
 }
 
@@ -301,25 +275,25 @@ void removeColors(Graph G) {
     }
 }
 
-u32 Neighbor(u32 j, u32 i, Graph G) {
+u32 neighbour(u32 j, u32 i, Graph G) {
     assert(G != NULL);
     // NOTE: Empieza en 0 los vecinos.
 
-    if (j >= Degree(i, G) || i >= NumberOfVertices(G)) {
+    if (j >= degree(i, G) || i >= numberOfVertices(G)) {
          printf(
-             "Index out of bounds en Neighbor(): devolviendo 2^32 -1; "
+             "Index out of bounds en neighbour(): devolviendo 2^32 -1; "
                 "Arguments were: j = %d, i = %d\n",
-                j, i);      // NOTE PrintConsole
+                j, i);      // NOTE printConsole
         return 4294967295; // 2^32 - 1
     }
-    u32 indexDei = (G->_firstNeighbor)[i];
+    u32 indexDei = (G->_firstneighbour)[i];
     return ((G->_edges)[j + indexDei].y);
 }
 
 void setColor(color x, u32 i, Graph G) {
     assert(G != NULL);
-    if (i >= NumberOfVertices(G)) {
-        // printf("Index out of bounds en setColor\n");// NOTE PrintConsole
+    if (i >= numberOfVertices(G)) {
+        // printf("Index out of bounds en setColor\n");// NOTE printConsole
         return;
     }
     (G->_colors)[i] = x;
@@ -330,7 +304,7 @@ void extractColors(Graph G, color* Color) {
     memcpy(Color, G -> _colors, (G -> n) * sizeof(color));
 }
 
-void PrintEdges(Graph G) {
+void printEdges(Graph G) {
     assert(G != NULL);
     printf("\nEdges:\n");
     for (u32 i = 0; i < 2 * (G->m); i++) {
@@ -338,22 +312,22 @@ void PrintEdges(Graph G) {
     };
 }
 
-void PrintVertices(Graph G) {
+void printVertices(Graph G) {
     assert(G != NULL);
     printf("\nVertices:\n");
     for (u32 i = 0; i < G->n; i++) {
         printf("Vértice %d: degree %d - Índice en lista de lados %d  - Color: %d\n", i,
-               (G->_degrees)[i], (G->_firstNeighbor)[i], G->_colors[i]);
+               (G->_degrees)[i], (G->_firstneighbour)[i], G->_colors[i]);
     };
 }
 
-void PrintGraph(Graph G) {
+void printGraph(Graph G) {
     assert(G != NULL);
     printf("\nn = %d\n", G->n);
     printf("m = %d\n", G->m);
     printf("Δ = %d\n\n", G->Δ);
     printf("δ = %d\n\n", G->δ);
-    PrintVertices(G);
-    PrintEdges(G);
+    printVertices(G);
+    printEdges(G);
 }
 

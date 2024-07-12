@@ -18,7 +18,7 @@ struct GraphSt {
     u32* _degrees;       // Arreglo de degrees. Size `n`.
     Edge _edges;        // Arreglo de lados. Size `m*2`.
     color* _colors;    // Arreglo de colors. Size `n`.
-    u32* _firstNeighbor; // An array s.t. _firstNeighbor[i] is the index of the first first neighbor of vertex `i`.
+    u32* _firstneighbour; // An array s.t. _firstneighbour[i] is the index of the first first neighbour of vertex `i`.
 };
 
 /**

@@ -6,75 +6,23 @@
 #include "search.h"
 #include "queue.h"
 #include "generator.h"
+#include "utils.h"
 
 int main() {
     // clock_t t;
     // t = clock();
-    printf("Comenzando la creacion del grafo.\n");     // NOTE PrintConsole
-    Graph G = BuildGraph();
+    printf("Comenzando la creacion del grafo.\n");     // NOTE printConsole
+    Graph G = buildGraph();
    // Graph C = genConnectedGraph(10, 30);
     if (G != NULL) {
-        Graph T = genConnectedGraphFromST(500, 19900);
-        printf("%d\n", T->n);
-        printf("%d\n", T->m);
-        printf("%d\n", T->Δ);
-//        PrintGraph(T);
-//        PrintGraph(C);
-//        printf("Passed\n");
-//        PrintGraph(C);
+        dumpGraph(G);
+//        Graph K = genCompleteGraph(100);
+        Graph K = genConnectedGraphFromKn(100, 4900); //0.24
+        //Graph K = genCGraph(100, 4950); //0.40
 
-//       Graph K = genCompleteGraph(10);
- //       PrintGraph(K);
-//        Graph B = BFS(K, 0);
-//        PrintGraph(B);
-//        removeEdge(K, 5, 6);
-//        removeEdge(K, 0, 3);
-//        removeEdge(K, 0, 9);
-//        removeEdge(K, 5, 9);
-//        removeEdge(K, 4, 9);
-//        B = BFS(K, 0);
-//        PrintGraph(B);
-//        PrintGraph(K);
-
-//        printf("\n ---------------- Greedy coloring ----------------\n");
-//        u32* order = NaturalOrder(G);
-//        u32 gr = Greedy(G, order);
-//        free(order);
-//        printf("\nA coloring with %d colors was found\n", gr);
-//        PrintGraph(G);                              // NOTE PrintConsole
-//        
-//        printf("\nTesting permutations...\n");
-//
-//        order = reverseOrder(G, gr);
-//        gr = Greedy(G, order);
-//        free(order);
-//        printf("\nA coloring with %d colors was found with reverse order\n", gr);
-//        order = cardinalityOrder(G, gr);
-//        gr = Greedy(G, order);
-//        free(order);
-//        printf("\nA coloring with %d colors was found with cardinality order\n", gr);
-//        printf("\nPrinting reverse order: \n");
-//        order = divisibilityOrder(G, gr);
-//        gr = Greedy(G, order);
-//        free(order);
-//        printf("\nA coloring with %d colors was found with divisibility order\n", gr);
-//        printf("\n ---------------- Two color ----------------\n");
-//        removeColors(G);
-//        u32 x = twoColorable(G);
-//        printf("Two colorable: %d\n", x); 
-//        printf("\n ---------------- BFS (Root vertex 0) ----------------\n");
-//        Graph B = BFS(G, 0);
-//        PrintGraph(B);                              // NOTE PrintConsole
-//        printf("\n ---------------- DFS (Root vertex 0) ----------------\n");
-//        Graph D = DFS(G, 0);
-//        PrintGraph(D);                              // NOTE PrintConsole
-//        DumpGraph(B);
-//        printf("G was dumped, dealing with B...\n"); // NOTE PrintConsole
-//        DumpGraph(G);
-//        printf("B was dumped, dealing with D...\n"); // NOTE PrintConsole
-//        DumpGraph(D);
-    } else {
-        printf("Error construyendo el grafo.\n");
+        dumpGraph(K);
+        //Graph K = genConnectedGraphFromKn(6, 10);
+        //printGraph(K);
     }
     return 0;
 }

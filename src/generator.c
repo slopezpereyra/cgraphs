@@ -2,58 +2,13 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-
-#include "greedy.h"
+#include "utils.h"
 #include "APIG24.h"
-#include "queue.h"
 #include "search.h"
-#include <time.h>
-#include <stdlib.h>
-
-void removeElement(u32 *array, u32 *size, u32 index) {
-    assert(*size != 0 && index < *size);
-    // Shift elements to the left starting from index
-    for (u32 i = index; i < *size - 1; i++) {
-        (array)[i] = (array)[i + 1];
-    }
-
-    // Decrease the *size of the array
-    *size -= 1;
-
-    // Reallocate memory to shrink the array
-    array = (u32*)realloc(array, (*size) * sizeof(u32));
-}
-
-void removeTargetElement(u32 *array, u32 *size, u32 target) {
-    for (u32 i = 0; i < *size; i++) {
-        if (array[i] == target) {
-            removeElement(array, size, i);
-            break;
-        }
-    }
-}
-
-u32 generate_random_u32() {
-    u32 random_num = ((u32)rand() << 16) | (u32)rand();
-    return random_num;
-}
-
-u32 generate_random_u32_in_range(u32 min, u32 max) {
-    u32 range = max - min + 1;
-    u32 limit = UINT32_MAX - (UINT32_MAX % range);
-    u32 random_num;
-
-    do {
-        random_num = generate_random_u32();
-    } while (random_num >= limit);
-
-    return (random_num % range) + min;
-}
 
 Graph genCompleteGraph(u32 n){
 
-    Graph G = InitGraph(n, n*(n-1)/2);
+    Graph G = initGraph(n, n*(n-1)/2);
     u32 edgeIndex = 0;
     for (u32 i = 0; i < n; i++){
         for (u32 j = 1+i; j < n; j++){
@@ -61,7 +16,7 @@ Graph genCompleteGraph(u32 n){
             edgeIndex++;
         }
     }
-    FormatEdges(G);
+    formatEdges(G);
     return(G);
 
 }
@@ -71,106 +26,11 @@ u32 edgeToIndex(u32 x, u32 y, u32 n){
     return xIndex + (y - (x+1));
 }
 
-Graph genConnectedGraph(u32 n, u32 m){
-   
-    u32 M = n*(n-1)/2; 
-    Graph Kn = genCompleteGraph(n);
-    u32 *S = (u32*)calloc(M, sizeof(u32));
-    u32 nCandidates = M;
-
-    for (u32 i = 0; i < M; i++){
-        S[i] = i;
-    }
-
-    while (NumberOfEdges(Kn) > m){
-        if (nCandidates == 0){
-            break;
-        } 
-        u32 choice = generate_random_u32_in_range(0, nCandidates);
-        removeElement(S, &nCandidates, choice);
-        u32 v = (Kn ->_edges)[choice].x, w = (Kn ->_edges)[choice].y;
-        u32 x = min(v, w), y = max(v, w);
-        if ((Degree(x, Kn) == 1 || Degree(w, Kn) == 1)){
-            continue;
-        }
-
-        if (!BFSSearch(Kn, x, y)){
-            continue;
-        }
-
-        removeEdge(Kn, x, y);
-        
-
-    }
-    FormatEdges(Kn);
-    return(Kn);
-}
-
-bool genConnectedRecursive(u32 m, u32 *S, u32 nCandidates, Graph K, u32 x, u32 y){
-
-    // If this is a removing branch
-    if (x != y){
-        if (!BFSSearch(K, x, y)){
-            return false;
-        }
-        if ( (K -> m) == m ){
-            return true;
-        }
-    }
-
-    if ((K->m) - m > nCandidates){
-        return false;
-    }
-
-    if (nCandidates <= 0){
-        return false;
-    }
-
-
-    // Choose random element
-    u32 choice = generate_random_u32_in_range(0, nCandidates);
-    removeElement(S, &nCandidates, choice);
-
-    u32 v = (K ->_edges)[choice].x, w = (K ->_edges)[choice].y;
-    x = min(v, w), y = max(v, w);
-    if (Degree(x, K) == 1 || Degree(y, K) == 1){
-        return(genConnectedRecursive(m, S, nCandidates, K, 0, 0));
-    }
-    removeEdge(K, x, y);
-
-
-    if (genConnectedRecursive(m, S, nCandidates, K, x, y)){
-        return(true);
-    }else{
-        //Backtrack
-        addEdge(K, x, y);
-        return(genConnectedRecursive(m, S, nCandidates, K, 0, 0));
-    }
-    
-
-}
-
-Graph genConnectedGraph2(u32 n, u32 m){
-   
-    u32 M = n*(n-1)/2; 
-    Graph K = genCompleteGraph(n);
-    u32 *S = (u32*)calloc(M, sizeof(u32));
-    u32 nCandidates = M;
-    bool generated = 0;
-
-
-    while (!generated){
-        generated = genConnectedRecursive(m, S, nCandidates, K, 0, 0);
-    }
-    FormatEdges(K);
-    return(K);
-}
-
 Graph fromPruferSequence(u32* seq, u32 seq_len){
 
     u32 n = seq_len + 2;
-    u32* degrees = (u32*)calloc(n, sizeof(u32));
-    Graph T = InitGraph(n, 0); 
+    u32* degrees = genArray(n);
+    Graph T = initGraph(n, 0); 
 
     for (u32 i = 0; i < n; i++){
         degrees[i] = 1;
@@ -210,70 +70,184 @@ Graph fromPruferSequence(u32* seq, u32 seq_len){
 
 }
 
+u32** genGammas(Graph G){
+
+    u32 n = G->n;
+    u32** Γ = (u32**)calloc(n, sizeof(u32*));
+    if (Γ == NULL){
+        printf("Error: calloc failed\n");
+        exit(1);
+    }
+    for (u32 i = 0; i < numberOfVertices(G); i++){
+
+        u32 d = degree(i, G);
+        Γ[i] = (u32*)malloc(d * sizeof(u32));
+
+        for (u32 j = 0; j < d; j++){
+            Γ[i][j] = neighbour(j, i, G);
+        }
+    }
+    return(Γ);
+}
+
 u32** genGammaComplements(Graph G){
 
     u32 n = G->n;
     u32** S = (u32**)calloc(n, sizeof(u32*));
+    if (S == NULL){
+        printf("Error: calloc failed\n");
+        exit(1);
+    }
+    for (u32 i = 0; i < numberOfVertices(G); i++){
 
-    for (u32 i = 0; i < NumberOfVertices(G); i++){
-
-        u32 d = Degree(i, G);
-        u32* iGammaComplement = (u32*)calloc(n - d - 1, sizeof(u32));
+        u32 d = degree(i, G);
+        S[i] = (u32*)malloc((n-d-1) * sizeof(u32));
         u32 jIndex = 0;
         for (u32 j = 0; j < n; j++){
-            if (isNeighbor(j, i, G) || i == j){
+            if (isNeighbour(j, i, G) || i == j){
                 continue;
             }
-            iGammaComplement[jIndex] = j;
+            S[i][jIndex] = j;
             jIndex++;
         }
-        S[i] = iGammaComplement;
     }
     return(S);
 }
 
-Graph genConnectedGraphFromST(u32 n, u32 m){
-    assert(m <= n*(n-1)/2);
-
-    u32* randSequence = (u32*)calloc(n-2, sizeof(u32));
+Graph randomTree(u32 n){
+    u32* randSequence = genArray(n-2);
     for (u32 i = 0; i < n - 2; i++){
         randSequence[i] = generate_random_u32_in_range(0, n-1);
     }
 
     Graph T = fromPruferSequence(randSequence, n-2);
     free(randSequence);
-    u32** S = genGammaComplements(T); // S = { Γ(x)ᶜ : x ∈ V }
-    // How many potential new neighbors each vertex has
-    u32* nCandidates = (u32*)calloc(n, sizeof(u32));
-    u32* vMatchable = (u32*)calloc(n, sizeof(u32));
+    return(T);
+}
 
+Graph genCGraphUnbound(u32 n){
+    Graph T = randomTree(n);
+    u32** S = genGammaComplements(T); // S = { Γ(x)ᶜ : x ∈ V }
+    u32 k = generate_random_u32_in_range(0, n*(n-1)/2 - numberOfEdges(T) - 1);
+    u32* nCandidates = genArray(n);
+    u32* vMatchable = genArray(n);
     for (u32 i = 0; i < n; i++){
-        nCandidates[i] = n - Degree(i, T) - 1;
+        nCandidates[i] = n - degree(i, T) - 1;
         vMatchable[i] = i;
     }
 
     u32 nMatchable = n;
-    while (NumberOfEdges(T) < m){
-        u32 vIndex = generate_random_u32_in_range(0, nMatchable - 1);
-        u32 v = vMatchable[vIndex];
-        if (nCandidates[v] == 0){
-            removeElement(vMatchable, &nMatchable, vIndex);
-            continue;
+    for (u32 j = 0; j < k; j++){
+        u32 v, vIndex;
+        while (true){
+            vIndex = generate_random_u32_in_range(0, nMatchable - 1);
+            v = vMatchable[vIndex];
+            if (nCandidates[v] == 0){
+                removeElement(&vMatchable, &nMatchable, vIndex);
+                continue;
+            }
+            break;
         }
         u32 i = generate_random_u32_in_range(0, nCandidates[v] - 1);
         u32 w = S[v][i];
-        removeElement(S[v], &( nCandidates[v] ), i);
+        removeElement(&( S[v] ), &( nCandidates[v] ), i);
         removeTargetElement(S[w], &( nCandidates[w] ), v);
         addEdge(T, min(v, w), max(v, w));
     }
     free(nCandidates);
+    for (u32 i = 0; i < numberOfEdges(T); i++){
+        free(S[i]);
+    }
+    free(S);
+    free(vMatchable);
+    return(T);
+
+
+}
+
+Graph genCGraph(u32 n, u32 m){
+    assert(m <= n*(n-1)/2);
+
+    Graph T = randomTree(n);
+    u32** S = genGammaComplements(T); // S = { Γ(x)ᶜ : x ∈ V }
+    // How many potential new neighbours each vertex has
+    u32* nCandidates = genArray(n);
+    u32* vMatchable = genArray(n);
+
+    for (u32 i = 0; i < n; i++){
+        nCandidates[i] = n - degree(i, T) - 1;
+        vMatchable[i] = i;
+    }
+
+    u32 nMatchable = n;
+    while (numberOfEdges(T) < m){
+        u32 vIndex = generate_random_u32_in_range(0, nMatchable - 1);
+        u32 v = vMatchable[vIndex];
+        if (nCandidates[v] == 0){
+            removeElement(&vMatchable, &nMatchable, vIndex);
+            continue;
+        }
+        u32 i = generate_random_u32_in_range(0, nCandidates[v] - 1);
+        u32 w = S[v][i];
+        removeElement(&( S[v] ), &( nCandidates[v] ), i);
+        removeTargetElement(S[w], &( nCandidates[w] ), v);
+        addEdge(T, min(v, w), max(v, w));
+    }
+    free(nCandidates);
+    for (u32 i = 0; i < numberOfEdges(T); i++){
+        free(S[i]);
+    }
     free(S);
     free(vMatchable);
     return(T);
 }
 
+Graph genConnectedGraphFromKn(u32 n, u32 m){
+   
+    Graph Kn = genCompleteGraph(n);
+    u32** Γ = genGammas(Kn);
+    u32* R = genArray(n);
+    // Number of removable edges per vertex
+    u32* nCandidates = genArray(n);
+
+    for (u32 i = 0; i < n; i++){
+        R[i] = i;
+        nCandidates[i] = n-1;
+    }
 
 
+    // Number of vertices which could still be pruned
+    u32 nRemovable = n;
+
+    while (numberOfEdges(Kn) > m){
+        u32 vIndex = generate_random_u32_in_range(0, nRemovable-1); 
+        u32 v = R[vIndex];
+        u32 wIndex = generate_random_u32_in_range(0, nCandidates[v] - 1);
+        u32 w = Γ[v][wIndex];
+
+        removeElement(&( Γ[v] ), &( nCandidates[v] ), wIndex);
+        removeTargetElement(Γ[w], &( nCandidates[w] ), v);
+        
+        if (BFSSearch(Kn, v, w)){
+            removeEdge(Kn, min(v, w), max(v, w));
+        }
+        if (degree(v, Kn) == 1 || nCandidates[v] == 0){
+            removeElement(&R, &nRemovable, vIndex);
+        }
+        if (degree(w, Kn) == 1 || nCandidates[w] == 0){
+            removeTargetElement(R, &nRemovable, w);
+        }
+
+    }
+    free(nCandidates);
+    free(R);
+    for (u32 i = 0; i < numberOfEdges(Kn); i++){
+        free(Γ[i]);
+    }
+    free(Γ);
+    formatEdges(Kn);
+    return(Kn);
+}
 
 
 

@@ -21,7 +21,7 @@ def gen_kn(n):
 # Always smallest vertex adds greatest vertex
 # The index of edge x ~> y is given by:
 
-# x neighbors begin at:
+# x neighbours begin at:
 #    
 #    (n-i) for 
 # 
@@ -39,7 +39,7 @@ def edge_to_index(x, y, n):
     x_index = int(x*n - (x*(x+1))/2)
     return x_index + (y - ( x + 1 ))
 
-def neighbors(edges, x, n, degrees):
+def neighbours(edges, x, n, degrees):
     x_index = int(x*n - (x*(x+1))/2)
     return [edges[x_index + i][1] for i in range(degrees[x])]
 
@@ -52,17 +52,17 @@ def bfs(edges, n, start, target, degrees):
     while queue:
         node = queue.popleft()
 
-        for neighbor in neighbors(edges, node, n, degrees):
-            if neighbor == target:
+        for neighbour in neighbours(edges, node, n, degrees):
+            if neighbour == target:
                 return True
-            if node < neighbor:
-                index = edge_to_index(node, neighbor, n)
+            if node < neighbour:
+                index = edge_to_index(node, neighbour, n)
             else:
-                index = edge_to_index(neighbor, node, n)
+                index = edge_to_index(neighbour, node, n)
 
-            if index < len(edges) and edges[index] != 0 and not visited[neighbor]:
-                queue.append(neighbor)
-                visited[neighbor] = True
+            if index < len(edges) and edges[index] != 0 and not visited[neighbour]:
+                queue.append(neighbour)
+                visited[neighbour] = True
     
     return False
 

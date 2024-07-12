@@ -11,4 +11,6 @@ Graph genConnectedGraph(u32 n, u32 m);
 Graph genConnectedGraph2(u32 n, u32 m);
 Graph fromPruferSequence(u32* seq, u32 seq_len);
 u32** genGammaComplements(Graph G);
-Graph genConnectedGraphFromST(u32 n, u32 m);
+Graph genCGraph(u32 n, u32 m);
+Graph genCGraphUnbound(u32 n);
+Graph genConnectedGraphFromKn(u32 n, u32 m);

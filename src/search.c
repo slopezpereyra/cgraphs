@@ -6,12 +6,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "utils.h"
 
 // An insertion array A = [v₁, …, vₙ] is s.t. A[i] = vₖ, then vertex (vₖ - 1)
 // added vertex i to the tree; i.e. i is a leaf of (vₖ - 1). The values of A are
 // increased by one unit to ensure that zero signals non-inclusion in the tree.
 Graph constructTreeFromArray(u32* insertionArray, u32 insertionArrayLength, u32 n){
-    Graph B = InitGraph(n, n-1);
+    Graph B = initGraph(n, n-1);
     u32 edgeIndex = 0;
 
     for (u32 i = 0; i < insertionArrayLength; i++){
@@ -22,19 +23,19 @@ Graph constructTreeFromArray(u32* insertionArray, u32 insertionArrayLength, u32 
         AddEdges(B , edgeIndex, insertionArray[i] - 1, i);
         edgeIndex++;
     }
-    FormatEdges(B );
+    formatEdges(B );
     return( B ) ;
 }
 
 // BFS : Graph ↦  Graph maps a graph G to its BFS tree 
 // ℬ.. 
 Graph BFS(Graph G, u32 s){
-//    PrintGraph(G);
+//    printGraph(G);
 
-    u32 n = NumberOfVertices(G);
+    u32 n = numberOfVertices(G);
     // An array s.t. insertionArray[i] = (k+1) iff vertex i was enqueued
     // by vertex k.
-    u32* insertionArray = (u32*)calloc(n, sizeof(u32*));
+    u32* insertionArray = genArray(n);
     u32 treeVertexCount = 1; // root included necessarily
 
     struct Queue* Q = createQueue();
@@ -43,16 +44,16 @@ Graph BFS(Graph G, u32 s){
     while (Q->front != NULL){
 
         u32 v = pop(Q);
-        u32 d = Degree(v, G);
+        u32 d = degree(v, G);
 
         for (u32 i = 0; i < d; i++){
-            u32 iNeighbor = Neighbor(i, v, G);
-            if (insertionArray[iNeighbor] != 0 || iNeighbor == s){
+            u32 iNeighbour = neighbour(i, v, G);
+            if (insertionArray[iNeighbour] != 0 || iNeighbour == s){
                 continue;
             }
-            insertionArray[iNeighbor] = v + 1; 
+            insertionArray[iNeighbour] = v + 1; 
             treeVertexCount++;
-            enQueue(Q, iNeighbor);
+            enQueue(Q, iNeighbour);
         }
     }
     dumpQueue(Q);
@@ -63,18 +64,18 @@ Graph BFS(Graph G, u32 s){
 }
 
 // Recursive DFS traversal using backtracking. Starts the recursion 
-// from vertex `v` and keeps `track` of who included each neighbor 
+// from vertex `v` and keeps `track` of who included each neighbour 
 // in an array of n elements. Returns the number of nodes in the tree.
 // This is important to deal with graphs with >1 connected components.
 u32 DFSRecursive(u32 v, u32* track, u32 root, Graph G){
     u32 n = 1;
-    for (u32 i = 0; i < Degree(v, G); i++){
-        u32 neighbor = Neighbor(i, v, G);
-        if (neighbor == root || track[neighbor] != 0){
+    for (u32 i = 0; i < degree(v, G); i++){
+        u32 iNeighbour = neighbour(i, v, G);
+        if (iNeighbour == root || track[iNeighbour] != 0){
             continue;
         }
-        track[neighbor] = v + 1;
-        n += DFSRecursive(neighbor, track, root, G);
+        track[iNeighbour] = v + 1;
+        n += DFSRecursive(iNeighbour, track, root, G);
     }
     return n;
 }
@@ -82,8 +83,8 @@ u32 DFSRecursive(u32 v, u32* track, u32 root, Graph G){
 // Uses RecursiveDFS to span the DFS tree.
 Graph DFS(Graph G, u32 s){
 
-    u32 n = NumberOfVertices(G);
-    u32 *insertionArray = (u32*)calloc(n, sizeof(u32*));
+    u32 n = numberOfVertices(G);
+    u32 *insertionArray = genArray(n);
     u32 treeVertexCount = DFSRecursive(s, insertionArray, s, G);
     Graph D = constructTreeFromArray(insertionArray, n, treeVertexCount); 
     free(insertionArray);
@@ -96,8 +97,8 @@ Graph DFS(Graph G, u32 s){
 bool BFSSearch(Graph G, u32 s, u32 target){
     assert(s != target);
 
-    u32 n = NumberOfVertices(G);
-    u32* visited = (u32*)calloc(n, sizeof(u32*));
+    u32 n = numberOfVertices(G);
+    u32* visited = genArray(n);
 
     struct Queue* Q = createQueue();
     enQueue(Q, s);
@@ -105,23 +106,23 @@ bool BFSSearch(Graph G, u32 s, u32 target){
     while (Q->front != NULL){
 
         u32 v = pop(Q);
-        u32 d = Degree(v, G);
+        u32 d = degree(v, G);
 
         for (u32 i = 0; i < d; i++){
-            u32 iNeighbor = Neighbor(i, v, G);
-            if (visited[iNeighbor] != 0 || iNeighbor == s){
+            u32 iNeighbour = neighbour(i, v, G);
+            if (visited[iNeighbour] != 0 || iNeighbour == s){
                 continue;
             }
-            if (iNeighbor == target && v == s){
+            if (iNeighbour == target && v == s){
                 continue;
             }
-            if (iNeighbor == target){
+            if (iNeighbour == target){
                 dumpQueue(Q);
                 free(visited);
                 return true;
             }
-            visited[iNeighbor] = 1; 
-            enQueue(Q, iNeighbor);
+            visited[iNeighbour] = 1; 
+            enQueue(Q, iNeighbour);
         }
     }
     dumpQueue(Q);
