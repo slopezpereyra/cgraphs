@@ -166,7 +166,7 @@ Graph genCGraphUnbound(u32 n){
 }
 
 Graph genCGraph(u32 n, u32 m){
-    assert(m <= n*(n-1)/2);
+    assert(m <= n*(n-1)/2 && m >= n - 1);
 
     Graph T = randomTree(n);
     u32** S = genGammaComplements(T); // S = { Γ(x)ᶜ : x ∈ V }
@@ -203,6 +203,8 @@ Graph genCGraph(u32 n, u32 m){
 }
 
 Graph genConnectedGraphFromKn(u32 n, u32 m){
+
+    assert(m <= n*(n-1)/2 && m >= n - 1);
    
     Graph Kn = genCompleteGraph(n);
     u32** Γ = genGammas(Kn);
