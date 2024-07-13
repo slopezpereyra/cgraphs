@@ -331,3 +331,18 @@ void printGraph(Graph G) {
     printEdges(G);
 }
 
+void writeGraph(Graph G, char* fname){
+    assert(G != NULL);
+    FILE *f = fopen(fname, "w");
+    if (f == NULL)
+    {
+        printf("Error opening file!\n");
+        exit(1);
+    }
+    fprintf(f, "p %d  %d\n", G->n, G->m);
+    for (u32 i = 0; i < 2 * (G->m); i++) {
+        fprintf(f, "e %d  %d\n", G->_edges[i].x, G->_edges[i].y);
+    };
+    fclose(f);
+}
+

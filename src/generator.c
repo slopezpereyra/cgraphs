@@ -243,7 +243,7 @@ Graph genConnectedGraphFromKn(u32 n, u32 m){
     }
     free(nCandidates);
     free(R);
-    for (u32 i = 0; i < numberOfEdges(Kn); i++){
+    for (u32 i = 0; i < numberOfVertices(Kn); i++){
         free(Γ[i]);
     }
     free(Γ);

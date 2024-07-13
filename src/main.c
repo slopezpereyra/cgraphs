@@ -17,8 +17,9 @@ int main() {
     if (G != NULL) {
         dumpGraph(G);
 //        Graph K = genCompleteGraph(100);
-        Graph K = genConnectedGraphFromKn(100, 4900); //0.24
+        Graph K = genConnectedGraphFromKn(100, 150); //0.24
         //Graph K = genCGraph(100, 4950); //0.40
+        writeGraph(G, "100-150.txt");
 
         dumpGraph(K);
         //Graph K = genConnectedGraphFromKn(6, 10);

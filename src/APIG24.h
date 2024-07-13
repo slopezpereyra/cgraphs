@@ -33,5 +33,6 @@ u32 neighbour(u32 j, u32 i, Graph G);
 void setColor(color x, u32 i, Graph G);
 void extractColors(Graph G, color* Color);
 void printGraph(Graph G);
+void writeGraph(Graph G, char* fname);
 
 #endif

@@ -49,7 +49,7 @@ def extend_tuples(tuples_list):
         unique_numbers.add(y)
     return list(unique_numbers)
 
-file_path = 'graphs/k100.txt'
+file_path = '100-150.txt'
 #C = read_colors('graphs/improvedColors.txt')
 E = read_edges(file_path)
 V = extend_tuples(E)
