@@ -252,10 +252,15 @@ static void skipLine(FILE* file) {
  *
  * @return A pointer to the built Graph struct.
  */
-struct Graph * readGraph() {
+struct Graph * readGraph(char *filename) {
     u32 n;              
     u32 m;             
-    FILE* file = stdin;
+    FILE *file = fopen(filename, "r");
+    
+    if (file == NULL) {
+        perror("Error opening file");
+        return NULL;
+    }
 
     char c;
     while (1) {
@@ -365,14 +370,6 @@ u32 Δ(struct Graph *G) {
     return G->Δ;
 }
 
-/**
- * @brief Return the minimum degree in the graph.
- *
- */
-u32 δ(struct Graph *G) {
-    assert(G != NULL);
-    return G->δ;
-}
 
 /**
  * @brief Return the degree of the ith edge.

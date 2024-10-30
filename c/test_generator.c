@@ -118,12 +118,12 @@ void test_genCGraphUnbound() {
     printf("genCGraphUnbound passed.\n");
 }
 
-void test_genCGraph() {
+void test_genFromRandomTree() {
     printf("Testing genCGraph...\n");
 
     u32 n = 50;
     u32 m = 100; // Should be between n-1 and n*(n-1)/2 for connected graphs
-    struct Graph *G = genCGraph(n, m);
+    struct Graph *G = genFromRandomTree(n, m);
 
     assert(G != NULL);
     assert(numberOfVertices(G) == n);
@@ -133,19 +133,19 @@ void test_genCGraph() {
     printf("genCGraph passed.\n");
 }
 
-void test_genConnectedGraphFromKn() {
-    printf("Testing genConnectedGraphFromKn...\n");
+void test_genFromKn() {
+    printf("Testing genFromKn...\n");
 
     u32 n = 50;
     u32 m = 100; // Retain this many edges in the generated graph
-    struct Graph *G = genConnectedGraphFromKn(n, m);
+    struct Graph *G = genFromKn(n, m);
 
     assert(G != NULL);
     assert(numberOfVertices(G) == n);
     assert(numberOfEdges(G) == m);
     assert(isConnected(G));
 
-    printf("genConnectedGraphFromKn passed.\n");
+    printf("genFromKn passed.\n");
 }
 
 int main() {
@@ -155,8 +155,8 @@ int main() {
     test_genGammaComplements();
     test_randomTree();
     test_genCGraphUnbound();
-    test_genCGraph();
-    test_genConnectedGraphFromKn();
+    test_genFromRandomTree();
+    test_genFromKn();
 
     printf("All tests passed!\n");
     return 0;

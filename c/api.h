@@ -14,7 +14,7 @@ u32 min(u32 x, u32 y);
 void removeEdge(struct Graph *G, u32 x, u32 y);
 void addEdge(struct Graph *G, u32 x, u32 y);
 bool isNeighbour(u32 x, u32 y, struct Graph *G);
-struct Graph * readGraph();
+struct Graph * readGraph(char *filename);
 struct Graph * initGraph(u32 n, u32 m);
 struct Edge * newEdge(u32 x, u32 y);
 void setEdge(struct Graph *G, u32 i, u32 x, u32 y);

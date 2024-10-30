@@ -23,11 +23,11 @@ int main(int argc, char* argv[]) {
     struct Graph *K = NULL;
     if (method == 1){
         printf("Generating from Kn\n");
-        K = genConnectedGraphFromKn(n, m); //0.24
+        K = genFromKn(n, m); //0.24
     }
     else{
         printf("Generating from Prufer\n");
-        K = genCGraph(n, m);
+        K = genFromRandomTree(n, m);
     }
     writeGraph(K, fileName);
     return 0;

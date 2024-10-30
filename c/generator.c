@@ -201,7 +201,7 @@ struct Graph *genCGraphUnbound(u32 n) {
  * @param m Number of edges in the graph.
  * @return Pointer to the generated connected graph.
  */
-struct Graph *genCGraph(u32 n, u32 m) {
+struct Graph *genFromRandomTree(u32 n, u32 m) {
     assert(m <= n*(n-1)/2 && m >= n - 1);
 
     struct Graph *T = randomTree(n);
@@ -243,7 +243,7 @@ struct Graph *genCGraph(u32 n, u32 m) {
  * @param m Number of edges to retain in the graph.
  * @return Pointer to the generated connected graph.
  */
-struct Graph *genConnectedGraphFromKn(u32 n, u32 m) {
+struct Graph *genFromKn(u32 n, u32 m) {
     assert(m <= n*(n-1)/2 && m >= n - 1);
    
     struct Graph *Kn = genCompleteGraph(n);
