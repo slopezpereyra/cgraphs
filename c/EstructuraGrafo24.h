@@ -6,17 +6,16 @@
 typedef uint32_t u32;
 typedef u32 color;
 typedef struct Vertex* vertex; // Puntero al Vertice
-typedef struct EdgeSt* Edge;     // Puntero al Edge
-typedef struct GraphSt* Graph;
-typedef struct EdgeSt* Pair;
+typedef struct Edge* Pair;
 
-struct GraphSt {
+
+struct Graph {
     u32 n;              // Numero de vertices del grafo.
     u32 m;              // Numero de lados del grafo.
     u32 Δ;          // Max de degrees. 
     u32 δ;          // Max de degrees. 
     u32* _degrees;       // Arreglo de degrees. Size `n`.
-    Edge _edges;        // Arreglo de lados. Size `m*2`.
+    struct Edge *_edges;        // Arreglo de lados. Size `m*2`.
     color* _colors;    // Arreglo de colors. Size `n`.
     u32* _firstneighbour; // An array s.t. _firstneighbour[i] is the index of the first first neighbour of vertex `i`.
 };
@@ -26,7 +25,7 @@ struct GraphSt {
  *
  * Size: `m * 2`
 */
-struct EdgeSt {
+struct Edge {
     u32 x; // Nombre del vertice `x` del lado `xy`.
     u32 y; // Nombre del vertice `y` del lado `yx`.
 };

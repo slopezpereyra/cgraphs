@@ -49,27 +49,43 @@ def extend_tuples(tuples_list):
         unique_numbers.add(y)
     return list(unique_numbers)
 
-file_path = '100-150.txt'
+def read_graph(file_path):
+    E = read_edges(file_path)
+    V = extend_tuples(E)
+    V = sorted(V)
+    print(V)
+    
+    ##E = gen_graph(50, 500)
+    G = nx.Graph()
+    for v in V:
+        G.add_node(v)
+    
+    for e in E:
+        G.add_edge(e[0], e[1])
+    
+    return(G)
+
+file_path = '50-49b.txt'
+file_path2 = '50-49a.txt'
+G = read_graph(file_path)
+G2 = read_graph(file_path2)
+G3 = read_graph('50-49c.txt')
+G4 = read_graph('50-49d.txt')
 #C = read_colors('graphs/improvedColors.txt')
-E = read_edges(file_path)
-V = extend_tuples(E)
-V = sorted(V)
-print(V)
 
-##E = gen_graph(50, 500)
-G = nx.Graph()
-for v in V:
-    G.add_node(v)
+pos=nx.spring_layout(G,iterations=100)
+plt.subplot(221)
+nx.draw(G,pos,node_color='k',node_size=1,with_labels=False)
 
-for e in E:
-    G.add_edge(e[0], e[1])
+pos=nx.spring_layout(G2,iterations=100)
+plt.subplot(222)
+nx.draw(G2,pos,node_color='k',node_size=1,with_labels=False)
 
-##
-##
-nx.draw(G, with_labels=True, font_weight='bold')
+pos=nx.circular_layout(G3)
+plt.subplot(223)
+nx.draw(G3,pos,node_color='k',node_size=1,with_labels=False)
+
+pos=nx.circular_layout(G4)
+plt.subplot(224)
+nx.draw(G4,pos,node_color='k',node_size=1,with_labels=False)
 plt.show()
-#
-#nx.draw(G)
-#plt.show()
-
-
