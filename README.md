@@ -23,23 +23,18 @@ algorithms for the generation of random connected graphs.
 
 ## API Overview 
 
-
 The fundamental structure in this library is the `struct Graph`. A `struct
-Graph` of $n$ vertices always has vertices $0, \ldots, n-1$; i.e. vertices are
-assumed to be labelled in the natural order.
+Graph` of $n$ vertices always has vertices $0, \ldots, n-1$.
 
-If $G$ is a graph of $n$ vertices, $m$ edges, then the corresponding `struct
-Graph` contains an array of $2m$ `struct Edge *`, where a `struct Edge` is
-(essentially) a tuple $(x, y)$. Every edge $\\{x, y\\}$ is contained twice,
-once as `struct Edge` `(x, y)` and another as the `struct Edge` `(y, x)`. The
-array of `struct Edge *` pointers is ordered in a way which ensures efficient
-(i.e. constant or almost constant) data access. This compensates for the extra
-memory implied in storing $2m$ instead of $m$ vertices.
+Graph data, such as the degree of a vertex or its neighbours, is accessed in
+constant or almost constant time in most cases. This makes it possible to
+handle extremely large graphs, though at the expense of some extra memory
+consumption.
 
 #### Reading and writing a graph
 
 A `stuct Graph *` pointer may be initialized or read from a `.txt` file in a 
-special format, which we call the Penazzi format. A `.txt` file is in 
+special format, which we call the *Penazzi format*. A `.txt` file is in 
 the Penazzi format if its first line is of the form `p n m`, with `n, m`
 natural numbers, and the rest of the lines are of the form `e v w`, where 
 `v, w` are natural numbers. The lines `e v w` define the edges of the 
@@ -79,15 +74,27 @@ instance, to be read by a graph plotting algorithm) using the
 
 #### Initializing a graph
 
-To initialize a graph with `n` vertices, `m` edges, use `initGraph(n, m)`. All
-edges in this graph are set to `(0, 0)`; i.e. memory is allocated for its
-edges, but these are not defined. The `setEdge(struct Graph* G, u32 i, u32 x,
-u32 y)` function can be used to set the `i`th edge to `(x, y)`. After setting
-the edges of a graph, it is important to call `formatEdges(struct Graph *G)`. 
+To initialize a graph with `n` vertices, `m` edges, use the function
+
+```c 
+struct Graph G* initGraph(n, m)
+```
+
+Upon initialization, all edges in `G` are set to `(0, 0)`. In other words,
+memory is allocated for its edges, but these are not defined. The
+
+```c
+setEdge(struct Graph* G, u32 i, u32 x, u32 y)
+``` 
+
+function can be used to set the `i`th edge to `(x, y)`. 
+
+After setting the edges of a graph `G`, it is important to call
+`formatEdges(G)`. 
 
 For instance, 
 
-```
+```c
 struct Graph *G = initGraph(4, 3);
 setEdge(G, 0, 0, 1);
 setEdge(G, 1, 1, 2);
