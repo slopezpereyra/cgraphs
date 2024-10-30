@@ -178,7 +178,7 @@ $$
     &\qquad\textbf{else } \\ 
     &\qquad\qquad j = \textbf{random}(1, C[v])\\
     &\qquad\qquad w := S_T[v][j] \\ 
-    &\qquad\qquad E(T) := E(T) \cup  \left\{ v, w \right\} \\
+    &\qquad\qquad E(T) := E(T) \cup  \{ v, w \} \\
     &\qquad\qquad C[v] := C[v] - 1 \\ 
     &\qquad\qquad \textbf{deleteAt}(S_T[v], j)  \\ 
     &\qquad\qquad\textbf{deleteElement}(S_T[w], v)\\ 
