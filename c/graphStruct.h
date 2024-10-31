@@ -5,29 +5,22 @@
 
 typedef uint32_t u32;
 typedef u32 color;
-typedef struct Vertex* vertex; // Puntero al Vertice
-typedef struct Edge* Pair;
 
 
-struct Graph {
-    u32 n;              // Numero de vertices del grafo.
-    u32 m;              // Numero de lados del grafo.
-    u32 Δ;          // Max de degrees. 
-    u32 δ;          // Max de degrees. 
-    u32* _degrees;       // Arreglo de degrees. Size `n`.
-    struct Edge *_edges;        // Arreglo de lados. Size `m*2`.
-    color* _colors;    // Arreglo de colors. Size `n`.
-    u32* _firstneighbour; // An array s.t. _firstneighbour[i] is the index of the first first neighbour of vertex `i`.
-};
+typedef struct {
+    u32 x; 
+    u32 y; 
+} Edge;
 
-/**
- * Contiene los lados `xy` e `ye`.
- *
- * Size: `m * 2`
-*/
-struct Edge {
-    u32 x; // Nombre del vertice `x` del lado `xy`.
-    u32 y; // Nombre del vertice `y` del lado `yx`.
-};
+
+typedef struct {
+    u32 n;              
+    u32 m;              
+    u32 Δ;          
+    u32* _degrees;   
+    Edge *_edges;        
+    color* _colors;    
+    u32* _firstneighbour; 
+} Graph;
 
 #endif

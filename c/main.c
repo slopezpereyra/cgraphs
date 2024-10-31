@@ -20,7 +20,7 @@ int main(int argc, char* argv[]) {
     char * fileName = "GeneratedGraph.txt";
     printf("Comenzando la creacion del grafo con nombre %s: n = %d, m = %d, seed = %d.\n", fileName, n, m, seed );     // NOTE printConsole
 
-    struct Graph *K = NULL;
+    Graph *K = NULL;
     if (method == 1){
         printf("Generating from Kn\n");
         K = genFromKn(n, m); //0.24

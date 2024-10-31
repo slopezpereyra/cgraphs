@@ -14,7 +14,7 @@ void test_genCompleteGraph() {
     printf("Testing genCompleteGraph...\n");
 
     u32 n = 50;
-    struct Graph *G = genCompleteGraph(n);
+    Graph *G = genCompleteGraph(n);
 
     assert(G != NULL);
     assert(numberOfVertices(G) == n);
@@ -38,7 +38,7 @@ void test_fromPruferSequence() {
     u32 prufer[] = {0, 1, 2, 3}; // Prufer sequence for a 6-node tree
     u32 prufer_len = sizeof(prufer) / sizeof(prufer[0]);
 
-    struct Graph *T = fromPruferSequence(prufer, prufer_len);
+    Graph *T = fromPruferSequence(prufer, prufer_len);
 
     u32 n = prufer_len + 2; // Number of nodes in the tree
     assert(T != NULL);
@@ -52,7 +52,7 @@ void test_fromPruferSequence() {
 void test_genGammas() {
     printf("Testing genGammas...\n");
 
-    struct Graph *G = genCompleteGraph(4);
+    Graph *G = genCompleteGraph(4);
     u32 **gammaLists = genGammas(G);
 
     assert(gammaLists != NULL);
@@ -71,7 +71,7 @@ void test_genGammas() {
 void test_genGammaComplements() {
     printf("Testing genGammaComplements...\n");
 
-    struct Graph *G = genCompleteGraph(4);
+    Graph *G = genCompleteGraph(4);
     u32 **gammaComplements = genGammaComplements(G);
 
     assert(gammaComplements != NULL);
@@ -94,7 +94,7 @@ void test_randomTree() {
     printf("Testing randomTree...\n");
 
     u32 n = 50;
-    struct Graph *T = randomTree(n);
+    Graph *T = randomTree(n);
 
     assert(T != NULL);
     assert(numberOfVertices(T) == n);
@@ -108,7 +108,7 @@ void test_genCGraphUnbound() {
     printf("Testing genCGraphUnbound...\n");
 
     u32 n = 50;
-    struct Graph *G = genCGraphUnbound(n);
+    Graph *G = genCGraphUnbound(n);
 
     assert(G != NULL);
     assert(numberOfVertices(G) == n);
@@ -123,7 +123,7 @@ void test_genFromRandomTree() {
 
     u32 n = 50;
     u32 m = 100; // Should be between n-1 and n*(n-1)/2 for connected graphs
-    struct Graph *G = genFromRandomTree(n, m);
+    Graph *G = genFromRandomTree(n, m);
 
     assert(G != NULL);
     assert(numberOfVertices(G) == n);
@@ -138,7 +138,7 @@ void test_genFromKn() {
 
     u32 n = 50;
     u32 m = 100; // Retain this many edges in the generated graph
-    struct Graph *G = genFromKn(n, m);
+    Graph *G = genFromKn(n, m);
 
     assert(G != NULL);
     assert(numberOfVertices(G) == n);

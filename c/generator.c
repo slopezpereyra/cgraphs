@@ -16,8 +16,8 @@
  * @param n Number of vertices in the graph.
  * @return Pointer to the generated complete graph.
  */
-struct Graph *genCompleteGraph(u32 n) {
-    struct Graph *G = initGraph(n, n*(n-1)/2);
+Graph *genCompleteGraph(u32 n) {
+    Graph *G = initGraph(n, n*(n-1)/2);
     u32 edgeIndex = 0;
     for (u32 i = 0; i < n; i++) {
         for (u32 j = 1+i; j < n; j++) {
@@ -36,10 +36,10 @@ struct Graph *genCompleteGraph(u32 n) {
  * @param seq_len Length of the Prufer sequence.
  * @return Pointer to the generated tree graph.
  */
-struct Graph *fromPruferSequence(u32* seq, u32 seq_len) {
+Graph *fromPruferSequence(u32* seq, u32 seq_len) {
     u32 n = seq_len + 2;
     u32* degrees = genArray(n);
-    struct Graph *T = initGraph(n, 0); 
+    Graph *T = initGraph(n, 0); 
 
     for (u32 i = 0; i < n; i++) {
         degrees[i] = 1;
@@ -88,7 +88,7 @@ struct Graph *fromPruferSequence(u32* seq, u32 seq_len) {
  * can be understood as generating [ Γ(v₁), … , Γ(vₙ) ], which explains 
  * its name.
  */
-u32** genGammas(struct Graph *G) {
+u32** genGammas(Graph *G) {
     u32 n = G->n;
     u32** Γ = (u32**)calloc(n, sizeof(u32*));
     if (Γ == NULL) {
@@ -114,7 +114,7 @@ u32** genGammas(struct Graph *G) {
  * can be understood as generating [ Γᶜ(v₁), … , Γᶜ(vₙ) ], which explains 
  * its name.
  */
-u32** genGammaComplements(struct Graph *G) {
+u32** genGammaComplements(Graph *G) {
     u32 n = G->n;
     u32** S = (u32**)calloc(n, sizeof(u32*));
     if (S == NULL) {
@@ -141,13 +141,13 @@ u32** genGammaComplements(struct Graph *G) {
  * @param n Number of vertices in the tree.
  * @return Pointer to the generated random tree.
  */
-struct Graph *randomTree(u32 n) {
+Graph *randomTree(u32 n) {
     u32* randSequence = genArray(n-2);
     for (u32 i = 0; i < n - 2; i++) {
         randSequence[i] = generate_random_u32_in_range(0, n-1);
     }
 
-    struct Graph *T = fromPruferSequence(randSequence, n-2);
+    Graph *T = fromPruferSequence(randSequence, n-2);
     free(randSequence);
     return T;
 }
@@ -157,8 +157,8 @@ struct Graph *randomTree(u32 n) {
  * @param n Number of vertices in the graph.
  * @return Pointer to the generated connected graph.
  */
-struct Graph *genCGraphUnbound(u32 n) {
-    struct Graph *T = randomTree(n);
+Graph *genCGraphUnbound(u32 n) {
+    Graph *T = randomTree(n);
     u32** S = genGammaComplements(T);
     u32 k = generate_random_u32_in_range(0, n*(n-1)/2 - numberOfEdges(T) - 1);
     u32* nCandidates = genArray(n);
@@ -201,10 +201,10 @@ struct Graph *genCGraphUnbound(u32 n) {
  * @param m Number of edges in the graph.
  * @return Pointer to the generated connected graph.
  */
-struct Graph *genFromRandomTree(u32 n, u32 m) {
+Graph *genFromRandomTree(u32 n, u32 m) {
     assert(m <= n*(n-1)/2 && m >= n - 1);
 
-    struct Graph *T = randomTree(n);
+    Graph *T = randomTree(n);
     u32** S = genGammaComplements(T);
     u32* nCandidates = genArray(n);
     u32* vMatchable = genArray(n);
@@ -243,10 +243,10 @@ struct Graph *genFromRandomTree(u32 n, u32 m) {
  * @param m Number of edges to retain in the graph.
  * @return Pointer to the generated connected graph.
  */
-struct Graph *genFromKn(u32 n, u32 m) {
+Graph *genFromKn(u32 n, u32 m) {
     assert(m <= n*(n-1)/2 && m >= n - 1);
    
-    struct Graph *Kn = genCompleteGraph(n);
+    Graph *Kn = genCompleteGraph(n);
     u32** Γ = genGammas(Kn);
     u32* R = genArray(n);
     u32* nCandidates = genArray(n);

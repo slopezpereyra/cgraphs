@@ -23,7 +23,7 @@ algorithms for the generation of random connected graphs.
 
 ## API Overview 
 
-The fundamental structure in this library is the `struct Graph`. A `struct
+The fundamental structure in this library is the `Graph`. A `struct
 Graph` of $n$ vertices always has vertices $0, \ldots, n-1$.
 
 Graph data, such as the degree of a vertex or its neighbours, is accessed in
@@ -62,29 +62,29 @@ To read a graph from a `.txt` in Penazzi format, use `readGraph(char *filename)`
 For instance, 
 
 ```c
-struct Graph *myGraph = readGraph("my_graph_in_penazzi_format.txt");
+Graph *myGraph = readGraph("my_graph_in_penazzi_format.txt");
 ```
 
 will properly read the graph specified in the `.txt` file into the structure of
 our C library.
 
-A `struct Graph G*` can be written in a `.txt` file in Penazzi format (for
+A `Graph G*` can be written in a `.txt` file in Penazzi format (for
 instance, to be read by a graph plotting algorithm) using the
-`writeGraph(struct Graph G*, char* fname)` function.
+`writeGraph(Graph G*, char* fname)` function.
 
 #### Initializing a graph
 
 To initialize a graph with `n` vertices, `m` edges, use the function
 
 ```c 
-struct Graph G* initGraph(n, m)
+Graph G* initGraph(n, m)
 ```
 
 Upon initialization, all edges in `G` are set to `(0, 0)`. In other words,
 memory is allocated for its edges, but these are not defined. The
 
 ```c
-setEdge(struct Graph* G, u32 i, u32 x, u32 y)
+setEdge(Graph* G, u32 i, u32 x, u32 y)
 ``` 
 
 function can be used to set the `i`th edge to `(x, y)`. 
@@ -95,7 +95,7 @@ After setting the edges of a graph `G`, it is important to call
 For instance, 
 
 ```c
-struct Graph *G = initGraph(4, 3);
+Graph *G = initGraph(4, 3);
 setEdge(G, 0, 0, 1);
 setEdge(G, 1, 1, 2);
 setEdge(G, 2, 1, 3);
@@ -115,7 +115,7 @@ also defines the graph
 
 #### Modifying an existing graph
 
-New edges can be added with the `addEdge(struct Graph *G, u32 x, u32 y)`
+New edges can be added with the `addEdge(Graph *G, u32 x, u32 y)`
 function, and existing edges can be removed with the `void removeEdge(struct
 Graph *G, u32 x, u32 y)` function. Both functions perform the necessary memory
 reallocations and reformat the graph's edges - i.e. call `formatEdges(G)`
@@ -124,22 +124,22 @@ implicitly.
 #### Graph and vertex attributes
 
 The number of edges or vertices in a graph can be found with the
-`numberOfVertices(struct Graph *G)` or `numberOfEdges(struct Graph *G)`
+`numberOfVertices(Graph *G)` or `numberOfEdges(Graph *G)`
 functions. The same is true of the $\Delta(G)$, which can be obtained (in
-constant time) with `Δ(struct Graph *G)`.
+constant time) with `Δ(Graph *G)`.
 
 Since edges in a graph are formatted and ordered, we can find the `j`th
-neighbour of vertex `i` with the `neighbour(u32 j, u32 i, struct Graph G*)`
+neighbour of vertex `i` with the `neighbour(u32 j, u32 i, Graph G*)`
 function. For instance, in the graph generated above, the `j=0` (first)
 neighbour of vertex `1` is `2`, and the `j=1` neighbour of vertex `1` is `3`.
 
 
-The `bool isNeighbour(u32 x, u32 y, struct Graph *G)` returns `true` if `(x, y)` 
+The `bool isNeighbour(u32 x, u32 y, Graph *G)` returns `true` if `(x, y)` 
 is an edge, and false otherwise.
 
-The degree of vertex `i` can be found with `degree(u32 i, struct Graph G*)`,
-and its color can be obtained or set with the `getColor(u32 i, struct Graph
-G*)` or `setColor(color x, u32 i, struct Graph *G)` functions. The `color` type
+The degree of vertex `i` can be found with `degree(u32 i, Graph G*)`,
+and its color can be obtained or set with the `getColor(u32 i, Graph
+G*)` or `setColor(color x, u32 i, Graph *G)` functions. The `color` type
 is a mask over `u32`. If a graph has not been colored, the color of all
 vertices is set to zero.
 
@@ -157,7 +157,7 @@ with new edges until $m$ edges exist. To generate a random graph using this
 method, call 
 
 ```c
-struct Graph *G = genFromRandomTree(n, m);
+Graph *G = genFromRandomTree(n, m);
 ```
 
 assuming `n, m` are defined integers.
@@ -233,7 +233,7 @@ vertices, $m$ edges uniformly.
 To use this algorithm, call 
 
 ```c
-struct Graph *G = genFromKn(n, m)
+Graph *G = genFromKn(n, m)
 ```
 
 assuming `n`, `m` are integers.

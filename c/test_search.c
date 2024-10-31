@@ -11,7 +11,7 @@ void testConstructTreeFromArray() {
     printf("Testing constructTreeFromArray.\n");
     u32 insertionArray[] = {0, 1, 1, 2, 3}; // Simple parent-child relationship
     u32 n = 5;
-    struct Graph *tree = _constructTreeFromArray(insertionArray, 5, n);
+    Graph *tree = _constructTreeFromArray(insertionArray, 5, n);
     assert(tree != NULL); // Tree should be created
     
     // Verify specific edges
@@ -27,14 +27,14 @@ void testConstructTreeFromArray() {
 // Test BFS traversal to ensure tree structure is correct.
 void testBFS() {
     printf("Testing BFS.\n");
-    struct Graph *G = initGraph(5, 4); // Create a simple graph with 5 vertices
+    Graph *G = initGraph(5, 4); // Create a simple graph with 5 vertices
     setEdge(G, 0, 0, 1);
     setEdge(G, 1, 0, 2);
     setEdge(G, 2, 1, 3);
     setEdge(G, 3, 1, 4);
     formatEdges(G);
     
-    struct Graph *BFSResult = BFS(G, 0); // Run BFS from vertex 0
+    Graph *BFSResult = BFS(G, 0); // Run BFS from vertex 0
     assert(BFSResult != NULL);
 
     // Verify BFS tree structure
@@ -51,13 +51,13 @@ void testBFS() {
 // Test DFS traversal to ensure tree structure is correct.
 void testDFS() {
     printf("Testing DFS.\n");
-    struct Graph *G = initGraph(5, 4); // Create a simple graph with 5 vertices
+    Graph *G = initGraph(5, 4); // Create a simple graph with 5 vertices
     setEdge(G, 0, 0, 1);
     setEdge(G, 1, 0, 2);
     setEdge(G, 2, 1, 3);
     setEdge(G, 3, 1, 4);
     
-    struct Graph *DFSResult = DFS(G, 0); // Run DFS from vertex 0
+    Graph *DFSResult = DFS(G, 0); // Run DFS from vertex 0
     assert(DFSResult != NULL);
 
     // Verify DFS tree structure
@@ -72,7 +72,7 @@ void testDFS() {
 // Test BFSSearch to check if the target vertex can be found in the graph.
 void testBFSSearch() {
     printf("Testing BFS search.\n");
-    struct Graph *G = initGraph(5, 4);
+    Graph *G = initGraph(5, 4);
     setEdge(G, 0, 0, 1);
     setEdge(G, 1, 1, 2);
     setEdge(G, 2, 2, 3);
@@ -90,7 +90,7 @@ void testBFSSearch() {
 // Test if the isConnected function correctly detects a connected graph.
 void testIsConnected() {
     printf("Testing isConnected function.\n");
-    struct Graph *G = initGraph(4, 3);
+    Graph *G = initGraph(4, 3);
     setEdge(G, 0, 0, 1);
     setEdge(G, 1, 1, 2);
     setEdge(G, 2, 2, 3);
@@ -98,7 +98,7 @@ void testIsConnected() {
 
     assert(isConnected(G) == true); // Graph is connected
     
-    struct Graph *disconnectedG = initGraph(4, 2);
+    Graph *disconnectedG = initGraph(4, 2);
     setEdge(disconnectedG, 0, 0, 0);
 
     assert(isConnected(disconnectedG) == false); // Graph is not connected

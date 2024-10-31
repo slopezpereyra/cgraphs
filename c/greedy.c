@@ -23,7 +23,7 @@
 int compareColor(const void *a, const void *b, void *arg) {
     u32 index_a = *(const u32 *)a;
     u32 index_b = *(const u32 *)b;
-    struct Graph *graph = (struct Graph *)arg;
+    Graph *graph = (Graph *)arg;
 
     if (graph->_colors[index_a] < graph->_colors[index_b]) {
         return 1;
@@ -39,7 +39,7 @@ int compareColor(const void *a, const void *b, void *arg) {
  * @param G Pointer to the graph.
  * @return Array containing the natural order of vertices.
  */
-u32* naturalOrder(struct Graph *G) {
+u32* naturalOrder(Graph *G) {
     u32* order = genArray(numberOfVertices(G));
     for (u32 i = 0; i < numberOfVertices(G); i++) {
         order[i] = i;
@@ -57,7 +57,7 @@ u32* naturalOrder(struct Graph *G) {
  * @param Order Array containing the order of vertices for coloring.
  * @return The number of colors used to color the graph.
  */
-u32 greedy(struct Graph *G, u32 *Order) {
+u32 greedy(Graph *G, u32 *Order) {
     u32* usedColorsDyn = genArray(Δ(G) + 1);
     u32* usedColorsStatic = genArray(Δ(G) + 1);
     u32 colorsUsed = 0;
@@ -104,7 +104,7 @@ u32 greedy(struct Graph *G, u32 *Order) {
  * @param G Pointer to the graph.
  * @return True if the graph is two-colorable, false otherwise.
  */
-bool twoColorable(struct Graph *G) {
+bool twoColorable(Graph *G) {
     struct Queue* Q = createQueue();
     enQueue(Q, 0);
     setColor(1, 0, G);
@@ -135,7 +135,7 @@ bool twoColorable(struct Graph *G) {
  * @param nColorsUsed Number of colors used in the graph.
  * @return Array of queues, each queue containing vertices of a specific color.
  */
-struct Queue** genColorQueues(struct Graph *G, u32 nColorsUsed) {
+struct Queue** genColorQueues(Graph *G, u32 nColorsUsed) {
     struct Queue** D = (struct Queue**) calloc(nColorsUsed, sizeof(struct Queue**));
     if (D == NULL) {
         printf("Error: calloc failed\n");
@@ -164,7 +164,7 @@ struct Queue** genColorQueues(struct Graph *G, u32 nColorsUsed) {
  * @param D Array of queues, each queue containing vertices of a specific color.
  * @return Array of vertices ordered by color.
  */
-u32* unfoldColorQueues(struct Graph *G, u32 nColorsUsed, struct Queue** D) {
+u32* unfoldColorQueues(Graph *G, u32 nColorsUsed, struct Queue** D) {
     u32* order = genArray(numberOfVertices(G));
     u32 j = numberOfVertices(G) - 1;
     for (u32 i = 0; i < nColorsUsed; i++) {
@@ -187,7 +187,7 @@ u32* unfoldColorQueues(struct Graph *G, u32 nColorsUsed, struct Queue** D) {
  * @param nColorsUsed Number of colors used in the graph.
  * @return Array of vertices ordered by color queue cardinality.
  */
-u32* cardinalityOrder(struct Graph *G, u32 nColorsUsed) {
+u32* cardinalityOrder(Graph *G, u32 nColorsUsed) {
     struct Queue** D = genColorQueues(G, nColorsUsed);
     qsort(D, nColorsUsed, sizeof(struct Queue*), compareQueue);
     return unfoldColorQueues(G, nColorsUsed, D);
@@ -199,7 +199,7 @@ u32* cardinalityOrder(struct Graph *G, u32 nColorsUsed) {
  * @param nColorsUsed Number of colors used in the graph.
  * @return Array of vertices in reverse order by color queues.
  */
-u32* reverseOrder(struct Graph *G, u32 nColorsUsed) {
+u32* reverseOrder(Graph *G, u32 nColorsUsed) {
     struct Queue** D = genColorQueues(G, nColorsUsed);
     return unfoldColorQueues(G, nColorsUsed, D);
 }
@@ -214,7 +214,7 @@ u32* reverseOrder(struct Graph *G, u32 nColorsUsed) {
  * @param nColorsUsed Number of colors used in the graph.
  * @return Array of vertices ordered by divisibility of colors.
  */
-u32* divisibilityOrder(struct Graph *G, u32 nColorsUsed) {
+u32* divisibilityOrder(Graph *G, u32 nColorsUsed) {
     struct Queue** D = genColorQueues(G, nColorsUsed);
     u32 nColorsDivisibleByFour = 0;
     u32 nColorsDivisibleByTwo = 0;

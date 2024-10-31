@@ -24,8 +24,8 @@
  * @param[in] n Total number of vertices in the graph.
  * @return A pointer to the constructed Graph structure.
  */
-struct Graph *_constructTreeFromArray(u32* insertionArray, u32 insertionArrayLength, u32 n){
-    struct Graph * B = initGraph(n, n-1);
+Graph *_constructTreeFromArray(u32* insertionArray, u32 insertionArrayLength, u32 n){
+    Graph * B = initGraph(n, n-1);
     u32 edgeIndex = 0;
 
     for (u32 i = 0; i < insertionArrayLength; i++){
@@ -49,7 +49,7 @@ struct Graph *_constructTreeFromArray(u32* insertionArray, u32 insertionArrayLen
  * @param[in] s Starting vertex for the BFS traversal.
  * @return A pointer to the Graph structure representing the BFS tree.
  */
-struct Graph *BFS(struct Graph *G, u32 s){
+Graph *BFS(Graph *G, u32 s){
 
     u32 n = numberOfVertices(G);
     // An array s.t. insertionArray[i] = (k+1) iff vertex i was enqueued
@@ -76,7 +76,7 @@ struct Graph *BFS(struct Graph *G, u32 s){
         }
     }
     dumpQueue(Q);
-    struct Graph *B = _constructTreeFromArray(insertionArray, n, treeVertexCount); 
+    Graph *B = _constructTreeFromArray(insertionArray, n, treeVertexCount); 
     free(insertionArray);
     return(B);
 
@@ -94,7 +94,7 @@ struct Graph *BFS(struct Graph *G, u32 s){
  * @param[in] G Pointer to the graph being traversed.
  * @return Number of vertices in the DFS tree.
  */
-u32 DFSRecursive(u32 v, u32* track, u32 root, struct Graph *G){
+u32 DFSRecursive(u32 v, u32* track, u32 root, Graph *G){
     u32 n = 1;
     for (u32 i = 0; i < degree(v, G); i++){
         u32 iNeighbour = neighbour(i, v, G);
@@ -116,12 +116,12 @@ u32 DFSRecursive(u32 v, u32* track, u32 root, struct Graph *G){
  * @param[in] s Starting vertex for the DFS traversal.
  * @return A pointer to the Graph structure representing the DFS tree.
  */
-struct Graph *DFS(struct Graph *G, u32 s){
+Graph *DFS(Graph *G, u32 s){
 
     u32 n = numberOfVertices(G);
     u32 *insertionArray = genArray(n);
     u32 treeVertexCount = DFSRecursive(s, insertionArray, s, G);
-    struct Graph *D = _constructTreeFromArray(insertionArray, n, treeVertexCount); 
+    Graph *D = _constructTreeFromArray(insertionArray, n, treeVertexCount); 
     free(insertionArray);
     return(D);
 
@@ -137,7 +137,7 @@ struct Graph *DFS(struct Graph *G, u32 s){
  * @param[in] target Vertex being searched for.
  * @return `true` if the target vertex is found, `false` otherwise.
  */
-bool BFSSearch(struct Graph *G, u32 s, u32 target){
+bool BFSSearch(Graph *G, u32 s, u32 target){
     assert(s != target);
 
     u32 n = numberOfVertices(G);
@@ -185,7 +185,7 @@ bool BFSSearch(struct Graph *G, u32 s, u32 target){
  * @param[in] G Pointer to the graph.
  * @return `true` if the graph is connected, `false` otherwise.
  */
-bool isConnected(struct Graph *G){
+bool isConnected(Graph *G){
 
     u32 n = numberOfVertices(G);
     u32* insertionArray = genArray(n);
