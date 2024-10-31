@@ -42,6 +42,18 @@ void testSetEdge() {
 }
 
 /**
+ * @brief Tests the edge setting in a graph and verifies correct adjacency for both directed edges.
+ */
+void testSetExistingEdge() {
+    struct Graph *G = initGraph(3, 1);
+    setEdge(G, 0, 1, 2);
+    assert(G->_edges[0].x == 1 && G->_edges[0].y == 2);
+    assert(G->_edges[G->m].x == 2 && G->_edges[G->m].y == 1);
+    dumpGraph(G);
+    printf("testSetEdge passed.\n");
+}
+
+/**
  * @brief Tests the addition of an edge and verifies if the number of edges and degrees are updated.
  */
 void testAddEdge() {

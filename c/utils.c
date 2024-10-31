@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "EstructuraGrafo24.h"
+#include "graphStruct.h"
 
 /**
  * @brief Returns the maximum of two unsigned integers.

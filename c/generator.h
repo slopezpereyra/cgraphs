@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "EstructuraGrafo24.h"
+#include "graphStruct.h"
 
 struct Graph *genCompleteGraph(u32 n);
 u32 generate_random_u32();

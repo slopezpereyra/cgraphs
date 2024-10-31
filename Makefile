@@ -32,9 +32,9 @@ test_graphs: test_utils.o test_generator.o test_search.o test_api.o $(OBJS_P1)
 # Individual object file compilation
 main.o: c/main.c
 	$(CC) $(CFLAGS) -c c/main.c
-api.o: c/api.c c/api.h c/EstructuraGrafo24.h
+api.o: c/api.c c/api.h c/graphStruct.h
 	$(CC) $(CFLAGS) -c c/api.c
-greedy.o: c/greedy.c c/api.h c/EstructuraGrafo24.h c/greedy.h
+greedy.o: c/greedy.c c/api.h c/graphStruct.h c/greedy.h
 	$(CC) $(CFLAGS) -c c/greedy.c
 queue.o: c/queue.c c/queue.h
 	$(CC) $(CFLAGS) -c c/queue.c

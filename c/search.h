@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "EstructuraGrafo24.h"
+#include "graphStruct.h"
 
 struct Graph *BFS(struct Graph *G, u32 s);
 struct Graph *DFS(struct Graph *G, u32 s);

@@ -6,7 +6,7 @@
 
 #include <stdbool.h>
 // El .h de abajo debe tener definida Graph, u32 y color.
-#include "EstructuraGrafo24.h"
+#include "graphStruct.h"
 
 
 u32 max(u32 x, u32 y);

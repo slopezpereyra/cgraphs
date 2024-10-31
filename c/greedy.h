@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 // El .h de abajo debe tener definida Graph, u32 y color.
-#include "EstructuraGrafo24.h"
+#include "graphStruct.h"
 
 u32* naturalOrder(struct Graph *G);
 u32 greedy(struct Graph *G, u32* Order);

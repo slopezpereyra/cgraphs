@@ -1,4 +1,4 @@
-#include "EstructuraGrafo24.h"
+#include "graphStruct.h"
 
 u32 max(u32 x, u32 y);
 u32 min(u32 x, u32 y);
