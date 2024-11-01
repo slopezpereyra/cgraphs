@@ -15,10 +15,10 @@ void testConstructTreeFromArray() {
     assert(tree != NULL); // Tree should be created
     
     // Verify specific edges
-    assert(isEdge(tree, 0, 1)); // Check root connection
-    assert(isEdge(tree, 0, 2)); // Check middle connection
-    assert(isEdge(tree, 1, 3)); // Check leaf connections
-    assert(isEdge(tree, 2, 4)); // Check leaf connections
+    assert(isNeighbour(0, 1, tree)); // Check root connection
+    assert(isNeighbour(0, 2, tree)); // Check middle connection
+    assert(isNeighbour(1, 3, tree)); // Check leaf connections
+    assert(isNeighbour(2, 4, tree)); // Check leaf connections
     
     dumpGraph(tree);
     printf("test_constructTreeFromArray passed.\n");
@@ -38,10 +38,10 @@ void testBFS() {
     assert(BFSResult != NULL);
 
     // Verify BFS tree structure
-    assert(isEdge(BFSResult, 0, 1));
-    assert(isEdge(BFSResult, 0, 2));
-    assert(isEdge(BFSResult, 1, 3));
-    assert(isEdge(BFSResult, 1, 4));
+    assert(isNeighbour(0, 1, BFSResult));
+    assert(isNeighbour(0, 2, BFSResult));
+    assert(isNeighbour(1, 3, BFSResult));
+    assert(isNeighbour(1, 4, BFSResult));
     
     dumpGraph(BFSResult);
     dumpGraph(G);
@@ -61,8 +61,8 @@ void testDFS() {
     assert(DFSResult != NULL);
 
     // Verify DFS tree structure
-    assert(isEdge(DFSResult, 0, 1));
-    assert(isEdge(DFSResult, 1, 3) || isEdge(DFSResult, 1, 4)); // DFS is depth-prioritized
+    assert(isNeighbour(0, 1, DFSResult));
+    assert(isNeighbour(1, 3, DFSResult) || isNeighbour(1, 4, DFSResult)); // DFS is depth-prioritized
     
     dumpGraph(DFSResult);
     dumpGraph(G);

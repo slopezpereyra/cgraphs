@@ -1,6 +1,7 @@
 # Prerequisites
 *.d
 .gdb_history
+test_graphs
 
 *.txt
 
