@@ -34,7 +34,6 @@ void setColor(color x, u32 i, Graph *G);
 void printGraph(Graph *G);
 void writeGraph(Graph *G, char* fname);
 u32 edgeToIndex(u32 x, u32 y, u32 n);
-bool isEdge(Graph *G, u32 x, u32 y);
 u32 edgeIndex(Graph *G, u32 x, u32 y);
 
 #endif

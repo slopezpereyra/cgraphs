@@ -123,6 +123,7 @@ Graph *initGraph(u32 n, u32 m) {
  */
 void setEdge(Graph *G, u32 i, u32 x, u32 y) {
     assert(G != NULL);
+    assert(i < numberOfEdges(G));
 
     // If the edge was previously set, reduce 
     if ((G -> _edges)[i].x != 0){
@@ -202,8 +203,16 @@ void addEdge(Graph *G, u32 x, u32 y) {
  *
  */
 void removeEdge(Graph *G, u32 x, u32 y) {
-    assert(x < y);
+    assert(x != y);
     assert((G -> m) > 1);
+
+    if (x > y){
+        u32 temp = x;
+        x = y;
+        y = temp;
+    }
+    
+    assert(isNeighbour(x, y, G));
    
     u32 index1 = edgeIndex(G, x, y);
     u32 index2 = edgeIndex(G, y, x) - 1;
@@ -396,21 +405,6 @@ color getColor(u32 i, Graph *G) {
 Edge getEdge(u32 i, Graph *G) {
     assert(G != NULL && i < 2* numberOfEdges(G));
     return ( G->_edges )[i];
-}
-
-/**
- * @brief Return true if {x, y} ∈ E(G), false otherwise.
- *
- */
-bool isEdge(Graph *G, u32 x, u32 y) {
-    assert(G != NULL && x < numberOfVertices(G) && y < numberOfVertices(G));
-    for (u32 i = 0; i < 2*numberOfEdges(G); i++){
-        Edge e = (G->_edges)[i];
-        if ((e.x == x && e.y == y) || (e.x == y && e.y == x)){
-            return true;
-        }
-    }
-    return false;
 }
 
 
