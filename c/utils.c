@@ -19,6 +19,12 @@ u32 max(u32 x, u32 y) {
     return (x > y ? x : y);
 }
 
+void swap_u32_pointers(u32 *x, u32 *y){
+    u32 temp = *x;
+    *x = *y;
+    *y = temp;
+}
+
 /**
  * @brief Returns the minimum of two unsigned integers.
  * @param x First unsigned integer.

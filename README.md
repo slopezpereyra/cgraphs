@@ -95,7 +95,7 @@ After setting the edges of a graph `G`, it is important to call
 For instance, 
 
 ```c
-Graph *G = initGraph(4, 3);
+Graph *G = initGraph(4, 3, STD_FLAG);
 setEdge(G, 0, 0, 1);
 setEdge(G, 1, 1, 2);
 setEdge(G, 2, 1, 3);

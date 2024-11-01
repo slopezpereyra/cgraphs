@@ -13,6 +13,47 @@
 
 
 /**
+ * @brief Allocates and initializes a Graph structure with `n` vertices
+ * and `m` edges.
+ *
+ * The `m` edges are allocated with `calloc` and thus their `{x, y}` values
+ * are set to zero. Informally, this means that, after initializing G,
+ * E(G) = {{0, 0}, {0, 0}, ..., {0, 0}} - were we take the liberty of speaking
+ * of a set with repeated elements.
+ * 
+ * The color, first neighbor and degree of all vertices is of course also set to
+ * zero.
+ *
+ * Importantly, the callocated `_edges` array contains 2m structs edges, because
+ * for each edge {x, y} in the graph we also store an edge {y, x}.
+ *
+ * @return A pointer to the allocated Graph structure.
+ */
+Graph *initGraph(u32 n, u32 m, g_flags flags) {
+    Graph *G = (Graph*)malloc(sizeof(Graph));
+    if (G == NULL){
+        printf("Error: malloc failed\n");
+        exit(1);
+    }
+    G->n = n;
+    G->m = m;
+    G->Δ = 0;
+    G->_edges = (Edge*)calloc(2 * m, sizeof(Edge));
+    G->_firstneighbour = (u32*)calloc(n, sizeof(u32));
+    G->_degrees = (u32*)calloc(n, sizeof(u32));
+    G->_formatted = true;
+    G->_G_FLAGS = flags;
+
+    G->_colors = (flags & C_FLAG) ? (u32*)calloc(n, sizeof(u32)) : NULL;
+    G->_weights = (flags & W_FLAG) ? (u32*)calloc(m, sizeof(Edge)) : NULL;
+    
+    return (G);
+}
+
+
+
+
+/**
  * @brief Allocate a new Edge between vertices `x` and `y`. 
  *
  * The values `x` and `y` are abstract, i.e. they do not relate to 
@@ -69,40 +110,6 @@ int compareEdges(const void* a, const void* b) {
 
     // If x values are equal, compare by y values
     return (A->y - B->y);
-}
-
-/**
- * @brief Allocates and initializes a Graph structure with `n` vertices
- * and `m` edges.
- *
- * The `m` edges are allocated with `calloc` and thus their `{x, y}` values
- * are set to zero. Informally, this means that, after initializing G,
- * E(G) = {{0, 0}, {0, 0}, ..., {0, 0}} - were we take the liberty of speaking
- * of a set with repeated elements.
- * 
- * The color, first neighbor and degree of all vertices is of course also set to
- * zero.
- *
- * Importantly, the callocated `_edges` array contains 2m structs edges, because
- * for each edge {x, y} in the graph we also store an edge {y, x}.
- *
- * @return A pointer to the allocated Graph structure.
- */
-Graph *initGraph(u32 n, u32 m) {
-    Graph *G = (Graph*)malloc(sizeof(Graph));
-    if (G == NULL){
-        printf("Error: malloc failed\n");
-        exit(1);
-    }
-    G->n = n;
-    G->m = m;
-    G->Δ = 0;
-    G->_firstneighbour = (u32*)calloc(n, sizeof(u32));
-    G->_degrees = (u32*)calloc(n, sizeof(u32));
-    G->_colors = (u32*)calloc(n, sizeof(u32));
-    G->_edges = (Edge*)calloc(2 * m, sizeof(Edge));
-    G->_formatted = true;
-    return (G);
 }
 
 /**
@@ -302,7 +309,7 @@ Graph * readGraph(char *filename) {
         return NULL;
     }
 
-    Graph *G = initGraph(n, m);
+    Graph *G = initGraph(n, m, STD_FLAG);
 
     for (u32 i = 0; i < m; i++) {
         u32 x, y;
@@ -345,8 +352,15 @@ void dumpGraph(Graph *G) {
     if (G != NULL) {
         free(G->_edges);
         free(G->_degrees);
-        free(G->_colors);
         free(G->_firstneighbour);
+        if (G->_colors != NULL)
+        {
+            free(G->_colors);
+
+        }
+        if (G->_weights != NULL){
+            free(G->_weights);
+        }
         free(G);
     }
 }
@@ -410,23 +424,33 @@ color getColor(u32 i, Graph *G) {
  * @brief Return the `i`th edge of the graph.
  *
  */
-Edge getEdge(u32 i, Graph *G) {
+Edge getIthEdge(u32 i, Graph *G) {
     assert(G != NULL && i < 2* numberOfEdges(G));
     return ( G->_edges )[i];
 }
 
 
 /**
- * @brief Converts an edge (x, y) to its corresponding index.
- * 
- * @param x The starting vertex.
- * @param y The ending vertex.
- * @param n The total number of vertices.
- * @return The index corresponding to the edge.
+ * @brief Return the `i`th edge of the graph.
+ *
  */
-u32 edgeToIndex(u32 x, u32 y, u32 n) {
-    u32 xIndex = x*n - (x*(x+1)/2);
-    return xIndex + (y - (x+1));
+u32 getIthWeight(u32 i, Graph *G) {
+    assert(G != NULL && i < 2* numberOfEdges(G));
+    assert(G->_G_FLAGS & W_FLAG);
+    return ( G->_weights )[i];
+}
+
+/**
+ * @brief Return the Edge {x, y}
+ *
+ */
+Edge getEdge(u32 x, u32 y, Graph *G) {
+    assert(G != NULL && x <  numberOfVertices(G) && y < numberOfVertices(G));
+    assert(isFormatted(G));
+    if (x > y)
+        swap_u32_pointers(&x, &y);
+    u32 i = edgeIndex(G, x, y);
+    return ( G->_edges )[i];
 }
 
 /**
@@ -459,7 +483,6 @@ u32 neighbour(u32 j, u32 i, Graph *G) {
     u32 indexDei = (G->_firstneighbour)[i];
     return ((G->_edges)[j + indexDei].y);
 }
-
 
 /**
  * @brief Sets to `x` the color of vertex `i`.
@@ -495,8 +518,8 @@ void printVertices(Graph *G) {
     assert(G != NULL);
     printf("\nVertices:\n");
     for (u32 i = 0; i < G->n; i++) {
-        printf("Vertex %d: degree %d - Index in edge array %d  - Color: %d\n", i,
-               (G->_degrees)[i], (G->_firstneighbour)[i], G->_colors[i]);
+        printf("Vertex %d: degree %d - Index in edge array %d\n", i,
+               (G->_degrees)[i], (G->_firstneighbour)[i]);
     };
 }
 

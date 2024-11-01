@@ -4,9 +4,13 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+typedef unsigned int g_flags;
+#define C_FLAG (1 << 0)
+#define W_FLAG (1 << 1)
+#define STD_FLAG (0)
+
 typedef uint32_t u32;
 typedef u32 color;
-
 
 typedef struct {
     u32 x; 
@@ -23,6 +27,8 @@ typedef struct {
     color* _colors;    
     u32* _firstneighbour; 
     bool _formatted;
+    u32* _weights;
+    g_flags _G_FLAGS;
 } Graph;
 
 #endif

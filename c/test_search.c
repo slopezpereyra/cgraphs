@@ -27,13 +27,13 @@ void testConstructTreeFromArray() {
 // Test BFS traversal to ensure tree structure is correct.
 void testBFS() {
     printf("Testing BFS.\n");
-    Graph *G = initGraph(5, 4); // Create a simple graph with 5 vertices
+    Graph *G = initGraph(5, 4, STD_FLAG); // Create a simple graph with 5 vertices
     setEdge(G, 0, 0, 1);
     setEdge(G, 1, 0, 2);
     setEdge(G, 2, 1, 3);
     setEdge(G, 3, 1, 4);
     formatEdges(G);
-    
+   
     Graph *BFSResult = BFS(G, 0); // Run BFS from vertex 0
     assert(BFSResult != NULL);
 
@@ -42,16 +42,18 @@ void testBFS() {
     assert(isNeighbour(0, 2, BFSResult));
     assert(isNeighbour(1, 3, BFSResult));
     assert(isNeighbour(1, 4, BFSResult));
+
+    printGraph(BFSResult);
     
-    dumpGraph(BFSResult);
     dumpGraph(G);
+    dumpGraph(BFSResult);
     printf("testBFS passed.\n");
 }
 
 // Test DFS traversal to ensure tree structure is correct.
 void testDFS() {
     printf("Testing DFS.\n");
-    Graph *G = initGraph(5, 4); // Create a simple graph with 5 vertices
+    Graph *G = initGraph(5, 4, STD_FLAG); // Create a simple graph with 5 vertices
     setEdge(G, 0, 0, 1);
     setEdge(G, 1, 0, 2);
     setEdge(G, 2, 1, 3);
@@ -72,8 +74,7 @@ void testDFS() {
 
 // Test BFSSearch to check if the target vertex can be found in the graph.
 void testBFSSearch() {
-    printf("Testing BFS search.\n");
-    Graph *G = initGraph(5, 4);
+    Graph *G = initGraph(5, 4, STD_FLAG);
     setEdge(G, 0, 0, 1);
     setEdge(G, 1, 1, 2);
     setEdge(G, 2, 2, 3);
@@ -91,7 +92,7 @@ void testBFSSearch() {
 // Test if the isConnected function correctly detects a connected graph.
 void testIsConnected() {
     printf("Testing isConnected function.\n");
-    Graph *G = initGraph(4, 3);
+    Graph *G = initGraph(4, 3, STD_FLAG);
     setEdge(G, 0, 0, 1);
     setEdge(G, 1, 1, 2);
     setEdge(G, 2, 2, 3);
@@ -99,7 +100,7 @@ void testIsConnected() {
 
     assert(isConnected(G) == true); // Graph is connected
     
-    Graph *disconnectedG = initGraph(4, 2);
+    Graph *disconnectedG = initGraph(4, 2, STD_FLAG);
     setEdge(disconnectedG, 0, 0, 0);
     formatEdges(disconnectedG);
 

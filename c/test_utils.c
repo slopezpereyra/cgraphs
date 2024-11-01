@@ -80,6 +80,17 @@ void test_generate_random_u32_in_range() {
     printf("test_generate_random_u32_in_range passed\n");
 }
 
+void test_swap_pointers(){
+
+    u32 x = 5;
+    u32 y = 10;
+
+    swap_u32_pointers(&x, &y);
+    assert(x == 10);
+    assert(y == 5);
+
+}
+
 // Main function to run all tests
 int main() {
     srand((unsigned int)time(NULL)); // Seed random number generator
@@ -91,6 +102,7 @@ int main() {
     test_removeTargetElement();
     test_generate_random_u32();
     test_generate_random_u32_in_range();
+    test_swap_pointers();
 
     printf("All tests passed\n");
     return 0;

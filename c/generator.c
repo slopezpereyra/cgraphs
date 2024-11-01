@@ -17,7 +17,7 @@
  * @return Pointer to the generated complete graph.
  */
 Graph *genCompleteGraph(u32 n) {
-    Graph *G = initGraph(n, n*(n-1)/2);
+    Graph *G = initGraph(n, n*(n-1)/2, STD_FLAG);
     u32 edgeIndex = 0;
     for (u32 i = 0; i < n; i++) {
         for (u32 j = 1+i; j < n; j++) {
@@ -39,7 +39,7 @@ Graph *genCompleteGraph(u32 n) {
 Graph *fromPruferSequence(u32* seq, u32 seq_len) {
     u32 n = seq_len + 2;
     u32* degrees = genArray(n);
-    Graph *T = initGraph(n, 0); 
+    Graph *T = initGraph(n, 0, STD_FLAG); 
 
     for (u32 i = 0; i < n; i++) {
         degrees[i] = 1;

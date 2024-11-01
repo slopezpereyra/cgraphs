@@ -25,7 +25,7 @@
  * @return A pointer to the constructed Graph structure.
  */
 Graph *_constructTreeFromArray(u32* insertionArray, u32 insertionArrayLength, u32 n){
-    Graph * B = initGraph(n, n-1);
+    Graph * B = initGraph(n, n-1, STD_FLAG);
     u32 edgeIndex = 0;
 
     for (u32 i = 0; i < insertionArrayLength; i++){
