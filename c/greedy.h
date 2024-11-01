@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-
-// El .h de abajo debe tener definida Graph, u32 y color.
 #include "graphStruct.h"
 
 u32* naturalOrder(Graph *G);

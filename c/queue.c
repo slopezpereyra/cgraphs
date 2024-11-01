@@ -8,6 +8,8 @@
 
 #include "queue.h"
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 /**
  * @brief Creates a new linked list node with the specified key.

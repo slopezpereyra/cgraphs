@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
 typedef uint32_t u32;

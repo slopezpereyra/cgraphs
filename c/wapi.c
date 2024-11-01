@@ -31,3 +31,4 @@ void setEdgeWeight(u32 x, u32 y, u32 w, Graph *G){
     u32 i = edgeIndex(G, x, y);
     (G->_weights)[i] = w;
 }
+
