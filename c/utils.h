@@ -10,3 +10,4 @@ void removeTargetElement(u32 *array, u32 *size, u32 target);
 u32 generate_random_u32();
 u32 generate_random_u32_in_range(u32 min, u32 max);
 void swap_u32_pointers(u32 *x, u32 *y);
+u32 findMin(u32 arr[], u32 size);

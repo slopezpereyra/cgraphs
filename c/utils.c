@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "graphStruct.h"
+#include <limits.h>
 
 /**
  * @brief Returns the maximum of two unsigned integers.
@@ -114,4 +115,18 @@ u32 generate_random_u32_in_range(u32 min, u32 max) {
     } while (random_num >= limit);
 
     return (random_num % range) + min;
+}
+
+
+/**
+ * @brief Find the least u32 in an array.
+ */
+u32 findMin(u32 arr[], u32 size) {
+    int min = INT_MAX; 
+    for (int i = 0; i < size; i++) {
+        if (arr[i] < min) {
+            min = arr[i];
+        }
+    }
+    return min;
 }

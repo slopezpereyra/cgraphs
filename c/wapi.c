@@ -6,9 +6,6 @@
 #include "api.h"
 #include "utils.h"
 #include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 u32 getEdgeWeight(u32 x, u32 y, Graph *G){
     assert(G->_G_FLAGS & W_FLAG);
