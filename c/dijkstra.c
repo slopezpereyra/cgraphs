@@ -32,9 +32,12 @@ u32 *dijkstra(u32 s, Graph *G){
         for (u32 w = 0; w < n; w++){
             if (visited[w] != 0 || distances[w] == INT_MAX)
                 continue;
-            if (distances[w] < vDistance)
-                    vDistance = distances[w]; v = w;
+            if (distances[w] < vDistance) {
+                vDistance = distances[w];
+                v = w;
+            }
         }
+        visited[v] = 1;
 
         // This only happens if all vertices were visited
         if (vDistance == INT_MAX){
@@ -44,11 +47,12 @@ u32 *dijkstra(u32 s, Graph *G){
         // Traverse neighbours of v and update its distances 
         for (u32 i = 0; i < degree(v, G); i++){
             u32 iNeighbour = neighbour(i, v, G);
+            if (visited[iNeighbour])
+                continue;
             u32 weight = getEdgeWeight(v, iNeighbour, G);
             distances[iNeighbour] = min( distances[iNeighbour], vDistance + weight);
         }
 
-        visited[v] = 1;
-        }
+    }
 
 }
