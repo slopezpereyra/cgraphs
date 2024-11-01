@@ -24,6 +24,15 @@ void testInitGraph() {
     assert(G->n == 5);
     assert(G->m == 3);
     assert(G->Δ == 0);
+    for (u32 i = 0; i < 2*numberOfEdges(G); i++){
+        Edge e = (G -> _edges)[i];
+        assert (e.x == 0 && e.y == 0);
+    }
+    for (u32 i = 0; i < numberOfVertices(G); i++){
+        assert ((G->_firstneighbour)[i] == 0);
+        assert ((G->_colors)[i] == 0);
+        assert ((G->_degrees)[i] == 0);
+    }
     dumpGraph(G);
     printf("testInitGraph passed.\n");
 }
@@ -32,22 +41,15 @@ void testInitGraph() {
  * @brief Tests the edge setting in a graph and verifies correct adjacency for both directed edges.
  */
 void testSetEdge() {
-    Graph *G = initGraph(3, 1);
+    Graph *G = initGraph(3, 2);
     setEdge(G, 0, 1, 2);
     assert(G->_edges[0].x == 1 && G->_edges[0].y == 2);
     assert(G->_edges[G->m].x == 2 && G->_edges[G->m].y == 1);
-    dumpGraph(G);
-    printf("testSetEdge passed.\n");
-}
-
-/**
- * @brief Tests the edge setting in a graph and verifies correct adjacency for both directed edges.
- */
-void testSetExistingEdge() {
-    Graph *G = initGraph(3, 1);
-    setEdge(G, 0, 1, 2);
-    assert(G->_edges[0].x == 1 && G->_edges[0].y == 2);
-    assert(G->_edges[G->m].x == 2 && G->_edges[G->m].y == 1);
+    assert(degree(1, G) == 1);
+    setEdge(G, 0, 1, 3);
+    assert(degree(1, G) == 1);
+    setEdge(G, 1, 1, 2);
+    assert(degree(1, G) == 2);
     dumpGraph(G);
     printf("testSetEdge passed.\n");
 }
@@ -56,25 +58,69 @@ void testSetExistingEdge() {
  * @brief Tests the addition of an edge and verifies if the number of edges and degrees are updated.
  */
 void testAddEdge() {
-    Graph *G = initGraph(3, 1);
+    Graph *G = initGraph(4, 1);
     setEdge(G, 0, 1, 2);
     addEdge(G, 0, 1);
-    assert(G->m == 2);
+    addEdge(G, 0, 2);
+    addEdge(G, 2, 3);
+    assert(G->m == 4);
     assert(isNeighbour(0, 1, G));
+    assert(isNeighbour(1, 2, G));
+    assert(isNeighbour(0, 2, G));
+    assert(isNeighbour(2, 3, G));
+
+    // The added edge should now be the first,
+    // because (0, 1) < (1, 2).
+    Edge e = getEdge(0, G);
+    assert (e.x == 0 && e.y == 1);
+    // Test degrees make sense
+    assert (degree(0, G) == 2);
+    assert (degree(1, G) == 2);
+    assert (degree(2, G) == 3);
+    assert (degree(3, G) == 1);
+    assert (Δ(G) == 3);
     dumpGraph(G);
     printf("testAddEdge passed.\n");
+}
+
+
+/**
+ * @brief Tests the functionality of `edgeIndex` to get correct edge position in the array.
+ */
+void testEdgeIndex() {
+    Graph *G = initGraph(4, 3);
+    setEdge(G, 0, 1, 2);
+    setEdge(G, 1, 0, 2);
+    setEdge(G, 2, 2, 3);
+
+    formatEdges(G);
+
+    printGraph(G);
+    assert(edgeIndex(G, 0, 2) == 0);
+    assert(edgeIndex(G, 1, 2) == 1);
+    assert(edgeIndex(G, 2, 3) == 4);
+
+    dumpGraph(G);
+    printf("testEdgeIndex passed.\n");
 }
 
 /**
  * @brief Tests the removal of an edge and checks if degrees and edges are correctly updated.
  */
 void testRemoveEdge() {
-    Graph *G = initGraph(3, 2);
+    Graph *G = initGraph(4, 4);
     setEdge(G, 0, 1, 2);
-    setEdge(G, 1, 2, 3);
-    removeEdge(G, 1, 2);
-    assert(!isEdge(G, 1, 2));
-    assert(G->m == 1);
+    setEdge(G, 1, 0, 1);
+    setEdge(G, 2, 0, 2);
+    setEdge(G, 3, 2, 3);
+
+    formatEdges(G);
+
+    removeEdge(G, 0, 2);
+
+    assert(!isNeighbour(0, 2, G));
+    assert(G->m == 3);
+
     dumpGraph(G);
     printf("testRemoveEdge passed.\n");
 }
@@ -91,16 +137,6 @@ void testIsNeighbour() {
     printf("testIsNeighbour passed.\n");
 }
 
-/**
- * @brief Tests the functionality of `edgeIndex` to get correct edge position in the array.
- */
-void testEdgeIndex() {
-    Graph *G = initGraph(3, 1);
-    setEdge(G, 0, 1, 2);
-    assert(edgeIndex(G, 1, 2) == 0);
-    dumpGraph(G);
-    printf("testEdgeIndex passed.\n");
-}
 
 /**
  * @brief Tests that the degree values are correctly calculated and stored in the graph.
@@ -147,7 +183,13 @@ void testCompareEdges() {
  */
 void test_readGraph() {
     // Simulate reading from a file (not implemented here as it requires I/O).
-    printf("test_readGraph requires a file; manually verify this function.\n");
+    Graph *G = readGraph("../testGraph.txt");
+    assert(G != NULL);
+    assert(numberOfVertices(G) == 4);
+    assert(numberOfEdges(G) == 3);
+    assert(Δ(G) == 1);
+    bool t = isNeighbour(0, 1, G) && isNeighbour(1, 2, G) && isNeighbour(2, 3, G);
+    assert(t);
 }
 
 /**
