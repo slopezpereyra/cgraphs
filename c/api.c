@@ -186,7 +186,11 @@ u32 edgeIndex(Graph *G, u32 x, u32 y){
  * @param y 
  */
 void addEdge(Graph *G, u32 x, u32 y) {
-    assert(x < y);
+    assert(G != NULL);
+    assert(x != y);
+    if (x > y){
+        swap_u32_pointers(&x, &y);
+    }
     
     (G->m)++;
     G->_edges = (Edge*)realloc(G->_edges, 2*(G->m) * sizeof(Edge));

@@ -1,6 +1,7 @@
 /**
- * @file wapi.c
- * @brief API for weighted graphs.
+ * @file dijkstra.c
+ * @brief An implementation of Dijkstra's algorithm for finding the minimum distance 
+ * from a root vertex `s` to all other vertices in a weighted graph.
  */
 
 #include "api.h"
@@ -13,6 +14,7 @@
 #include <limits.h>
 
 u32 *dijkstra(u32 s, Graph *G){
+    assert(G != NULL);
     assert(G->_G_FLAGS & W_FLAG);
 
     u32 n = numberOfVertices(G);
