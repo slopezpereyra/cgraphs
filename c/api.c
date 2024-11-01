@@ -5,7 +5,6 @@
 
 #include "api.h"
 #include "utils.h"
-
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -61,15 +60,15 @@ bool isNeighbour(u32 x, u32 y, Graph *G){
  *
  */
 int compareEdges(const void* a, const void* b) {
-    Edge *ladoA = (Edge *)a;
-    Edge *ladoB = (Edge *)b;
+    Edge *A = (Edge *)a;
+    Edge *B = (Edge *)b;
 
     // Compare first by x values
-    if (ladoA->x != ladoB->x)
-        return (ladoA->x - ladoB->x);
+    if (A->x != B->x)
+        return (A->x - B->x);
 
     // If x values are equal, compare by y values
-    return (ladoA->y - ladoB->y);
+    return (A->y - B->y);
 }
 
 /**
@@ -486,7 +485,7 @@ void printVertices(Graph *G) {
     assert(G != NULL);
     printf("\nVertices:\n");
     for (u32 i = 0; i < G->n; i++) {
-        printf("Vértice %d: degree %d - Índice en lista de lados %d  - Color: %d\n", i,
+        printf("Vertex %d: degree %d - Index in edge array %d  - Color: %d\n", i,
                (G->_degrees)[i], (G->_firstneighbour)[i], G->_colors[i]);
     };
 }
