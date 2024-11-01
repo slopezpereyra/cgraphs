@@ -131,6 +131,7 @@ void testRemoveEdge() {
 void testIsNeighbour() {
     Graph *G = initGraph(3, 1);
     setEdge(G, 0, 1, 2);
+    formatEdges(G);
     assert(isNeighbour(1, 2, G) == true);
     assert(isNeighbour(0, 2, G) == false);
     dumpGraph(G);

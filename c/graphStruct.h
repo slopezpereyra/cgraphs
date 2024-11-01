@@ -2,6 +2,7 @@
 #define P1_ESTRUCTURAGRAFO24_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef uint32_t u32;
 typedef u32 color;
@@ -21,6 +22,7 @@ typedef struct {
     Edge *_edges;        
     color* _colors;    
     u32* _firstneighbour; 
+    bool _formatted;
 } Graph;
 
 #endif

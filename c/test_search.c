@@ -56,6 +56,7 @@ void testDFS() {
     setEdge(G, 1, 0, 2);
     setEdge(G, 2, 1, 3);
     setEdge(G, 3, 1, 4);
+    formatEdges(G);
     
     Graph *DFSResult = DFS(G, 0); // Run DFS from vertex 0
     assert(DFSResult != NULL);
@@ -100,6 +101,7 @@ void testIsConnected() {
     
     Graph *disconnectedG = initGraph(4, 2);
     setEdge(disconnectedG, 0, 0, 0);
+    formatEdges(disconnectedG);
 
     assert(isConnected(disconnectedG) == false); // Graph is not connected
     

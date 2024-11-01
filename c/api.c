@@ -101,6 +101,7 @@ Graph *initGraph(u32 n, u32 m) {
     G->_degrees = (u32*)calloc(n, sizeof(u32));
     G->_colors = (u32*)calloc(n, sizeof(u32));
     G->_edges = (Edge*)calloc(2 * m, sizeof(Edge));
+    G->_formatted = true;
     return (G);
 }
 
@@ -139,6 +140,11 @@ void setEdge(Graph *G, u32 i, u32 x, u32 y) {
     (G->_degrees)[x]++;
     (G->_degrees)[y]++;
     (G->Δ) = max(max((G->_degrees)[x], (G->_degrees)[y]), G->Δ);
+    G->_formatted = false;
+}
+
+bool isFormatted(Graph *G){
+    return(G->_formatted);
 }
 
 
@@ -149,6 +155,7 @@ void setEdge(Graph *G, u32 i, u32 x, u32 y) {
  * @return `i` if `E := (G -> _edges)[i]` satisfies `E.x == x` and `E.y == y`.
  */
 u32 edgeIndex(Graph *G, u32 x, u32 y){
+    assert(isFormatted(G));
     u32 index = (G -> _firstneighbour)[x];
     for (u32 i = 0; i < degree(x, G); i++){
         if (neighbour(i, x, G) == y){
@@ -202,6 +209,7 @@ void addEdge(Graph *G, u32 x, u32 y) {
  *
  */
 void removeEdge(Graph *G, u32 x, u32 y) {
+    assert(isFormatted(G));
     assert(x != y);
     assert((G -> m) > 1);
 
@@ -325,6 +333,7 @@ void formatEdges(Graph *G){
     for (u32 j = 1; j < (G->n); j++) {
         (G->_firstneighbour)[j] = (G->_firstneighbour[j - 1]) + (G->_degrees)[j - 1];
     };
+    G->_formatted = true;
 }
 
 /**
@@ -438,6 +447,7 @@ void removeColors(Graph *G) {
  */
 u32 neighbour(u32 j, u32 i, Graph *G) {
     assert(G != NULL);
+    assert(isFormatted(G));
 
     if (j >= degree(i, G) || i >= numberOfVertices(G)) {
          printf(
