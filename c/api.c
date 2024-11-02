@@ -4,6 +4,7 @@
  */
 
 #include "api.h"
+#include "wapi.h"
 #include "utils.h"
 #include <assert.h>
 #include <stdio.h>
@@ -29,7 +30,7 @@
  *
  * @return A pointer to the allocated Graph structure.
  */
-Graph *initGraph(u32 n, u32 m, g_flags flags) {
+Graph *initGraph(u32 n, u32 m, g_flag flags) {
     Graph *G = (Graph*)malloc(sizeof(Graph));
     if (G == NULL){
         printf("Error: malloc failed\n");
@@ -42,7 +43,7 @@ Graph *initGraph(u32 n, u32 m, g_flags flags) {
     G->_firstneighbour = (u32*)calloc(n, sizeof(u32));
     G->_degrees = (u32*)calloc(n, sizeof(u32));
     G->_formatted = true;
-    G->_G_FLAGS = flags;
+    G->_g_flag = flags;
 
     G->_colors = (flags & C_FLAG) ? (u32*)calloc(n, sizeof(u32)) : NULL;
     G->_weights = (flags & W_FLAG) ? (u32*)calloc(m, sizeof(Edge)) : NULL;
@@ -274,6 +275,7 @@ static void skipLine(FILE* file) {
 Graph * readGraph(char *filename) {
     u32 n;              
     u32 m;             
+    g_flag FLAG;
     FILE *file = fopen(filename, "r");
     
     if (file == NULL) {
@@ -312,12 +314,11 @@ Graph * readGraph(char *filename) {
     if (strcmp("edge", edge_str) != 0) {
         return NULL;
     }
-
     Graph *G = initGraph(n, m, STD_FLAG);
 
     for (u32 i = 0; i < m; i++) {
         u32 x, y;
-        if (scanf("e %u %u\n", &x, &y) == 2) {
+        if (fscanf(file, "e %u %u\n", &x, &y) == 2) {
             setEdge(G, i, x, y);
         } else {
             return NULL; // Caso de error devuelvo NULL
@@ -440,7 +441,7 @@ Edge getIthEdge(u32 i, Graph *G) {
  */
 u32 getIthWeight(u32 i, Graph *G) {
     assert(G != NULL && i < 2* numberOfEdges(G));
-    assert(G->_G_FLAGS & W_FLAG);
+    assert(G->_g_flag & W_FLAG);
     return ( G->_weights )[i];
 }
 
@@ -509,7 +510,13 @@ void printEdges(Graph *G) {
     assert(G != NULL);
     printf("\nEdges:\n");
     for (u32 i = 0; i < 2 * (G->m); i++) {
-        printf("%d ~ %d\n", G->_edges[i].x, G->_edges[i].y);
+        Edge e = getIthEdge(i, G);
+        if (G->_g_flag & W_FLAG){
+            u32 w = getEdgeWeight(e.x, e.y, G);
+            printf("%d ~ %d  (%d)\n", e.x, e.y, w);
+        }else{
+            printf("%d ~ %d\n", e.x, e.y);
+        }
     };
 }
 

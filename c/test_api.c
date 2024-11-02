@@ -212,11 +212,12 @@ void testCompareEdges() {
  */
 void test_readGraph() {
     // Simulate reading from a file (not implemented here as it requires I/O).
-    Graph *G = readGraph("../testGraph.txt");
+    Graph *G = readGraph("testGraph.txt");
     assert(G != NULL);
+    printGraph(G);
     assert(numberOfVertices(G) == 4);
     assert(numberOfEdges(G) == 3);
-    assert(Δ(G) == 1);
+    assert(Δ(G) == 2);
     bool t = isNeighbour(0, 1, G) && isNeighbour(1, 2, G) && isNeighbour(2, 3, G);
     assert(t);
 }
@@ -237,5 +238,6 @@ int main() {
     testCompareEdges();
     // Note: test_readGraph requires an actual file input for complete verification.
     printf("All tests passed.\n");
+    test_readGraph();
     return 0;
 }
