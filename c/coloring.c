@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "greedy.h"
+#include "coloring.h"
 #include "api.h"
 #include "queue.h"
 #include "utils.h"
@@ -58,6 +58,10 @@ u32* naturalOrder(Graph *G) {
  * @return The number of colors used to color the graph.
  */
 u32 greedy(Graph *G, u32 *Order) {
+    assert(G != NULL);
+    assert(G->_g_flag & C_FLAG);
+
+
     u32* usedColorsDyn = genArray(Δ(G) + 1);
     u32* usedColorsStatic = genArray(Δ(G) + 1);
     u32 colorsUsed = 0;
@@ -105,6 +109,9 @@ u32 greedy(Graph *G, u32 *Order) {
  * @return True if the graph is two-colorable, false otherwise.
  */
 bool twoColorable(Graph *G) {
+    assert(G != NULL);
+    assert(G->_g_flag & C_FLAG);
+
     struct Queue* Q = createQueue();
     enQueue(Q, 0);
     setColor(1, 0, G);
@@ -136,6 +143,9 @@ bool twoColorable(Graph *G) {
  * @return Array of queues, each queue containing vertices of a specific color.
  */
 struct Queue** genColorQueues(Graph *G, u32 nColorsUsed) {
+    assert(G != NULL);
+    assert(G->_g_flag & C_FLAG);
+
     struct Queue** D = (struct Queue**) calloc(nColorsUsed, sizeof(struct Queue**));
     if (D == NULL) {
         printf("Error: calloc failed\n");
@@ -188,6 +198,8 @@ u32* unfoldColorQueues(Graph *G, u32 nColorsUsed, struct Queue** D) {
  * @return Array of vertices ordered by color queue cardinality.
  */
 u32* cardinalityOrder(Graph *G, u32 nColorsUsed) {
+    assert(G != NULL);
+    assert(G->_g_flag & C_FLAG);
     struct Queue** D = genColorQueues(G, nColorsUsed);
     qsort(D, nColorsUsed, sizeof(struct Queue*), compareQueue);
     return unfoldColorQueues(G, nColorsUsed, D);
@@ -200,6 +212,8 @@ u32* cardinalityOrder(Graph *G, u32 nColorsUsed) {
  * @return Array of vertices in reverse order by color queues.
  */
 u32* reverseOrder(Graph *G, u32 nColorsUsed) {
+    assert(G != NULL);
+    assert(G->_g_flag & C_FLAG);
     struct Queue** D = genColorQueues(G, nColorsUsed);
     return unfoldColorQueues(G, nColorsUsed, D);
 }
@@ -215,6 +229,8 @@ u32* reverseOrder(Graph *G, u32 nColorsUsed) {
  * @return Array of vertices ordered by divisibility of colors.
  */
 u32* divisibilityOrder(Graph *G, u32 nColorsUsed) {
+    assert(G != NULL);
+    assert(G->_g_flag & C_FLAG);
     struct Queue** D = genColorQueues(G, nColorsUsed);
     u32 nColorsDivisibleByFour = 0;
     u32 nColorsDivisibleByTwo = 0;
