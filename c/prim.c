@@ -13,37 +13,46 @@
 #include <string.h>
 #include <limits.h>
 
-Graph *prim(Graph *G, u32 startVertex) {
+// helper function
+void addEdgesToHeap(u32 root, Heap *heap, bool* inMST, Graph *G){
+
+  u32 rootIndex = firstNeighbourIndex(G, root);
+
+  for (u32 i = 0; i < degree(root, G); i++) {
+    u32 w = neighbour(i, root, G);
+    insert(heap, rootIndex + i, *getEdge(root, w, G).w);
+  }
+
+}
+
+Graph *prim(Graph *G, u32 s) {
 
   bool *inMST = (bool *)calloc(G->n, sizeof(bool));
   u32 n = numberOfVertices(G);
   Graph *MST = initGraph(n, 0, W_FLAG);
-  inMST[startVertex] = 1;
+  inMST[s] = 1;
+
+  Heap *heap = createHeap(numberOfEdges(G));
+  addEdgesToHeap(s, heap, inMST, G);
+  inMST[s] = 1;
 
   while (numberOfEdges(MST) < n - 1) {
 
-    u32 edgeToAdd[3] = {0, 0, INT_MAX};
+    HeapNode node = extractMin(heap);
+    Edge edgeToAdd = getIthEdge(node.label, G);
 
-    for (u32 v = 0; v < n; v++) {
-      if (!inMST[v] || degree(v, MST) == degree(v, G))
-        continue;
+    u32 newVertex = edgeToAdd.y;
+    if (inMST[newVertex])
+      continue;
 
-      for (u32 j = 0; j < degree(v, G); j++) {
-        u32 iNeighbour = neighbour(j, v, G);
-        if (inMST[iNeighbour])
-          continue;
-        Edge e = getEdge(v, iNeighbour, G);
-        if (*(e.w) < edgeToAdd[2]) {
-          edgeToAdd[0] = v;
-          edgeToAdd[1] = iNeighbour;
-          edgeToAdd[2] = *e.w;
-        }
-      }
-    }
-    addEdge(MST, edgeToAdd[0], edgeToAdd[1], &edgeToAdd[2]);
-    inMST[edgeToAdd[1]] = 1;
+    addEdge(MST, edgeToAdd.x, edgeToAdd.y, edgeToAdd.w);
+    inMST[newVertex] = 1;
+    addEdgesToHeap(newVertex, heap, inMST, G);
+
+
   }
 
   free(inMST);
+  dumpHeap(heap);
   return (MST);
 }
