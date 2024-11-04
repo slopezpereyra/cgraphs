@@ -31,5 +31,6 @@ void writeGraph(Graph *G, char* fname);
 u32 edgeIndex(Graph *G, u32 x, u32 y);
 Edge getEdge(u32 x, u32 y, Graph *G);
 bool isFormatted(Graph *G);
+u32 firstNeighbourIndex(Graph *G, u32 x);
 
 #endif

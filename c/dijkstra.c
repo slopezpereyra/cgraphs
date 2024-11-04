@@ -42,7 +42,6 @@ u32 *dijkstra(u32 s, Graph *G){
 
         // This only happens if all vertices were visited
         if (vDistance == INT_MAX){
-            free(distances);
             free(visited);
             return distances;
         }

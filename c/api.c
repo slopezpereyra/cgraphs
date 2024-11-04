@@ -146,6 +146,10 @@ u32 edgeIndex(Graph *G, u32 x, u32 y){
 
 }
 
+u32 firstNeighbourIndex(Graph *G, u32 x){
+    return(G->_firstneighbour[x]);
+}
+
 /**
  * @brief Add the new edge {x, y} to a Graph.
  *
