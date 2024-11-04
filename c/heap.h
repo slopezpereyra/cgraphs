@@ -21,3 +21,4 @@ void heapify(Heap* heap, u32 i);
 void insert(Heap* heap, u32 label, u32 value);
 HeapNode extractMin(Heap* heap);
 void printHeap(Heap* heap);
+void dumpHeap(Heap *heap);

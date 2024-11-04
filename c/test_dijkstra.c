@@ -8,7 +8,7 @@
 
 void test_denseGraph() {
     Graph *G = readGraph("graphs/dijkstraTest.txt");
-    printf("Passed\n");
+    printGraph(G);
 
     // Run Dijkstra starting from vertex 0
     u32 *distances = dijkstra(0, G);
@@ -18,6 +18,7 @@ void test_denseGraph() {
 
     // Validate the distances
     for (u32 i = 0; i < numberOfVertices(G); i++) {
+        printf("At %d : %d ~~~ %d\n", i, distances[i], expected_distances[i]);
         assert(distances[i] == expected_distances[i]);
     }
 
