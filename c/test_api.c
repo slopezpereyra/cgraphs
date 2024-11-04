@@ -4,18 +4,6 @@
 #include <stdlib.h>
 #include "api.h"
 
-// Test suite for Graph API
-
-/**
- * @brief Tests the creation of a new edge and verifies if the x and y values are correctly assigned.
- */
-void testNewEdge() {
-    Edge *edge = newEdge(1, 2);
-    assert(edge->x == 1);
-    assert(edge->y == 2);
-    free(edge);
-    printf("testNewEdge passed.\n");
-}
 
 /**
  * @brief Tests the initialization of a new graph and checks initial vertex and edge counts.
@@ -32,39 +20,26 @@ void testInitGraph() {
     for (u32 i = 0; i < numberOfVertices(G); i++){
         assert ((G->_firstneighbour)[i] == 0);
         assert (G->_colors == NULL);
-        assert (G->_weights == NULL);
         assert ((G->_degrees)[i] == 0);
     }
+    assert(G->_g_flag == STD_FLAG);
     dumpGraph(G);
+    Graph *T = initGraph(5, 3, W_FLAG);
+    assert(T->_g_flag == W_FLAG);
     printf("testInitGraph passed.\n");
+    dumpGraph(T);
 }
 
-/**
- * @brief Tests the edge setting in a graph and verifies correct adjacency for both directed edges.
- */
-void testSetEdge() {
-    Graph *G = initGraph(3, 2, STD_FLAG);
-    setEdge(G, 0, 1, 2);
-    assert(G->_edges[0].x == 1 && G->_edges[0].y == 2);
-    assert(G->_edges[G->m].x == 2 && G->_edges[G->m].y == 1);
-    assert(degree(1, G) == 1);
-    setEdge(G, 0, 1, 3);
-    assert(degree(1, G) == 1);
-    setEdge(G, 1, 1, 2);
-    assert(degree(1, G) == 2);
-    dumpGraph(G);
-    printf("testSetEdge passed.\n");
-}
 
 /**
  * @brief Tests the addition of an edge and verifies if the number of edges and degrees are updated.
  */
 void testAddEdge() {
     Graph *G = initGraph(4, 1, STD_FLAG);
-    setEdge(G, 0, 1, 2);
-    addEdge(G, 0, 1);
-    addEdge(G, 0, 2);
-    addEdge(G, 2, 3);
+    setEdge(G, 0, 1, 2, NULL);
+    addEdge(G, 0, 1, NULL);
+    addEdge(G, 0, 2, NULL);
+    addEdge(G, 2, 3, NULL);
     assert(G->m == 4);
     assert(isNeighbour(0, 1, G));
     assert(isNeighbour(1, 2, G));
@@ -91,9 +66,9 @@ void testAddEdge() {
  */
 void testEdgeIndex() {
     Graph *G = initGraph(4, 3, STD_FLAG);
-    setEdge(G, 0, 1, 2);
-    setEdge(G, 1, 0, 2);
-    setEdge(G, 2, 2, 3);
+    setEdge(G, 0, 1, 2, NULL);
+    setEdge(G, 1, 0, 2, NULL);
+    setEdge(G, 2, 2, 3, NULL);
 
     formatEdges(G);
 
@@ -111,9 +86,9 @@ void testEdgeIndex() {
  */
 void testGetEdge() {
     Graph *G = initGraph(4, 3, STD_FLAG);
-    setEdge(G, 0, 1, 2);
-    setEdge(G, 1, 0, 2);
-    setEdge(G, 2, 2, 3);
+    setEdge(G, 0, 1, 2, NULL);
+    setEdge(G, 1, 0, 2, NULL);
+    setEdge(G, 2, 2, 3, NULL);
 
     formatEdges(G);
 
@@ -134,10 +109,10 @@ void testGetEdge() {
  */
 void testRemoveEdge() {
     Graph *G = initGraph(4, 4, STD_FLAG);
-    setEdge(G, 0, 1, 2);
-    setEdge(G, 1, 0, 1);
-    setEdge(G, 2, 0, 2);
-    setEdge(G, 3, 2, 3);
+    setEdge(G, 0, 1, 2, NULL);
+    setEdge(G, 1, 0, 1, NULL);
+    setEdge(G, 2, 0, 2, NULL);
+    setEdge(G, 3, 2, 3, NULL);
 
     formatEdges(G);
 
@@ -155,7 +130,7 @@ void testRemoveEdge() {
  */
 void testIsNeighbour() {
     Graph *G = initGraph(3, 1, STD_FLAG);
-    setEdge(G, 0, 1, 2);
+    setEdge(G, 0, 1, 2, NULL);
     formatEdges(G);
     assert(isNeighbour(1, 2, G) == true);
     assert(isNeighbour(0, 2, G) == false);
@@ -169,8 +144,8 @@ void testIsNeighbour() {
  */
 void testDegree() {
     Graph *G = initGraph(3, 2, STD_FLAG);
-    setEdge(G, 0, 0, 1);
-    setEdge(G, 1, 1, 2);
+    setEdge(G, 0, 0, 1, NULL);
+    setEdge(G, 1, 1, 2, NULL);
     formatEdges(G);
     assert(degree(1, G) == 2);
     assert(degree(0, G) == 1);
@@ -184,7 +159,6 @@ void testDegree() {
 void testColors() {
     Graph *G = initGraph(3, 1, C_FLAG);
     assert(G->_colors != NULL);
-    printf("\nHERE\n");
     setColor(2, 0, G);
     assert(getColor(0, G) == 2);
     removeColors(G);
@@ -197,9 +171,9 @@ void testColors() {
  * @brief Tests the edge comparison function to ensure edges are ordered correctly.
  */
 void testCompareEdges() {
-    Edge e1 = {1, 2};
-    Edge e2 = {2, 3};
-    Edge e3 = {1, 3};
+    Edge e1 = {1, 2, NULL};
+    Edge e2 = {2, 3, NULL};
+    Edge e3 = {1, 3, NULL};
     assert(compareEdges(&e1, &e2) < 0);
     assert(compareEdges(&e2, &e1) > 0);
     assert(compareEdges(&e1, &e3) < 0);
@@ -214,21 +188,33 @@ void test_readGraph() {
     // Simulate reading from a file (not implemented here as it requires I/O).
     Graph *G = readGraph("testGraph.txt");
     assert(G != NULL);
-    printGraph(G);
     assert(numberOfVertices(G) == 4);
     assert(numberOfEdges(G) == 3);
     assert(Δ(G) == 2);
+    assert(G->_g_flag == STD_FLAG);
     bool t = isNeighbour(0, 1, G) && isNeighbour(1, 2, G) && isNeighbour(2, 3, G);
     assert(t);
+
+    Graph *W = readGraph("testGraphW.txt");
+    assert(W != NULL);
+    assert(W->_g_flag == W_FLAG);
+    assert(numberOfVertices(W) == 4);
+    assert(numberOfEdges(W) == 3);
+    assert(Δ(W) == 2);
+    bool tw = isNeighbour(0, 1, W) && isNeighbour(1, 2, W) && isNeighbour(2, 3, W);
+    bool tw2 = *(getEdge(0, 1, W).w) == 1 && *(getEdge(1, 2, W).w) == 10 && *(getEdge(2, 3, W).w) == 20;
+    assert(tw);
+    assert(tw2);
+    dumpGraph(W);
+    dumpGraph(G);
 }
 
 /**
  * @brief Main function to run all tests.
  */
 int main() {
-    testNewEdge();
     testInitGraph();
-    testSetEdge();
+    test_readGraph();
     testAddEdge();
     testRemoveEdge();
     testIsNeighbour();
@@ -238,6 +224,5 @@ int main() {
     testCompareEdges();
     // Note: test_readGraph requires an actual file input for complete verification.
     printf("All tests passed.\n");
-    test_readGraph();
     return 0;
 }

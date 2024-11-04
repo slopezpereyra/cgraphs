@@ -1,4 +1,4 @@
 
 #include "api.h"
 
-Graph *prim(u32 s, Graph *G);
+Graph *prim(Graph *G, u32 start);

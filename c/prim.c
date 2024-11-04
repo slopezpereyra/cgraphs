@@ -6,50 +6,44 @@
 
 #include "api.h"
 #include "utils.h"
-#include "wapi.h"
-#include "queue.h"
+#include "heap.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
 
-Graph *prim(u32 s, Graph *G){
-    assert(G != NULL);
-    assert(G->_G_FLAGS & W_FLAG);
+Graph *prim(Graph *G, u32 startVertex) {
 
+  bool *inMST = (bool *)calloc(G->n, sizeof(bool));
+  u32 n = numberOfVertices(G);
+  Graph *MST = initGraph(n, 0, W_FLAG);
+  inMST[startVertex] = 1;
 
-    u32 n = numberOfVertices(G);
-    u32 *visited = genArray(n);
+  while (numberOfEdges(MST) < n - 1) {
 
-    struct Queue* Q = createQueue();
-    enQueue(Q, s);
-    Graph *T = initGraph(n, 0, STD_FLAG);
+    u32 edgeToAdd[3] = {0, 0, INT_MAX};
 
-    u32 nCount = 0;
+    for (u32 v = 0; v < n; v++) {
+      if (!inMST[v] || degree(v, MST) == degree(v, G))
+        continue;
 
-    while (nCount < n-1){
-        nCount++;
-        u32 v = pop(Q);
-        visited[v] = 1;
-      
-        // Find closes neighbour
-        u32 curWeight = INT_MAX;
-        u32 w;
-        printf("\nPivoting at %d with w = %d\n", v, w);
-        for (u32 i = 0; i < degree(v, G); i++){
-            u32 iNeighbour = neighbour(i, v, G);
-            if (visited[iNeighbour] != 0)
-                continue;
-            u32 weight = getEdgeWeight(v, iNeighbour, G);
-            enQueue(Q, iNeighbour);
-            if (weight < curWeight)
-                w = iNeighbour;
+      for (u32 j = 0; j < degree(v, G); j++) {
+        u32 iNeighbour = neighbour(j, v, G);
+        if (inMST[iNeighbour])
+          continue;
+        Edge e = getEdge(v, iNeighbour, G);
+        if (*(e.w) < edgeToAdd[2]) {
+          edgeToAdd[0] = v;
+          edgeToAdd[1] = iNeighbour;
+          edgeToAdd[2] = *e.w;
         }
-        printf("\nSelected neighbour %d\n", w);
-        addEdge(T, v, w);
+      }
     }
+    addEdge(MST, edgeToAdd[0], edgeToAdd[1], &edgeToAdd[2]);
+    inMST[edgeToAdd[1]] = 1;
+  }
 
-    formatEdges(T);
-    return T;
+  free(inMST);
+  return (MST);
 }

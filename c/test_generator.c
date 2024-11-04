@@ -30,6 +30,7 @@ void test_genCompleteGraph() {
         }
     }
     printf("genCompleteGraph passed.\n");
+    dumpGraph(G);
 }
 
 void test_fromPruferSequence() {
@@ -47,6 +48,7 @@ void test_fromPruferSequence() {
     assert(isConnected(T));
 
     printf("fromPruferSequence passed.\n");
+    dumpGraph(T);
 }
 
 void test_genGammas() {
@@ -65,6 +67,7 @@ void test_genGammas() {
     }
     free(gammaLists);
 
+    dumpGraph(G);
     printf("genGammas passed.\n");
 }
 
@@ -87,6 +90,7 @@ void test_genGammaComplements() {
     }
     free(gammaComplements);
 
+    dumpGraph(G);
     printf("genGammaComplements passed.\n");
 }
 
@@ -101,6 +105,7 @@ void test_randomTree() {
     assert(numberOfEdges(T) == n - 1); // A tree has n-1 edges
     assert(isConnected(T));
 
+    dumpGraph(T);
     printf("randomTree passed.\n");
 }
 
@@ -115,6 +120,7 @@ void test_genCGraphUnbound() {
     assert(numberOfEdges(G) >= n - 1); // Graph should have at least n-1 edges to remain connected
     assert(isConnected(G));
 
+    dumpGraph(G);
     printf("genCGraphUnbound passed.\n");
 }
 
@@ -129,6 +135,7 @@ void test_genFromRandomTree() {
     assert(numberOfVertices(G) == n);
     assert(numberOfEdges(G) == m);
     assert(isConnected(G));
+    dumpGraph(G);
 
     printf("genCGraph passed.\n");
 }
@@ -144,6 +151,7 @@ void test_genFromKn() {
     assert(numberOfVertices(G) == n);
     assert(numberOfEdges(G) == m);
     assert(isConnected(G));
+    dumpGraph(G);
 
     printf("genFromKn passed.\n");
 }

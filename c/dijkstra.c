@@ -6,7 +6,6 @@
 
 #include "api.h"
 #include "utils.h"
-#include "wapi.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,7 +14,7 @@
 
 u32 *dijkstra(u32 s, Graph *G){
     assert(G != NULL);
-    assert(G->_G_FLAGS & W_FLAG);
+    assert(G->_g_flag & W_FLAG);
 
     u32 n = numberOfVertices(G);
     u32 *distances = genArray(n);
@@ -43,6 +42,8 @@ u32 *dijkstra(u32 s, Graph *G){
 
         // This only happens if all vertices were visited
         if (vDistance == INT_MAX){
+            free(distances);
+            free(visited);
             return distances;
         }
 
@@ -51,10 +52,12 @@ u32 *dijkstra(u32 s, Graph *G){
             u32 iNeighbour = neighbour(i, v, G);
             if (visited[iNeighbour])
                 continue;
-            u32 weight = getEdgeWeight(v, iNeighbour, G);
+            Edge e = getEdge(v, iNeighbour, G);
+            u32 weight = *( e.w );
             distances[iNeighbour] = min( distances[iNeighbour], vDistance + weight);
         }
 
     }
+
 
 }

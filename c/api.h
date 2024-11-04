@@ -8,12 +8,11 @@
 u32 max(u32 x, u32 y);
 u32 min(u32 x, u32 y);
 void removeEdge(Graph *G, u32 x, u32 y);
-void addEdge(Graph *G, u32 x, u32 y);
+void addEdge(Graph *G, u32 x, u32 y, u32 *w);
 bool isNeighbour(u32 x, u32 y, Graph *G);
 Graph * readGraph(char *filename);
-Graph * initGraph(u32 n, u32 m, g_flags flags);
-Edge * newEdge(u32 x, u32 y);
-void setEdge(Graph *G, u32 i, u32 x, u32 y);
+Graph * initGraph(u32 n, u32 m, g_flag flags);
+void setEdge(Graph *G, u32 i, u32 x, u32 y, u32 *w);
 void formatEdges(Graph *G);
 int compareEdges(const void* a, const void* b);
 void printEdges(Graph *G);
@@ -32,6 +31,5 @@ void writeGraph(Graph *G, char* fname);
 u32 edgeIndex(Graph *G, u32 x, u32 y);
 Edge getEdge(u32 x, u32 y, Graph *G);
 bool isFormatted(Graph *G);
-u32 getIthWeight(u32 i, Graph *G);
 
 #endif

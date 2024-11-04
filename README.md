@@ -23,8 +23,8 @@ algorithms for the generation of random connected graphs.
 
 ## API Overview 
 
-The fundamental structure in this library is the `Graph`. A `struct
-Graph` of $n$ vertices always has vertices $0, \ldots, n-1$.
+The fundamental structure in this library is the `Graph`. A `struct Graph` of
+$n$ vertices always has vertices $0, \ldots, n-1$.
 
 Graph data, such as the degree of a vertex or its neighbours, is accessed in
 constant or almost constant time in most cases. This makes it possible to
@@ -35,13 +35,24 @@ consumption.
 
 A `stuct Graph *` pointer may be initialized or read from a `.txt` file in a 
 special format, which we call the *Penazzi format*. A `.txt` file is in 
-the Penazzi format if its first line is of the form `p n m`, with `n, m`
-natural numbers, and the rest of the lines are of the form `e v w`, where 
+the Penazzi format if it satisfies the following conditions:
+
+- Its first line is of the form `p n m FLAG`, with `n, m`
+natural numbers and `FLAG` one of the follownig strings:
+    - `STD_FLAG` : Specifies that this is a "standard" graph, i.e. unweighted and uncolored.
+    - `W_FLAG` : Specifies that this is a weighted graph.
+    - `C_FLAG`: Specifies that this is a colored graph.
+- The rest of the lines are of the form `e x y` for standard graphs 
+or `e x y w` for weighted graphs. Each `x y` pair is read into an edge,
+with weight `w` if the graph is weighted.
+
+
+and the rest of the lines are of the form `e v w`, where 
 `v, w` are natural numbers. The lines `e v w` define the edges of the 
 graph. For instance,
 
 ```
-p 4 3
+p edge 4 3 STD_FLAG
 e 0 1
 e 1 2 
 e 1 3
@@ -56,6 +67,29 @@ defines the graph
      1
     / \
    2   3
+```
+
+and 
+
+
+```
+p edge 4 3 W_FLAG
+e 0 1 10
+e 1 2 20
+e 1 3 30
+```
+
+specifies
+
+
+```
+        0
+        |
+        | (10)
+        |
+        1
+  (20) / \ (30)
+      2   3
 ```
 
 To read a graph from a `.txt` in Penazzi format, use `readGraph(char *filename)` function.
@@ -77,28 +111,37 @@ instance, to be read by a graph plotting algorithm) using the
 To initialize a graph with `n` vertices, `m` edges, use the function
 
 ```c 
-Graph G* initGraph(n, m)
+Graph G* initGraph(n, m, FLAG) // Set FLAG to STD_FLAG, W_FLAG or C_FLAG, or 
+                               // a combination (e.g. W_FLAG | G_FLAG)
 ```
 
-Upon initialization, all edges in `G` are set to `(0, 0)`. In other words,
-memory is allocated for its edges, but these are not defined. The
+Upon initialization, all edges in `G` are set to `{0, 0}`. Memory is not
+allocated for edge weights nor vertex colors unless the specified by 
+the flag. This allows us to handle all kinds of graphs with the same 
+structure type without using unnecessary memory.
+
+To add an edge, call
 
 ```c
-setEdge(Graph* G, u32 i, u32 x, u32 y)
-``` 
+setEdge(Graph* G, u32 i, u32 x, u32 y, u32 *, NUL, NULL)
+```
 
-function can be used to set the `i`th edge to `(x, y)`. 
 
-After setting the edges of a graph `G`, it is important to call
-`formatEdges(G)`. 
+This function sets the `i`th edge to `(x, y)`, with `w` either `NULL` (if the
+graph is not weighted) or a pointer to a `u32`, if the graph is weighted.
+Passing a non-null `w` pointer to the function with a non-weighted graph is
+undefined behavior and will produce a crash.
+
+**It is fundamental to call** to call `formatEdges(G)` after using `setEdge` to
+create a graph dynamically.
 
 For instance, 
 
 ```c
 Graph *G = initGraph(4, 3, STD_FLAG);
-setEdge(G, 0, 0, 1);
-setEdge(G, 1, 1, 2);
-setEdge(G, 2, 1, 3);
+setEdge(G, 0, 0, 1, NULL);
+setEdge(G, 1, 1, 2, NULL);
+setEdge(G, 2, 1, 3, NULL);
 formatEdges(G);
 ```
 
@@ -115,11 +158,12 @@ also defines the graph
 
 #### Modifying an existing graph
 
-New edges can be added with the `addEdge(Graph *G, u32 x, u32 y)`
-function, and existing edges can be removed with the `void removeEdge(struct
-Graph *G, u32 x, u32 y)` function. Both functions perform the necessary memory
-reallocations and reformat the graph's edges - i.e. call `formatEdges(G)`
-implicitly.
+A graph initialized with `m` edges allocates the exact amount of memory
+required for storing this number of edges. However, new edges can be added with
+the `addEdge(Graph *G, u32 x, u32 y, NULL)` function, and existing edges can be
+removed with the `void removeEdge(struct Graph *G, u32 x, u32 y)` function.
+Both functions perform the necessary memory reallocations and reformat the
+graph's edges - i.e. call `formatEdges(G)` implicitly.
 
 #### Graph and vertex attributes
 

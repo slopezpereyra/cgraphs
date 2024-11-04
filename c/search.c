@@ -33,7 +33,7 @@ Graph *_constructTreeFromArray(u32* insertionArray, u32 insertionArrayLength, u3
         if (insertionArray[i] == 0){
             continue;
         }
-        setEdge(B , edgeIndex, insertionArray[i] - 1, i);
+        setEdge(B , edgeIndex, insertionArray[i] - 1, i, NULL);
         edgeIndex++;
     }
     formatEdges(B );
@@ -210,6 +210,8 @@ bool isConnected(Graph *G){
         }
     }
     dumpQueue(Q);
+
+    free(insertionArray);
 
     return (n == treeVertexCount);
 

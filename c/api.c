@@ -4,7 +4,6 @@
  */
 
 #include "api.h"
-#include "wapi.h"
 #include "utils.h"
 #include <assert.h>
 #include <stdio.h>
@@ -46,35 +45,9 @@ Graph *initGraph(u32 n, u32 m, g_flag flags) {
     G->_g_flag = flags;
 
     G->_colors = (flags & C_FLAG) ? (u32*)calloc(n, sizeof(u32)) : NULL;
-    G->_weights = (flags & W_FLAG) ? (u32*)calloc(m, sizeof(Edge)) : NULL;
     
     return (G);
 }
-
-
-
-
-/**
- * @brief Allocate a new Edge between vertices `x` and `y`. 
- *
- * The values `x` and `y` are abstract, i.e. they do not relate to 
- * any particular graph.
- *
- * @param `u32` x 
- * @param `u32 y  
- * @return A pointer to the allocated Edge.
- */
-Edge * newEdge(u32 x, u32 y){
-    Edge *e = (Edge*) malloc(sizeof(Edge));
-    if (e == NULL){
-        printf("Error: malloc failed\n");
-        exit(1);
-    }
-    e -> x = x;
-    e -> y = y;
-    return(e);
-}
-
 
 /**
  * @brief Test if {x, y} ∈ E(G).
@@ -129,20 +102,19 @@ int compareEdges(const void* a, const void* b) {
  *       once after all these calls for efficiency.
  *
  */
-void setEdge(Graph *G, u32 i, u32 x, u32 y) {
+void setEdge(Graph *G, u32 i, u32 x, u32 y, u32 *w) {
     assert(G != NULL);
     assert(i < numberOfEdges(G));
+    if (w != NULL) {assert(G->_g_flag & W_FLAG);}
 
-    // If the edge was previously set, reduce 
-    if ((G -> _edges)[i].x != 0){
-        u32 old_x = (G -> _edges)[i].x;
-        u32 old_y = (G -> _edges)[i].y;
-        (G->_degrees)[old_x]--;
-        (G->_degrees)[old_y]--;
-        (G->Δ) = max(max((G->_degrees)[old_x], (G->_degrees)[old_y]), G->Δ);
-    }
     (G->_edges)[i].x = x;
     (G->_edges)[i].y = y;
+    if (w != NULL){
+        (G->_edges)[i].w = (u32*)malloc(sizeof(u32));
+        *(G->_edges)[i].w = *w;
+        (G->_edges)[i + G->m].w = (u32*)malloc(sizeof(u32));
+        *(G->_edges)[i + G->m].w = *w;
+    }
     (G->_edges)[i + G->m].x = y;
     (G->_edges)[i + G->m].y = x;
     (G->_degrees)[x]++;
@@ -186,19 +158,24 @@ u32 edgeIndex(Graph *G, u32 x, u32 y){
  * @param x 
  * @param y 
  */
-void addEdge(Graph *G, u32 x, u32 y) {
+void addEdge(Graph *G, u32 x, u32 y, u32 *w) {
     assert(G != NULL);
     assert(x != y);
-    if (x > y){
-        swap_u32_pointers(&x, &y);
-    }
-    
+    if (w != NULL) {assert(G->_g_flag & W_FLAG);}
+
     (G->m)++;
     G->_edges = (Edge*)realloc(G->_edges, 2*(G->m) * sizeof(Edge));
     (G->_edges)[2*( G->m )-2].x = x;
     (G->_edges)[2*( G->m )-2].y = y;
     (G->_edges)[2*( G->m )-1].x = y;
     (G->_edges)[2*( G->m )-1].y = x;
+
+    if (w != NULL){
+        (G->_edges)[2*( G->m )-2].w = (u32*)malloc(sizeof(u32));
+        (G->_edges)[2*( G->m )-1].w = (u32*)malloc(sizeof(u32));
+        *((G->_edges)[2*( G->m )-2].w) = *w; 
+        *((G->_edges)[2*( G->m )-1].w) = *w; 
+    }
    
     (G->_degrees)[x]++;
     (G->_degrees)[y]++;
@@ -301,10 +278,11 @@ Graph * readGraph(char *filename) {
     // Asignamos 6: 4 char para edge, 1 para \0
     // y 1 para chequear si esta mal la linea.
     char edge_str[6];
+    char flag_str[10];
     int matched_format; // Por el ret de fscanf
 
     // Lectura del FILE hasta p edge
-    matched_format = fscanf(file, "%s %u %u", edge_str, &n, &m);
+    matched_format = fscanf(file, "%s %u %u %s", edge_str, &n, &m, flag_str);
 
     if (matched_format < 3) {
         printf("ERROR: No hay match.\n"); // NOTE printConsole
@@ -314,18 +292,37 @@ Graph * readGraph(char *filename) {
     if (strcmp("edge", edge_str) != 0) {
         return NULL;
     }
-    Graph *G = initGraph(n, m, STD_FLAG);
+
+    if (strcmp(flag_str, "W_FLAG") == 0) {
+        FLAG = W_FLAG;
+    } else if (strcmp(flag_str, "C_FLAG") == 0) {
+        FLAG = C_FLAG;
+    } else if (strcmp(flag_str, "STD_FLAG") == 0) {
+        FLAG = STD_FLAG;
+    } else {
+        printf("ERROR: Unknown flag '%s'.\n", flag_str);
+        return NULL;
+    }
+
+    Graph *G = initGraph(n, m, FLAG);
 
     for (u32 i = 0; i < m; i++) {
-        u32 x, y;
-        if (fscanf(file, "e %u %u\n", &x, &y) == 2) {
-            setEdge(G, i, x, y);
-        } else {
-            return NULL; // Caso de error devuelvo NULL
+        u32 x, y, w;
+        if (FLAG & W_FLAG){
+            if (fscanf(file, "e %u %u %d\n", &x, &y, &w) == 3)
+                setEdge(G, i, x, y, &w);
+            else
+                return NULL;
+        }else{
+            if (fscanf(file, "e %u %u\n", &x, &y) == 2)
+                setEdge(G, i, x, y, NULL);
+            else 
+                return NULL;
         }
     };
 
     formatEdges(G);
+    fclose(file);
 
     return G;
 }
@@ -355,6 +352,13 @@ void formatEdges(Graph *G){
  */
 void dumpGraph(Graph *G) {
     if (G != NULL) {
+        if (G->_g_flag & W_FLAG)
+        {
+            for (u32 i = 0; i < 2*G->m; i++){
+                free(G->_edges[i].w);
+            }
+
+        }
         free(G->_edges);
         free(G->_degrees);
         free(G->_firstneighbour);
@@ -362,9 +366,6 @@ void dumpGraph(Graph *G) {
         {
             free(G->_colors);
 
-        }
-        if (G->_weights != NULL){
-            free(G->_weights);
         }
         free(G);
     }
@@ -435,15 +436,6 @@ Edge getIthEdge(u32 i, Graph *G) {
 }
 
 
-/**
- * @brief Return the `i`th edge of the graph.
- *
- */
-u32 getIthWeight(u32 i, Graph *G) {
-    assert(G != NULL && i < 2* numberOfEdges(G));
-    assert(G->_g_flag & W_FLAG);
-    return ( G->_weights )[i];
-}
 
 /**
  * @brief Return the Edge {x, y}
@@ -512,8 +504,7 @@ void printEdges(Graph *G) {
     for (u32 i = 0; i < 2 * (G->m); i++) {
         Edge e = getIthEdge(i, G);
         if (G->_g_flag & W_FLAG){
-            u32 w = getEdgeWeight(e.x, e.y, G);
-            printf("%d ~ %d  (%d)\n", e.x, e.y, w);
+            printf("%d ~ %d  (%d)\n", e.x, e.y, *e.w);
         }else{
             printf("%d ~ %d\n", e.x, e.y);
         }

@@ -1,7 +1,7 @@
 # Compiler and flags
 CC=gcc
 CFLAGS = -Wall -Wextra -O3 -std=c99 -g
-OBJS_P1 = api.o wapi.o greedy.o queue.o search.o generator.o utils.o dijkstra.o prim.o
+OBJS_P1 = api.o greedy.o queue.o heap.o search.o generator.o utils.o dijkstra.o prim.o
 
 VALGRIND_FLAGS = --leak-check=full --show-reachable=yes
 VALGRIND_CMD = $(if $(VALGRIND),valgrind $(VALGRIND_FLAGS),)
@@ -40,12 +40,12 @@ main.o: c/main.c
 	$(CC) $(CFLAGS) -c c/main.c
 api.o: c/api.c c/api.h c/graphStruct.h
 	$(CC) $(CFLAGS) -c c/api.c
-wapi.o: c/wapi.c c/wapi.h c/graphStruct.h
-	$(CC) $(CFLAGS) -c c/wapi.c
 greedy.o: c/greedy.c c/api.h c/graphStruct.h c/greedy.h
 	$(CC) $(CFLAGS) -c c/greedy.c
 queue.o: c/queue.c c/queue.h
 	$(CC) $(CFLAGS) -c c/queue.c
+heap.o: c/heap.c c/heap.h
+	$(CC) $(CFLAGS) -c c/heap.c
 search.o: c/search.c c/api.h c/search.h
 	$(CC) $(CFLAGS) -c c/search.c
 generator.o: c/generator.c c/api.h c/generator.h
