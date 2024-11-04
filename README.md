@@ -14,6 +14,9 @@ algorithms for the generation of random connected graphs.
     - [Initializing a graph](#initializing-a-graph)
     - [Modifying an existing graph](#modifying-an-existing-graph)
     - [Graph and vertex attributes](#graph-and-vertex-attributes)
+- [Weighted graphs](#weighted-graphs)
+    - [Dijkstra's algorithm](#dijkstras-algorithm)
+    - [Prim's algorithm](#dijkstras-algorithm)
 - [Random graph generation](#random-graph-generation)
     - [Bottom-up approach](#bottom-up-approach)
     - [Top-down approach](#top-down-approach)
@@ -47,9 +50,7 @@ or `e x y w` for weighted graphs. Each `x y` pair is read into an edge,
 with weight `w` if the graph is weighted.
 
 
-and the rest of the lines are of the form `e v w`, where 
-`v, w` are natural numbers. The lines `e v w` define the edges of the 
-graph. For instance,
+For instance,
 
 ```
 p edge 4 3 STD_FLAG
@@ -92,19 +93,11 @@ specifies
       2   3
 ```
 
-To read a graph from a `.txt` in Penazzi format, use `readGraph(char *filename)` function.
-For instance, 
-
-```c
-Graph *myGraph = readGraph("my_graph_in_penazzi_format.txt");
-```
-
-will properly read the graph specified in the `.txt` file into the structure of
-our C library.
+To read a graph from a `.txt` in Penazzi format, use `readGraph(char *filename)` function, which returns a pointer to a `Graph`.
 
 A `Graph G*` can be written in a `.txt` file in Penazzi format (for
 instance, to be read by a graph plotting algorithm) using the
-`writeGraph(Graph G*, char* fname)` function.
+`writeGraph(Graph *G, char *fname)` function.
 
 #### Initializing a graph
 
@@ -116,24 +109,24 @@ Graph G* initGraph(n, m, FLAG) // Set FLAG to STD_FLAG, W_FLAG or C_FLAG, or
 ```
 
 Upon initialization, all edges in `G` are set to `{0, 0}`. Memory is not
-allocated for edge weights nor vertex colors unless the specified by 
-the flag. This allows us to handle all kinds of graphs with the same 
-structure type without using unnecessary memory.
+allocated for edge weights nor vertex colors if the weighted/colored flags are
+not used. This allows all kinds of graphs to share a common API without using
+unnecessary memory.
 
-To add an edge, call
+To add an edge, the function
 
 ```c
-setEdge(Graph* G, u32 i, u32 x, u32 y, u32 *, NUL, NULL)
+void setEdge(Graph* G, u32 i, u32 x, u32 y, u32 * w)
 ```
 
 
 This function sets the `i`th edge to `(x, y)`, with `w` either `NULL` (if the
 graph is not weighted) or a pointer to a `u32`, if the graph is weighted.
-Passing a non-null `w` pointer to the function with a non-weighted graph is
+Passing a non-null `w` pointer to the function with a non-weighted graph `G` is
 undefined behavior and will produce a crash.
 
-**It is fundamental to call** to call `formatEdges(G)` after using `setEdge` to
-create a graph dynamically.
+**It is fundamental to call** to call `formatEdges(G)` after dynamically
+creating a graph with calls to the `setEdge` function.
 
 For instance, 
 
@@ -160,17 +153,30 @@ also defines the graph
 
 A graph initialized with `m` edges allocates the exact amount of memory
 required for storing this number of edges. However, new edges can be added with
-the `addEdge(Graph *G, u32 x, u32 y, NULL)` function, and existing edges can be
-removed with the `void removeEdge(struct Graph *G, u32 x, u32 y)` function.
-Both functions perform the necessary memory reallocations and reformat the
-graph's edges - i.e. call `formatEdges(G)` implicitly.
+the function
+
+```c
+void addEdge(Graph *G, u32 x, u32 y, NULL)
+```
+
+Existing edges can be
+removed with the void 
+
+```c 
+void removeEdge(struct Graph *G, u32 x, u32 y) 
+```
+
+
+function. Both functions perform the necessary memory reallocations and update
+the graph attributes (e.g. $\Delta(G)$, $d(x)$, $d(y)$). They also  call
+`formatEdges(G)` implicitly, so there is no need for an implicit call to this
+function afterwards.
 
 #### Graph and vertex attributes
 
 The number of edges or vertices in a graph can be found with the
-`numberOfVertices(Graph *G)` or `numberOfEdges(Graph *G)`
-functions. The same is true of the $\Delta(G)$, which can be obtained (in
-constant time) with `Δ(Graph *G)`.
+`numberOfVertices(Graph *G)` or `numberOfEdges(Graph *G)` functions. The same
+is true of the $\Delta(G)$, obtained with `Δ(Graph *G)`.
 
 Since edges in a graph are formatted and ordered, we can find the `j`th
 neighbour of vertex `i` with the `neighbour(u32 j, u32 i, Graph G*)`
@@ -178,14 +184,45 @@ function. For instance, in the graph generated above, the `j=0` (first)
 neighbour of vertex `1` is `2`, and the `j=1` neighbour of vertex `1` is `3`.
 
 
-The `bool isNeighbour(u32 x, u32 y, Graph *G)` returns `true` if `(x, y)` 
-is an edge, and false otherwise.
+The `bool isNeighbour(u32 x, u32 y, Graph *G)` returns `true` if $\{x, y\} \in
+E(G)$ and `false` otherwise.
 
 The degree of vertex `i` can be found with `degree(u32 i, Graph G*)`,
 and its color can be obtained or set with the `getColor(u32 i, Graph
 G*)` or `setColor(color x, u32 i, Graph *G)` functions. The `color` type
 is a mask over `u32`. If a graph has not been colored, the color of all
 vertices is set to zero.
+
+## Weighted graphs 
+
+#### Dijkstra's algorithm
+
+The library provides an implementation of Dijkstra's algorithm to find the
+shortest distance, from a starting vertex $s$, to all vertices $v \in V(G)$.  
+The function 
+
+```c 
+u32 *dijkstra(u32 s, Graph *G){
+```
+
+returns an array $D$ of `u32` integers s.t. $D[i]$ is the minimum distance 
+from $s$ to $i$ in $G$.
+
+#### Prim's algorithm
+
+The library provides an implementation of Prim's algorithm to find a 
+minimum spanning tree (MST) of a weighted graph $G$. A minimum spanning 
+tree $T$ of $G$ is a spanning tree $T \subseteq G$ that minimizes the 
+sum of the edge weights.
+
+The function 
+
+```c
+Graph *prim(Graph *G, u32 startVertex) {
+```
+
+returns a pointer to a `Graph`, and the `Graph` pointed to is the found MST of
+`G`.
 
 
 ## Random graph generation 
