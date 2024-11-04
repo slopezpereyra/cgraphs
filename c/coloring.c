@@ -1,5 +1,5 @@
 /**
- * @file coloring.c
+ * @file greedy.c
  * @brief Graph coloring and order generation functions.
  */
 
@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "coloring.h"
+#include "greedy.h"
 #include "api.h"
 #include "queue.h"
 #include "utils.h"
