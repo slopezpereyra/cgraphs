@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "greedyflow.h"
 
 
 // Network search 
@@ -28,6 +28,8 @@
  * @param[in] target Vertex being searched for.
  * @return `true` if the target vertex is found, `false` otherwise.
  */
+
+
 u32 *flowBFS(Graph *G, u32 s, u32 target){
     assert(s != target);
     assert(G->_g_flag == F_FLAG);
@@ -72,20 +74,92 @@ u32 *flowBFS(Graph *G, u32 s, u32 target){
 }
 
 
-void greedyFlow(Graph *N, u32 s, u32 t){
+/**
+ * @brief Recursive helper function for Depth-First Search (DFS) in network flows.
+ *
+ * Traverses a graph recursively from a starting vertex `v` until 
+ * vertex `t` is found. Updates the insertion array `track` accordingly.
+ * Sets `flag` to true upon finding, which interrupts the recursion.
+ *
+ * @param[in] v Current vertex in the traversal.
+ * @param[out] track Array tracking the parent of each vertex.
+ * @param[in] root Initial root vertex of the DFS traversal.
+ * @param[in] t Target vertex.
+ * @param[in] flag Flag which keeps recursion going or stops it.
+ * @param[in] G Pointer to the graph being traversed.
+ * @return Number of vertices in the DFS tree.
+ */
+void flowDFSRecursive(u32 v, u32* track, u32 root, u32 t, bool *flag, Graph *G){
+    assert(G->_g_flag == F_FLAG);
+    for (u32 i = 0; i < degree(v, G); i++){
+        if (*flag)
+            return;
+        u32 iNeighbour = neighbour(i, v, G);
+        if (getRemainingCapacity(v, iNeighbour, G) == 0)
+            continue;
+        if (track[iNeighbour] != -1){
+            continue;
+        }
+        track[iNeighbour] = v;
+        if (iNeighbour == t){
+            *flag = true;
+            return;
+        }
+        flowDFSRecursive(iNeighbour, track, iNeighbour, t, flag, G);
+    }
+}
 
+/**
+ * @brief Builds an insertion array from the DFS search of vertex `target`,
+ * starting from vertex `s`.
+ *
+ *
+ * @param[in] G Pointer to the original graph.
+ * @param[in] s Starting vertex for the DFS traversal.
+ * @param[in] target Vertex looked for: recursion stops when this is found.
+ * @return A pointer to the Graph structure representing the DFS tree.
+ */
+u32 *flowDFS(Graph *G, u32 s, u32 target){
+    assert(G->_g_flag == F_FLAG);
 
-    while (true){
+    bool *flag = (bool *)malloc(sizeof(bool));
+    *flag = false;
+    u32 n = numberOfVertices(G);
+    u32 *insertionArray = genArray(n);
+    for (u32 i = 0; i < n; i++)
+        insertionArray[i] = -1;
+    insertionArray[s] = 0;
+    flowDFSRecursive(s, insertionArray, s, target, flag, G);
+    if (insertionArray[target] == -1)
+        return NULL;
+    return(insertionArray);
 
-        u32 *edgesInPath = flowBFS(N, s, t);
-        if ( edgesInPath == NULL  )
+}
+
+// Function pointer type for the search functions
+
+// Modify `greedyFlow` to accept a `SearchFunction` parameter
+void greedyFlow(Graph *N, u32 s, u32 t, SearchFunction searchFunc) {
+    assert(N != NULL);
+    assert(N->_g_flag == F_FLAG);
+
+    while (true) {
+        // Use the search function pointer to decide between BFS or DFS
+        u32 *edgesInPath = searchFunc(N, s, t);
+        if (edgesInPath == NULL)
             break;
 
+        for (u32 i = 0; i < numberOfVertices(N); i++){
+            printf("InsArray[%d] = %d\n", i, edgesInPath[i]);
+        }
+        printf("\n********************************\n");
+
         u32 v = t;
-        u32 w;
         u32 flowToSend = INT_MAX;
-        u32 remainingCapacity;
-        while (v != s){
+        u32 w, remainingCapacity;
+        
+        // Traverse the insertion array to find the maximum flow
+        while (v != s) {
             w = edgesInPath[v];
             Edge e = getEdge(v, w, N);
             remainingCapacity = *e.c - *e.w;
@@ -93,17 +167,16 @@ void greedyFlow(Graph *N, u32 s, u32 t){
                flowToSend = remainingCapacity;
             v = w;
         }
+        // Traverse the insertion array again to update the flow
         v = t;
-        while (v != s){
+        printf("\nSending %d\n", flowToSend);
+        while (v != s) {
             w = edgesInPath[v];
             Edge e = getEdge(v, w, N);
             increaseEdgeWeight(e.x, e.y, flowToSend, N);
             v = w;
         }
-
-
     }
-
 }
 
 

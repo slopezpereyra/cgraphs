@@ -109,6 +109,23 @@ void testIsConnected() {
     printf("testIsConnected passed.\n");
 }
 
+
+void testDFSSearch() {
+    Graph *G = readGraph("graphs/simpleNetwork.txt");
+
+    printGraph(G);
+
+    u32 *insArray = DFSSearch(G, 0, 5);
+
+    for (u32 i = 0; i < numberOfVertices(G); i++){
+        printf("InsArray[%d] = [%d]\n", i, insArray[i]);
+    }
+
+    
+    dumpGraph(G);
+    printf("testBFSSearch passed.\n");
+}
+
 // Main function to run all test cases
 int main() {
     testConstructTreeFromInsertionArray();
@@ -116,6 +133,7 @@ int main() {
     testDFS();
     testBFSSearch();
     testIsConnected();
+    testDFSSearch();
     
     printf("All tests passed successfully.\n");
     return 0;

@@ -222,4 +222,60 @@ bool isConnected(Graph *G){
 
 }
 
+/**
+ * @brief Recursive helper function for Depth-First Search (DFS).
+ *
+ * Traverses a graph recursively from a starting vertex `v` until 
+ * vertex `t` is found. Updates the insertion array `track` accordingly.
+ * Sets `flag` to true upon finding, which interrupts the recursion.
+ *
+ * @param[in] v Current vertex in the traversal.
+ * @param[out] track Array tracking the parent of each vertex.
+ * @param[in] root Initial root vertex of the DFS traversal.
+ * @param[in] t Target vertex.
+ * @param[in] flag Flag which keeps recursion going or stops it.
+ * @param[in] G Pointer to the graph being traversed.
+ * @return Number of vertices in the DFS tree.
+ */
+void DFSSearchRecursive(u32 v, u32* track, u32 root, u32 t, bool *flag, Graph *G){
+    for (u32 i = 0; i < degree(v, G); i++){
+        if (*flag)
+            return;
+        u32 iNeighbour = neighbour(i, v, G);
+        if (track[iNeighbour] != -1){
+            continue;
+        }
+        track[iNeighbour] = v;
+        if (iNeighbour == t){
+            *flag = true;
+            return;
+        }
+        DFSSearchRecursive(iNeighbour, track, iNeighbour, t, flag, G);
+    }
+}
+
+/**
+ * @brief Builds an insertion array from the DFS search of vertex `target`,
+ * starting from vertex `s`.
+ *
+ *
+ * @param[in] G Pointer to the original graph.
+ * @param[in] s Starting vertex for the DFS traversal.
+ * @param[in] target Vertex looked for: recursion stops when this is found.
+ * @return A pointer to the Graph structure representing the DFS tree.
+ */
+u32 *DFSSearch(Graph *G, u32 s, u32 target){
+
+    bool *flag = (bool *)malloc(sizeof(bool));
+    *flag = false;
+    u32 n = numberOfVertices(G);
+    u32 *insertionArray = genArray(n);
+    for (u32 i = 0; i < n; i++)
+        insertionArray[i] = -1;
+    insertionArray[s] = 0;
+    DFSSearchRecursive(s, insertionArray, s, target, flag, G);
+    return(insertionArray);
+
+}
+
 

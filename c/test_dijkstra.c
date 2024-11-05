@@ -17,7 +17,6 @@ void test_denseGraph() {
 
     // Validate the distances
     for (u32 i = 0; i < numberOfVertices(G); i++) {
-        printf("At %d : %d ~~~ %d\n", i, distances[i], expected_distances[i]);
         assert(distances[i] == expected_distances[i]);
     }
 

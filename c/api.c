@@ -307,7 +307,6 @@ Graph * readGraph(char *filename) {
     }
 
     Graph *G = initGraph(n, m, FLAG);
-    printf("Initialized\n");
 
     for (u32 i = 0; i < m; i++) {
         u32 x, y, w, c;
