@@ -504,11 +504,12 @@ void printEdges(Graph *G) {
     printf("\nEdges:\n");
     for (u32 i = 0; i < 2 * (G->m); i++) {
         Edge e = getIthEdge(i, G);
-        if (G->_g_flag & W_FLAG){
+        if (G -> _g_flag == F_FLAG) 
+            printf("%d ~ %d  (%d)  [%d]\n", e.x, e.y, *e.w, *e.c);
+        else if (G->_g_flag & W_FLAG)
             printf("%d ~ %d  (%d)\n", e.x, e.y, *e.w);
-        }else{
+        else
             printf("%d ~ %d\n", e.x, e.y);
-        }
     };
 }
 

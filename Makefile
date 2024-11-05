@@ -15,12 +15,15 @@ final: main.o $(OBJS_P1)
 
 
 # Compile and run the tests in test_generator.c
-test_graphs: test_utils.o test_generator.o test_search.o test_api.o test_dijkstra.o test_prim.o $(OBJS_P1)
+test_graphs: test_utils.o test_generator.o test_search.o test_api.o test_dijkstra.o test_prim.o test_network.o $(OBJS_P1)
 	$(CC) $(CFLAGS) -o test_graphs test_utils.o $(OBJS_P1)
 	@echo "\nRunning utilities tests..."
 	$(VALGRIND_CMD) ./test_graphs
 	$(CC) $(CFLAGS) -o test_graphs test_api.o $(OBJS_P1)
 	@echo "\nRunning API tests..."
+	$(VALGRIND_CMD) ./test_graphs
+	$(CC) $(CFLAGS) -o test_graphs test_network.o $(OBJS_P1)
+	@echo "\nRunning API tests for flow networks..."
 	$(VALGRIND_CMD) ./test_graphs
 	$(CC) $(CFLAGS) -o test_graphs test_search.o $(OBJS_P1)
 	@echo "\nRunning tests for search functions..."
@@ -64,6 +67,8 @@ test_api.o:
 	$(CC) $(CFLAGS) -c c/test_api.c
 test_utils.o: 
 	$(CC) $(CFLAGS) -c c/test_utils.c
+test_network.o: 
+	$(CC) $(CFLAGS) -c c/test_network.c
 test_dijkstra.o: 
 	$(CC) $(CFLAGS) -c c/test_dijkstra.c
 test_prim.o: 
