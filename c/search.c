@@ -33,7 +33,7 @@ Graph *_constructTreeFromArray(u32* insertionArray, u32 insertionArrayLength, u3
         if (insertionArray[i] == 0){
             continue;
         }
-        setEdge(B , edgeIndex, insertionArray[i] - 1, i, NULL);
+        setEdge(B , edgeIndex, insertionArray[i] - 1, i, NULL, NULL);
         edgeIndex++;
     }
     formatEdges(B );

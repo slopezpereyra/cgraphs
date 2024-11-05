@@ -5,9 +5,10 @@
 #include <stdbool.h>
 
 typedef unsigned int g_flag;
-#define C_FLAG (1 << 0)
-#define W_FLAG (1 << 1)
-#define STD_FLAG (0)
+#define C_FLAG (1 << 0) // 01
+#define W_FLAG (1 << 1) // 10 
+#define F_FLAG (W_FLAG | (1 << 2)) // 100
+#define STD_FLAG (0)    // 00
 
 typedef uint32_t u32;
 typedef u32 color;
@@ -15,7 +16,8 @@ typedef u32 color;
 typedef struct {
     u32 x; 
     u32 y; 
-    u32 *w;
+    u32 *w; // weight, or distance, or flow in case of flow networks
+    u32 *c; //  capacity, a limit for the weight/flow
 } Edge;
 
 

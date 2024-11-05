@@ -4,30 +4,27 @@
 #include <stdlib.h>
 #include "api.h"
 
-
 /**
  * @brief Tests the initialization of a new graph and checks initial vertex and edge counts.
  */
 void testInitGraph() {
-    Graph *G = initGraph(5, 3, STD_FLAG);
+    Graph *G = initGraph(5, 3, F_FLAG);
     assert(G->n == 5);
     assert(G->m == 3);
     assert(G->Δ == 0);
+    assert(G->_g_flag & W_FLAG);
+    assert(G->_g_flag & F_FLAG);
+    assert(!( G->_g_flag & C_FLAG ));
     for (u32 i = 0; i < 2*numberOfEdges(G); i++){
         Edge e = (G -> _edges)[i];
-        assert (e.x == 0 && e.y == 0);
+        assert (e.x == 0 && e.y == 0 && e.w != NULL && e.c != NULL);
     }
     for (u32 i = 0; i < numberOfVertices(G); i++){
         assert ((G->_firstneighbour)[i] == 0);
         assert (G->_colors == NULL);
         assert ((G->_degrees)[i] == 0);
     }
-    assert(G->_g_flag == STD_FLAG);
     dumpGraph(G);
-    Graph *T = initGraph(5, 3, W_FLAG);
-    assert(T->_g_flag == W_FLAG);
-    printf("testInitGraph passed.\n");
-    dumpGraph(T);
 }
 
 
@@ -35,7 +32,7 @@ void testInitGraph() {
  * @brief Tests the addition of an edge and verifies if the number of edges and degrees are updated.
  */
 void testAddEdge() {
-    Graph *G = initGraph(4, 1, STD_FLAG);
+    Graph *G = initGraph(4, 1, W_FLAG);
     setEdge(G, 0, 1, 2, NULL, NULL);
     addEdge(G, 0, 1, NULL, NULL);
     addEdge(G, 0, 2, NULL, NULL);
@@ -208,7 +205,6 @@ void test_readGraph() {
     dumpGraph(W);
     dumpGraph(G);
 }
-
 
 
 /**

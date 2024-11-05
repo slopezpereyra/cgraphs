@@ -45,7 +45,7 @@ Graph *prim(Graph *G, u32 s) {
     if (inMST[newVertex])
       continue;
 
-    addEdge(MST, edgeToAdd.x, edgeToAdd.y, edgeToAdd.w);
+    addEdge(MST, edgeToAdd.x, edgeToAdd.y, edgeToAdd.w, NULL);
     inMST[newVertex] = 1;
     addEdgesToHeap(newVertex, heap, inMST, G);
 

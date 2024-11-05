@@ -21,7 +21,7 @@ Graph *genCompleteGraph(u32 n) {
     u32 edgeIndex = 0;
     for (u32 i = 0; i < n; i++) {
         for (u32 j = 1+i; j < n; j++) {
-            setEdge(G, edgeIndex, i, j, NULL);
+            setEdge(G, edgeIndex, i, j, NULL, NULL);
             edgeIndex++;
         }
     }
@@ -54,7 +54,7 @@ Graph *fromPruferSequence(u32* seq, u32 seq_len) {
         u32 v = seq[i];
         for (u32 j = 0; i < n; j++) {
             if (degrees[j] == 1) {
-                addEdge(T, min(v, j), max(v, j), NULL);
+                addEdge(T, min(v, j), max(v, j), NULL, NULL);
                 degrees[v]--;
                 degrees[j]--;
                 break;
@@ -74,7 +74,7 @@ Graph *fromPruferSequence(u32* seq, u32 seq_len) {
         }
     }
 
-    addEdge(T, min(u, v), max(u, v), NULL);
+    addEdge(T, min(u, v), max(u, v), NULL, NULL);
     free(degrees);
     return T;
 }
@@ -184,7 +184,7 @@ Graph *genCGraphUnbound(u32 n) {
         u32 w = S[v][i];
         removeElement(&( S[v] ), &( nCandidates[v] ), i);
         removeTargetElement(S[w], &( nCandidates[w] ), v);
-        addEdge(T, min(v, w), max(v, w), NULL);
+        addEdge(T, min(v, w), max(v, w), NULL, NULL);
     }
     free(nCandidates);
     for (u32 i = 0; i < numberOfVertices(T); i++) {
@@ -226,7 +226,7 @@ Graph *genFromRandomTree(u32 n, u32 m) {
         u32 w = S[v][i];
         removeElement(&( S[v] ), &( nCandidates[v] ), i);
         removeTargetElement(S[w], &( nCandidates[w] ), v);
-        addEdge(T, min(v, w), max(v, w), NULL);
+        addEdge(T, min(v, w), max(v, w), NULL, NULL);
     }
     free(nCandidates);
     for (u32 i = 0; i < numberOfVertices(T); i++) {

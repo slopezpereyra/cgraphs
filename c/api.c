@@ -12,23 +12,6 @@
 
 
 
-/**
- * @brief Allocates and initializes a Graph structure with `n` vertices
- * and `m` edges.
- *
- * The `m` edges are allocated with `calloc` and thus their `{x, y}` values
- * are set to zero. Informally, this means that, after initializing G,
- * E(G) = {{0, 0}, {0, 0}, ..., {0, 0}} - were we take the liberty of speaking
- * of a set with repeated elements.
- * 
- * The color, first neighbor and degree of all vertices is of course also set to
- * zero.
- *
- * Importantly, the callocated `_edges` array contains 2m structs edges, because
- * for each edge {x, y} in the graph we also store an edge {y, x}.
- *
- * @return A pointer to the allocated Graph structure.
- */
 Graph *initGraph(u32 n, u32 m, g_flag flags) {
     Graph *G = (Graph*)malloc(sizeof(Graph));
     if (G == NULL){
@@ -102,10 +85,11 @@ int compareEdges(const void* a, const void* b) {
  *       once after all these calls for efficiency.
  *
  */
-void setEdge(Graph *G, u32 i, u32 x, u32 y, u32 *w) {
+void setEdge(Graph *G, u32 i, u32 x, u32 y, u32 *w, u32 *c) {
     assert(G != NULL);
     assert(i < numberOfEdges(G));
     if (w != NULL) {assert(G->_g_flag & W_FLAG);}
+    if (c != NULL) {assert(G->_g_flag & F_FLAG);}
 
     (G->_edges)[i].x = x;
     (G->_edges)[i].y = y;
@@ -114,6 +98,12 @@ void setEdge(Graph *G, u32 i, u32 x, u32 y, u32 *w) {
         *(G->_edges)[i].w = *w;
         (G->_edges)[i + G->m].w = (u32*)malloc(sizeof(u32));
         *(G->_edges)[i + G->m].w = *w;
+    }
+    if (c != NULL){
+        (G->_edges)[i].c = (u32*)malloc(sizeof(u32));
+        *(G->_edges)[i].c = *c;
+        (G->_edges)[i + G->m].c = (u32*)malloc(sizeof(u32));
+        *(G->_edges)[i + G->m].c = *c;
     }
     (G->_edges)[i + G->m].x = y;
     (G->_edges)[i + G->m].y = x;
@@ -162,10 +152,11 @@ u32 firstNeighbourIndex(Graph *G, u32 x){
  * @param x 
  * @param y 
  */
-void addEdge(Graph *G, u32 x, u32 y, u32 *w) {
+void addEdge(Graph *G, u32 x, u32 y, u32 *w, u32 *c) {
     assert(G != NULL);
     assert(x != y);
     if (w != NULL) {assert(G->_g_flag & W_FLAG);}
+    if (c != NULL) {assert(G->_g_flag & F_FLAG);}
 
     (G->m)++;
     G->_edges = (Edge*)realloc(G->_edges, 2*(G->m) * sizeof(Edge));
@@ -179,6 +170,12 @@ void addEdge(Graph *G, u32 x, u32 y, u32 *w) {
         (G->_edges)[2*( G->m )-1].w = (u32*)malloc(sizeof(u32));
         *((G->_edges)[2*( G->m )-2].w) = *w; 
         *((G->_edges)[2*( G->m )-1].w) = *w; 
+    }
+    if (c != NULL){
+        (G->_edges)[2*( G->m )-2].c = (u32*)malloc(sizeof(u32));
+        (G->_edges)[2*( G->m )-1].c = (u32*)malloc(sizeof(u32));
+        *((G->_edges)[2*( G->m )-2].c) = *c; 
+        *((G->_edges)[2*( G->m )-1].c) = *c; 
     }
    
     (G->_degrees)[x]++;
@@ -314,12 +311,12 @@ Graph * readGraph(char *filename) {
         u32 x, y, w;
         if (FLAG & W_FLAG){
             if (fscanf(file, "e %u %u %d\n", &x, &y, &w) == 3)
-                setEdge(G, i, x, y, &w);
+                setEdge(G, i, x, y, &w, NULL);
             else
                 return NULL;
         }else{
             if (fscanf(file, "e %u %u\n", &x, &y) == 2)
-                setEdge(G, i, x, y, NULL);
+                setEdge(G, i, x, y, NULL, NULL);
             else 
                 return NULL;
         }
@@ -563,4 +560,84 @@ void writeGraph(Graph *G, char* fname){
     };
     fclose(f);
 }
+
+
+// ~~~~~~~~~~~~~~~~~~~ Network flow API ~~~~~~~~~~~~~~~~~~~~~
+
+
+u32 getEdgeWeight(u32 x, u32 y, Graph *G){
+    assert(G != NULL);
+    assert(G->_g_flag & W_FLAG);
+    return *(getEdge(x, y, G).w);
+}
+
+
+u32 getEdgeCapacity(u32 x, u32 y, Graph *G){
+    assert(G != NULL);
+    assert(G->_g_flag & F_FLAG);
+    return *(getEdge(x, y, G).c);
+}
+
+
+u32 getIthEdgeWeight(u32 i, Graph *G){
+    assert(G != NULL);
+    assert(G->_g_flag & W_FLAG);
+    return *(getIthEdge(i, G).w);
+}
+
+
+u32 getIthEdgeCapacity(u32 i, Graph *G){
+    assert(G != NULL);
+    assert(G->_g_flag & W_FLAG);
+    return *(getIthEdge(i, G).c);
+}
+
+
+void setEdgeWeight(u32 x, u32 y, u32 w, Graph *G){
+    assert(G != NULL);
+    assert(G->_g_flag & W_FLAG);
+    Edge e = getEdge(x, y, G);
+    if (G -> _g_flag & F_FLAG)
+        assert(w <= *e.c);
+    *e.w = w;
+}
+
+
+void setEdgeCapacity(u32 x, u32 y, u32 c, Graph *G){
+    assert(G != NULL);
+    assert(G->_g_flag & W_FLAG);
+    *getEdge(x, y, G).c = c;
+}
+
+
+void setIthEdgeWeight(u32 i, u32 w, Graph *G){
+    assert(G != NULL);
+    assert(G->_g_flag & W_FLAG);
+    Edge e = getIthEdge(i, G);
+    if (G -> _g_flag & F_FLAG)
+        assert(w <= *e.c);
+    *e.w = w;
+}
+
+
+void setIthEdgeCapacity(u32 i, u32 c, Graph *G){
+    assert(G != NULL);
+    assert(G->_g_flag & W_FLAG);
+    *getIthEdge(i, G).c = c;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
