@@ -8,7 +8,6 @@
 
 void test_denseGraph() {
     Graph *G = readGraph("graphs/dijkstraTest.txt");
-    printGraph(G);
 
     // Run Dijkstra starting from vertex 0
     u32 *distances = dijkstra(0, G);

@@ -54,8 +54,6 @@ void testAddEdge() {
     assert (degree(2, G) == 3);
     assert (degree(3, G) == 1);
 
-    printGraph(G);
-
     // Expected edge array:
     // 0 ~ 1  (5)  [5]
     // 0 ~ 2  (5)  [10]
@@ -87,21 +85,45 @@ void testAddEdge() {
     printf("testAddEdge passed.\n");
 }
 
+void testReadGraph(){
+
+    Graph *G = readGraph("graphs/simpleNetwork.txt");
+    assert(G != NULL);
+    assert(G->n == 6);
+    assert(G->m == 7); 
+    // Expected Graph
+    // 0 ~ 1  (10)  [30]
+    // 0 ~ 2  (20)  [30]
+    // 1 ~ 0  (10)  [30]
+    // 1 ~ 4  (30)  [30]
+    // 2 ~ 0  (20)  [30]
+    // 2 ~ 3  (10)  [30]
+    // 2 ~ 4  (5)  [30]
+    // 3 ~ 2  (10)  [30]
+    // 3 ~ 5  (20)  [30]
+    // 4 ~ 1  (30)  [30]
+    // 4 ~ 2  (5)  [30]
+    // 4 ~ 5  (10)  [30]
+    // 5 ~ 3  (20)  [30]
+    // 5 ~ 4  (10)  [30]
+    u32 capacities[14] = {30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30};
+    u32 weights[14] = {10, 20, 10, 30, 20, 10, 5, 10, 20, 30, 5, 10, 20, 10};
+    for (u32 i = 0; i < 2*numberOfEdges(G); i++)
+    {
+        Edge e = getIthEdge(i, G);
+        assert( *e.w == weights[i] && *e.c == capacities[i] );
+    }
+
+}
+
 
 /**
  * @brief Main function to run all tests.
  */
 int main() {
     testInitGraph();
-//    test_readGraph();
     testAddEdge();
-//    testRemoveEdge();
-//    testIsNeighbour();
-//    testEdgeIndex();
-//    testDegree();
-//    testColors();
-//    testCompareEdges();
-    // Note: test_readGraph requires an actual file input for complete verification.
+    testReadGraph();
     printf("All tests passed.\n");
     return 0;
 }

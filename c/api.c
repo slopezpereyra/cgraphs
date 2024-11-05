@@ -296,7 +296,9 @@ Graph * readGraph(char *filename) {
 
     if (strcmp(flag_str, "W_FLAG") == 0) {
         FLAG = W_FLAG;
-    } else if (strcmp(flag_str, "C_FLAG") == 0) {
+    }else if (strcmp(flag_str, "F_FLAG") == 0) {
+        FLAG = F_FLAG;
+    }else if (strcmp(flag_str, "C_FLAG") == 0) {
         FLAG = C_FLAG;
     } else if (strcmp(flag_str, "STD_FLAG") == 0) {
         FLAG = STD_FLAG;
@@ -306,10 +308,20 @@ Graph * readGraph(char *filename) {
     }
 
     Graph *G = initGraph(n, m, FLAG);
+    printf("Initialized\n");
 
     for (u32 i = 0; i < m; i++) {
-        u32 x, y, w;
-        if (FLAG & W_FLAG){
+        u32 x, y, w, c;
+        if (FLAG == F_FLAG){
+            if (fscanf(file, "e %u %u %d %d\n", &x, &y, &w, &c) == 4)
+                setEdge(G, i, x, y, &w, &c);
+            else{
+
+                printf("Failed to read line %d\n", i+1);
+                return NULL;
+            }
+        }
+        else if (FLAG & W_FLAG){
             if (fscanf(file, "e %u %u %d\n", &x, &y, &w) == 3)
                 setEdge(G, i, x, y, &w, NULL);
             else
