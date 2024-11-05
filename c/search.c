@@ -24,7 +24,7 @@
  * @param[in] n Total number of vertices in the graph.
  * @return A pointer to the constructed Graph structure.
  */
-Graph *_constructTreeFromArray(u32* insertionArray, u32 insertionArrayLength, u32 n){
+Graph *_TreeFromInsertionArray(u32* insertionArray, u32 insertionArrayLength, u32 n){
     Graph * B = initGraph(n, n-1, STD_FLAG);
     u32 edgeIndex = 0;
 
@@ -39,6 +39,8 @@ Graph *_constructTreeFromArray(u32* insertionArray, u32 insertionArrayLength, u3
     formatEdges(B );
     return( B ) ;
 }
+
+
 
 /**
  * @brief Builds a Breadth-First Search (BFS) tree from a given graph.
@@ -76,7 +78,7 @@ Graph *BFS(Graph *G, u32 s){
         }
     }
     dumpQueue(Q);
-    Graph *B = _constructTreeFromArray(insertionArray, n, treeVertexCount); 
+    Graph *B = _TreeFromInsertionArray(insertionArray, n, treeVertexCount); 
     free(insertionArray);
     return(B);
 
@@ -85,8 +87,9 @@ Graph *BFS(Graph *G, u32 s){
 /**
  * @brief Recursive helper function for Depth-First Search (DFS).
  *
- * Traverses a graph recursively from a starting vertex `v`, updating the `track` array to record
- * parent vertices and counting the number of nodes in the DFS tree. Useful for managing multiple connected components.
+ * Traverses a graph recursively from a starting vertex `v`, updating the
+ * `track` array to record parent vertices and counting the number of nodes in
+ * the DFS tree. Useful for managing multiple connected components.
  *
  * @param[in] v Current vertex in the traversal.
  * @param[out] track Array tracking the parent of each vertex.
@@ -121,11 +124,12 @@ Graph *DFS(Graph *G, u32 s){
     u32 n = numberOfVertices(G);
     u32 *insertionArray = genArray(n);
     u32 treeVertexCount = DFSRecursive(s, insertionArray, s, G);
-    Graph *D = _constructTreeFromArray(insertionArray, n, treeVertexCount); 
+    Graph *D = _TreeFromInsertionArray(insertionArray, n, treeVertexCount); 
     free(insertionArray);
     return(D);
 
 }
+
 
 /**
  * @brief Searches for a target vertex in a graph using Breadth-First Search (BFS).

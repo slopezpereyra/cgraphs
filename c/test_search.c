@@ -5,13 +5,13 @@
 #include "queue.h"
 #include "api.h"
 #include "utils.h"
+#include "search.h"
 
-// Test if constructTreeFromArray builds the correct tree structure from a given insertion array.
-void testConstructTreeFromArray() {
-    printf("Testing constructTreeFromArray.\n");
+void testConstructTreeFromInsertionArray() {
+    printf("Testing constructTreeFromInsertionArray.\n");
     u32 insertionArray[] = {0, 1, 1, 2, 3}; // Simple parent-child relationship
     u32 n = 5;
-    Graph *tree = _constructTreeFromArray(insertionArray, 5, n);
+    Graph *tree = _TreeFromInsertionArray(insertionArray, 5, n);
     assert(tree != NULL); // Tree should be created
     
     // Verify specific edges
@@ -21,7 +21,7 @@ void testConstructTreeFromArray() {
     assert(isNeighbour(2, 4, tree)); // Check leaf connections
     
     dumpGraph(tree);
-    printf("test_constructTreeFromArray passed.\n");
+    printf("test_constructTreeFromInsertionArray passed.\n");
 }
 
 // Test BFS traversal to ensure tree structure is correct.
@@ -111,7 +111,7 @@ void testIsConnected() {
 
 // Main function to run all test cases
 int main() {
-    testConstructTreeFromArray();
+    testConstructTreeFromInsertionArray();
     testBFS();
     testDFS();
     testBFSSearch();

@@ -135,4 +135,20 @@ void setIthEdgeWeight(u32 i, u32 w, Graph *G);
  */
 void setIthEdgeCapacity(u32 i, u32 c, Graph *G);
 
+
+/**
+ * @brief Gets the remaining capacity of the edge {x, y} in 
+ * a network.
+ * 
+ * @param x The starting node of the edge.
+ * @param y The ending node of the edge.
+ * @param G Pointer to the Graph structure.
+ * 
+ * @pre G must not be NULL.
+ * @pre Graph must have the F_FLAG.
+ */
+u32 getRemainingCapacity(u32 x, u32 y,  Graph *G);
+
+void increaseEdgeWeight(u32 x, u32 y, u32 delta, Graph *G);
+
 #endif

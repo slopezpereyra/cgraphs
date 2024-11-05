@@ -11,7 +11,6 @@
 #include <string.h>
 
 
-
 Graph *initGraph(u32 n, u32 m, g_flag flags) {
     Graph *G = (Graph*)malloc(sizeof(Graph));
     if (G == NULL){
@@ -460,7 +459,7 @@ Edge getEdge(u32 x, u32 y, Graph *G) {
     if (x > y)
         swap_u32_pointers(&x, &y);
     u32 i = edgeIndex(G, x, y);
-    return ( G->_edges )[i];
+    return (G ->_edges )[i];
 }
 
 /**
@@ -587,7 +586,7 @@ u32 getEdgeWeight(u32 x, u32 y, Graph *G){
 
 u32 getEdgeCapacity(u32 x, u32 y, Graph *G){
     assert(G != NULL);
-    assert(G->_g_flag & F_FLAG);
+    assert(G->_g_flag == F_FLAG);
     return *(getEdge(x, y, G).c);
 }
 
@@ -601,7 +600,7 @@ u32 getIthEdgeWeight(u32 i, Graph *G){
 
 u32 getIthEdgeCapacity(u32 i, Graph *G){
     assert(G != NULL);
-    assert(G->_g_flag & W_FLAG);
+    assert(G->_g_flag == F_FLAG);
     return *(getIthEdge(i, G).c);
 }
 
@@ -616,9 +615,19 @@ void setEdgeWeight(u32 x, u32 y, u32 w, Graph *G){
 }
 
 
-void setEdgeCapacity(u32 x, u32 y, u32 c, Graph *G){
+void increaseEdgeWeight(u32 x, u32 y, u32 delta, Graph *G){
     assert(G != NULL);
     assert(G->_g_flag & W_FLAG);
+    Edge e = getEdge(x, y, G);
+    if (G -> _g_flag & F_FLAG)
+        assert(*e.w + delta <= *e.c);
+    *e.w = *e.w + delta;
+}
+
+
+void setEdgeCapacity(u32 x, u32 y, u32 c, Graph *G){
+    assert(G != NULL);
+    assert(G->_g_flag == F_FLAG);
     *getEdge(x, y, G).c = c;
 }
 
@@ -635,8 +644,17 @@ void setIthEdgeWeight(u32 i, u32 w, Graph *G){
 
 void setIthEdgeCapacity(u32 i, u32 c, Graph *G){
     assert(G != NULL);
-    assert(G->_g_flag & W_FLAG);
+    assert(G->_g_flag == F_FLAG);
     *getIthEdge(i, G).c = c;
+}
+
+
+u32 getRemainingCapacity(u32 x, u32 y,  Graph *G){
+    assert(G != NULL);
+    assert(G->_g_flag == F_FLAG);
+    Edge e = getEdge(x, y, G);
+    return *e.c - *e.w;
+
 }
 
 

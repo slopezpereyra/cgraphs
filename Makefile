@@ -1,7 +1,7 @@
 # Compiler and flags
 CC=gcc
 CFLAGS = -Wall -Wextra -O3 -std=c99 -g
-OBJS_P1 = api.o coloring.o queue.o heap.o search.o generator.o utils.o dijkstra.o prim.o
+OBJS_P1 = api.o coloring.o queue.o heap.o search.o generator.o utils.o dijkstra.o prim.o greedyflow.o
 
 VALGRIND_FLAGS = --leak-check=full --show-reachable=yes
 VALGRIND_CMD = $(if $(VALGRIND),valgrind $(VALGRIND_FLAGS),)
@@ -15,7 +15,7 @@ final: main.o $(OBJS_P1)
 
 
 # Compile and run the tests in test_generator.c
-test_graphs: test_utils.o test_generator.o test_search.o test_api.o test_dijkstra.o test_prim.o test_network.o $(OBJS_P1)
+test_graphs: test_utils.o test_generator.o test_search.o test_api.o test_dijkstra.o test_prim.o test_network.o test_greedyflow.o $(OBJS_P1)
 	$(CC) $(CFLAGS) -o test_graphs test_utils.o $(OBJS_P1)
 	@echo "\nRunning utilities tests..."
 	$(VALGRIND_CMD) ./test_graphs
@@ -36,6 +36,9 @@ test_graphs: test_utils.o test_generator.o test_search.o test_api.o test_dijkstr
 	$(VALGRIND_CMD) ./test_graphs
 	$(CC) $(CFLAGS) -o test_graphs test_prim.o $(OBJS_P1)
 	@echo "\nRunning tests for Prim..."
+	$(VALGRIND_CMD) ./test_graphs
+	$(CC) $(CFLAGS) -o test_graphs test_greedyflow.o $(OBJS_P1)
+	@echo "\nRunning tests for greedy flow..."
 	$(VALGRIND_CMD) ./test_graphs
 
 # Individual object file compilation
@@ -73,7 +76,10 @@ test_dijkstra.o:
 	$(CC) $(CFLAGS) -c c/test_dijkstra.c
 test_prim.o: 
 	$(CC) $(CFLAGS) -c c/test_prim.c
-
+greedyflow.o: c/greedyflow.c
+	$(CC) $(CFLAGS) -c c/greedyflow.c
+test_greedyflow.o: 
+	$(CC) $(CFLAGS) -c c/test_greedyflow.c
 
 
 clean:
