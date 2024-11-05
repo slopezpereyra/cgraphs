@@ -66,39 +66,42 @@ u32 *flowBFS(Graph *G, u32 s, u32 target){
 
     dumpQueue(Q);
     free(visited);
+    if (!found)
+        return NULL;
     return insertionArray;
 }
 
 
 void greedyFlow(Graph *N, u32 s, u32 t){
 
-    u32 *edgesInPath = flowBFS(N, s, t);
 
-    printf("Insertion array: \n");
+    while (true){
 
-    for (u32 i = 0; i < numberOfVertices(N); i++){
-        printf("InsArray[%d] = %d\n", i, edgesInPath[i]);
-    }
+        u32 *edgesInPath = flowBFS(N, s, t);
+        if ( edgesInPath == NULL  )
+            break;
 
-    u32 v = t;
-    u32 w;
-    u32 flowToSend = INT_MAX;
-    u32 remainingCapacity;
-    while (v != s){
-        w = edgesInPath[v];
-        printf("Attempting to get edge %d ~~~ %d\n", v, w);
-        Edge e = getEdge(v, w, N);
-        remainingCapacity = *e.c - *e.w;
-        if (remainingCapacity < flowToSend)
-           flowToSend = remainingCapacity;
-        v = w;
-    }
-    v = t;
-    while (v != s){
-        w = edgesInPath[v];
-        Edge e = getEdge(v, w, N);
-        increaseEdgeWeight(e.x, e.y, flowToSend, N);
-        v = w;
+        u32 v = t;
+        u32 w;
+        u32 flowToSend = INT_MAX;
+        u32 remainingCapacity;
+        while (v != s){
+            w = edgesInPath[v];
+            Edge e = getEdge(v, w, N);
+            remainingCapacity = *e.c - *e.w;
+            if (remainingCapacity < flowToSend)
+               flowToSend = remainingCapacity;
+            v = w;
+        }
+        v = t;
+        while (v != s){
+            w = edgesInPath[v];
+            Edge e = getEdge(v, w, N);
+            increaseEdgeWeight(e.x, e.y, flowToSend, N);
+            v = w;
+        }
+
+
     }
 
 }
