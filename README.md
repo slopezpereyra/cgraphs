@@ -29,10 +29,10 @@ algorithms for the generation of random connected graphs.
 The fundamental structure in this library is the `Graph`. A `struct Graph` of
 $n$ vertices always has vertices $0, \ldots, n-1$.
 
-Graph data, such as the degree of a vertex or its neighbours, is accessed in
-constant or almost constant time in most cases. This makes it possible to
-handle extremely large graphs, though at the expense of some extra memory
-consumption.
+Graph's properties, such as the degree of a vertex or its neighbours, is
+accessed in constant or almost constant time in most cases. This makes it
+possible to handle extremely large graphs, though at the expense of some extra
+memory consumption.
 
 #### Reading and writing a graph
 
@@ -223,6 +223,76 @@ Graph *prim(Graph *G, u32 startVertex) {
 
 returns a pointer to a `Graph`, and the `Graph` pointed to is the found MST of
 `G`.
+
+## Flow networks
+
+The flag `F_FLAG` specifies that a `Graph` is a flow network. 
+
+A flow network is formally a $5$-uple $(V, E, c, s, t)$, with  $c : E \mapsto
+\mathbb{N}$ and $s, t \in V$. ($c$ could be a mapping into any subset of $\mathbb{R}$, but this
+library restricts itself to "integer networks"). 
+
+The weight of each edge $e \in E$ is understood in this context to represent
+its current flow $f(e) \in [0, c(e)]$, and hence the usual functions
+(`getEdgeWeight, setEdgeWeight`, etc.) should be use to manipulate $f$.
+
+A flow network can be read from the Penazzi format by setting the flag as
+`F_FLAG` and adding the capacity next to the weight of each edge. For instance, 
+
+```
+p edge 6 8 F_FLAG
+e 0 1 0 10
+e 0 2 0 20
+e 1 3 0 10
+e 1 4 0 5
+e 2 3 0 5
+e 2 4 0 5
+e 3 5 0 10 
+e 4 5 0 10
+```
+
+specifies a network with $f$ initialized to zero and capacities $10, 20, 10,
+\ldots$ for the edges.
+
+#### Greedy flow 
+
+The simplest approach to finding a flow in a network is to greedily find
+non-saturated paths from the source $s$ to the sink $t$. A path 
+
+$$s = v_0 \to v_1 \to \ldots \to v_{k-1} \to v_k = t$$ 
+
+is non-saturated if $f(\overrightarrow{v_i v_{i+1}}) <
+c(\overrightarrow{v_i{v_{i+1}}})$. Upon finding such path, the algorithm
+increases the flow through that path by the maximum value which does not
+surpass the remaining capacity of any edge. The algorithm continues until no
+more saturated paths exist.
+
+The greedy flow algorithm has some nice properties:
+
+- It always produces a valid flow 
+- It always halts, since it saturates at least an edge per iteration, and 
+saturated edges are never re-emptied.
+- Its complexity is $O(m^2)$, since it performs $O(m)$ iterations, each of
+which has complexity $O(m)$.
+
+To find a flow $f$ using the greedy flow algorithm, assuming you have defined 
+a flow network `Graph *N` with the `F_FLAG`, call either
+
+```c
+u32 flowValue = greedyFlow(N, s, t, flowBFS)
+```
+
+or 
+
+```c
+u32 flowValue = greedyFlow(N, s, t, flowDFS)
+```
+
+The two calls differ in the way they find non-saturated paths from $s$ to $t$
+(with BFS or DFS).  
+
+The function $(a)$ returns the value of the flow found and $(b)$ updates the
+flow (weight) of each edge in the `N`. 
 
 
 ## Random graph generation 
