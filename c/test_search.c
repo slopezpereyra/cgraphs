@@ -5,13 +5,16 @@
 #include "queue.h"
 #include "api.h"
 #include "utils.h"
-#include "search.h"
 
 void testConstructTreeFromInsertionArray() {
     printf("Testing constructTreeFromInsertionArray.\n");
-    u32 insertionArray[] = {0, 1, 1, 2, 3}; // Simple parent-child relationship
+    //            0   1  2  3  4
+    u32 arr[5] = {-1, 0, 0, 1, 2}; 
+    InsertionArray *insArray = createInsertionArray(5);
+    for (u32 i = 0; i < 5; i++)
+        insArrayStore(i, arr[i], insArray);
     u32 n = 5;
-    Graph *tree = _TreeFromInsertionArray(insertionArray, 5, n);
+    Graph *tree = _TreeFromInsertionArray(insArray, 5, n);
     assert(tree != NULL); // Tree should be created
     
     // Verify specific edges
@@ -36,6 +39,7 @@ void testBFS() {
    
     Graph *BFSResult = BFS(G, 0); // Run BFS from vertex 0
     assert(BFSResult != NULL);
+    printGraph(BFSResult);
 
     // Verify BFS tree structure
     assert(isNeighbour(0, 1, BFSResult));
@@ -110,22 +114,6 @@ void testIsConnected() {
 }
 
 
-void testDFSSearch() {
-    Graph *G = readGraph("graphs/simpleNetwork.txt");
-
-    printGraph(G);
-
-    u32 *insArray = DFSSearch(G, 0, 5);
-
-    for (u32 i = 0; i < numberOfVertices(G); i++){
-        printf("InsArray[%d] = [%d]\n", i, insArray[i]);
-    }
-
-    
-    dumpGraph(G);
-    printf("testBFSSearch passed.\n");
-}
-
 // Main function to run all test cases
 int main() {
     testConstructTreeFromInsertionArray();
@@ -133,7 +121,6 @@ int main() {
     testDFS();
     testBFSSearch();
     testIsConnected();
-    testDFSSearch();
     
     printf("All tests passed successfully.\n");
     return 0;

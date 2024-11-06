@@ -4,7 +4,6 @@
  */
 
 #include "search.h"
-
 #include "queue.h"
 #include "api.h"
 #include <assert.h>
@@ -24,16 +23,16 @@
  * @param[in] n Total number of vertices in the graph.
  * @return A pointer to the constructed Graph structure.
  */
-Graph *_TreeFromInsertionArray(u32* insertionArray, u32 insertionArrayLength, u32 n){
+Graph *_TreeFromInsertionArray(InsertionArray *insertionArray, u32 insertionArrayLength, u32 n){
     Graph * B = initGraph(n, n-1, STD_FLAG);
     u32 edgeIndex = 0;
 
     for (u32 i = 0; i < insertionArrayLength; i++){
-        // If insertionArray[i] == 0, the vertex i is not in the BFS tree.
-        if (insertionArray[i] == 0){
+        u32 predecessor = insArrayGet(i, insertionArray);
+        // If the insertion array at i is -1, vertex i is not in the tree
+        if (predecessor == -1)
             continue;
-        }
-        setEdge(B , edgeIndex, insertionArray[i] - 1, i, NULL, NULL);
+        setEdge(B , edgeIndex, predecessor, i, NULL, NULL);
         edgeIndex++;
     }
     formatEdges(B );
@@ -56,7 +55,7 @@ Graph *BFS(Graph *G, u32 s){
     u32 n = numberOfVertices(G);
     // An array s.t. insertionArray[i] = (k+1) iff vertex i was enqueued
     // by vertex k.
-    u32* insertionArray = genArray(n);
+    InsertionArray *insertionArray = createInsertionArray(n);
     u32 treeVertexCount = 1; // root included necessarily
 
     struct Queue* Q = createQueue();
@@ -69,10 +68,9 @@ Graph *BFS(Graph *G, u32 s){
 
         for (u32 i = 0; i < d; i++){
             u32 iNeighbour = neighbour(i, v, G);
-            if (insertionArray[iNeighbour] != 0 || iNeighbour == s){
+            if (insArrayGet(iNeighbour, insertionArray) != -1 || iNeighbour == s)
                 continue;
-            }
-            insertionArray[iNeighbour] = v + 1; 
+            insArrayStore(iNeighbour, v, insertionArray);
             treeVertexCount++;
             enQueue(Q, iNeighbour);
         }
@@ -97,14 +95,14 @@ Graph *BFS(Graph *G, u32 s){
  * @param[in] G Pointer to the graph being traversed.
  * @return Number of vertices in the DFS tree.
  */
-u32 DFSRecursive(u32 v, u32* track, u32 root, Graph *G){
+u32 DFSRecursive(u32 v, InsertionArray *track, u32 root, Graph *G){
     u32 n = 1;
     for (u32 i = 0; i < degree(v, G); i++){
         u32 iNeighbour = neighbour(i, v, G);
-        if (iNeighbour == root || track[iNeighbour] != 0){
+        if (iNeighbour == root || insArrayGet(iNeighbour, track) != -1){
             continue;
         }
-        track[iNeighbour] = v + 1;
+        insArrayStore(iNeighbour, v, track);
         n += DFSRecursive(iNeighbour, track, root, G);
     }
     return n;
@@ -122,7 +120,7 @@ u32 DFSRecursive(u32 v, u32* track, u32 root, Graph *G){
 Graph *DFS(Graph *G, u32 s){
 
     u32 n = numberOfVertices(G);
-    u32 *insertionArray = genArray(n);
+    InsertionArray *insertionArray = createInsertionArray(n);
     u32 treeVertexCount = DFSRecursive(s, insertionArray, s, G);
     Graph *D = _TreeFromInsertionArray(insertionArray, n, treeVertexCount); 
     free(insertionArray);
@@ -221,61 +219,4 @@ bool isConnected(Graph *G){
 
 
 }
-
-/**
- * @brief Recursive helper function for Depth-First Search (DFS).
- *
- * Traverses a graph recursively from a starting vertex `v` until 
- * vertex `t` is found. Updates the insertion array `track` accordingly.
- * Sets `flag` to true upon finding, which interrupts the recursion.
- *
- * @param[in] v Current vertex in the traversal.
- * @param[out] track Array tracking the parent of each vertex.
- * @param[in] root Initial root vertex of the DFS traversal.
- * @param[in] t Target vertex.
- * @param[in] flag Flag which keeps recursion going or stops it.
- * @param[in] G Pointer to the graph being traversed.
- * @return Number of vertices in the DFS tree.
- */
-void DFSSearchRecursive(u32 v, u32* track, u32 root, u32 t, bool *flag, Graph *G){
-    for (u32 i = 0; i < degree(v, G); i++){
-        if (*flag)
-            return;
-        u32 iNeighbour = neighbour(i, v, G);
-        if (track[iNeighbour] != -1){
-            continue;
-        }
-        track[iNeighbour] = v;
-        if (iNeighbour == t){
-            *flag = true;
-            return;
-        }
-        DFSSearchRecursive(iNeighbour, track, iNeighbour, t, flag, G);
-    }
-}
-
-/**
- * @brief Builds an insertion array from the DFS search of vertex `target`,
- * starting from vertex `s`.
- *
- *
- * @param[in] G Pointer to the original graph.
- * @param[in] s Starting vertex for the DFS traversal.
- * @param[in] target Vertex looked for: recursion stops when this is found.
- * @return A pointer to the Graph structure representing the DFS tree.
- */
-u32 *DFSSearch(Graph *G, u32 s, u32 target){
-
-    bool *flag = (bool *)malloc(sizeof(bool));
-    *flag = false;
-    u32 n = numberOfVertices(G);
-    u32 *insertionArray = genArray(n);
-    for (u32 i = 0; i < n; i++)
-        insertionArray[i] = -1;
-    insertionArray[s] = 0;
-    DFSSearchRecursive(s, insertionArray, s, target, flag, G);
-    return(insertionArray);
-
-}
-
 

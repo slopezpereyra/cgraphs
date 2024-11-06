@@ -30,14 +30,14 @@
  */
 
 
-u32 *flowBFS(Graph *G, u32 s, u32 target){
+InsertionArray *flowBFS(Graph *G, u32 s, u32 target){
     assert(s != target);
     assert(G->_g_flag == F_FLAG);
 
     u32 n = numberOfVertices(G);
     u32* visited = genArray(n);
     u32 treeVertexCount = 1; // root included necessarily
-    u32* insertionArray = genArray(n);
+    InsertionArray* insertionArray = createInsertionArray(n);
 
     struct Queue* Q = createQueue();
     enQueue(Q, s);
@@ -56,13 +56,14 @@ u32 *flowBFS(Graph *G, u32 s, u32 target){
                 continue;
             }
             if (iNeighbour == target){
-                insertionArray[target] = v;
+                
+                insArrayStore(target, v, insertionArray);
                 found = true;
                 break;
             }
             visited[iNeighbour] = 1; 
             enQueue(Q, iNeighbour);
-            insertionArray[iNeighbour] = v;
+            insArrayStore(iNeighbour, v, insertionArray);
         }
     }
 
@@ -89,7 +90,7 @@ u32 *flowBFS(Graph *G, u32 s, u32 target){
  * @param[in] G Pointer to the graph being traversed.
  * @return Number of vertices in the DFS tree.
  */
-void flowDFSRecursive(u32 v, u32* track, u32 root, u32 t, bool *flag, Graph *G){
+void flowDFSRecursive(u32 v, InsertionArray *track, u32 root, u32 t, bool *flag, Graph *G){
     assert(G->_g_flag == F_FLAG);
     for (u32 i = 0; i < degree(v, G); i++){
         if (*flag)
@@ -97,10 +98,12 @@ void flowDFSRecursive(u32 v, u32* track, u32 root, u32 t, bool *flag, Graph *G){
         u32 iNeighbour = neighbour(i, v, G);
         if (getRemainingCapacity(v, iNeighbour, G) == 0)
             continue;
-        if (track[iNeighbour] != -1){
+        // insArrayGet(index, insArray) is not -1 only if the index has been 
+        // previously set, i.e. the vertex has been traversed already
+        if (insArrayGet(iNeighbour, track) != -1)
             continue;
-        }
-        track[iNeighbour] = v;
+        
+        insArrayStore(iNeighbour, v, track);
         if (iNeighbour == t){
             *flag = true;
             return;
@@ -119,18 +122,16 @@ void flowDFSRecursive(u32 v, u32* track, u32 root, u32 t, bool *flag, Graph *G){
  * @param[in] target Vertex looked for: recursion stops when this is found.
  * @return A pointer to the Graph structure representing the DFS tree.
  */
-u32 *flowDFS(Graph *G, u32 s, u32 target){
+InsertionArray *flowDFS(Graph *G, u32 s, u32 target){
     assert(G->_g_flag == F_FLAG);
 
     bool *flag = (bool *)malloc(sizeof(bool));
     *flag = false;
     u32 n = numberOfVertices(G);
-    u32 *insertionArray = genArray(n);
-    for (u32 i = 0; i < n; i++)
-        insertionArray[i] = -1;
-    insertionArray[s] = 0;
+    InsertionArray *insertionArray = createInsertionArray(n);
+    insArrayStore(s, n + 1, insertionArray);
     flowDFSRecursive(s, insertionArray, s, target, flag, G);
-    if (insertionArray[target] == -1)
+    if (insArrayGet(target, insertionArray) == -1)
         return NULL;
     return(insertionArray);
 
@@ -139,18 +140,20 @@ u32 *flowDFS(Graph *G, u32 s, u32 target){
 // Function pointer type for the search functions
 
 // Modify `greedyFlow` to accept a `SearchFunction` parameter
-void greedyFlow(Graph *N, u32 s, u32 t, SearchFunction searchFunc) {
+u32 greedyFlow(Graph *N, u32 s, u32 t, SearchFunction searchFunc) {
     assert(N != NULL);
     assert(N->_g_flag == F_FLAG);
 
+    u32 flowValue = 0;
+
     while (true) {
         // Use the search function pointer to decide between BFS or DFS
-        u32 *edgesInPath = searchFunc(N, s, t);
+        InsertionArray *edgesInPath = searchFunc(N, s, t);
         if (edgesInPath == NULL)
             break;
 
         for (u32 i = 0; i < numberOfVertices(N); i++){
-            printf("InsArray[%d] = %d\n", i, edgesInPath[i]);
+            printf("InsArray[%d] = %d\n", i, insArrayGet(i, edgesInPath));
         }
         printf("\n********************************\n");
 
@@ -160,7 +163,7 @@ void greedyFlow(Graph *N, u32 s, u32 t, SearchFunction searchFunc) {
         
         // Traverse the insertion array to find the maximum flow
         while (v != s) {
-            w = edgesInPath[v];
+            w = insArrayGet(v, edgesInPath);
             Edge e = getEdge(v, w, N);
             remainingCapacity = *e.c - *e.w;
             if (remainingCapacity < flowToSend)
@@ -170,13 +173,15 @@ void greedyFlow(Graph *N, u32 s, u32 t, SearchFunction searchFunc) {
         // Traverse the insertion array again to update the flow
         v = t;
         printf("\nSending %d\n", flowToSend);
+        flowValue += flowToSend;
         while (v != s) {
-            w = edgesInPath[v];
+            w = insArrayGet(v, edgesInPath);
             Edge e = getEdge(v, w, N);
             increaseEdgeWeight(e.x, e.y, flowToSend, N);
             v = w;
         }
     }
+    return(flowValue);
 }
 
 

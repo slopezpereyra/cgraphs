@@ -1,7 +1,8 @@
 #include "api.h"
+#include "insertionArray.h"
 
-typedef u32* (*SearchFunction)(Graph *G, u32 s, u32 target);
+typedef InsertionArray* (*SearchFunction)(Graph *G, u32 s, u32 target);
 
-u32 *flowBFS(Graph *G, u32 s, u32 target);
-u32 *flowDFS(Graph *G, u32 s, u32 target);
-void greedyFlow(Graph *N, u32 s, u32 t, SearchFunction searchFunc);
+InsertionArray *flowBFS(Graph *G, u32 s, u32 target);
+InsertionArray *flowDFS(Graph *G, u32 s, u32 target);
+u32 greedyFlow(Graph *N, u32 s, u32 t, SearchFunction searchFunc);
