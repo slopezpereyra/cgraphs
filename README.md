@@ -17,6 +17,8 @@ algorithms for the generation of random connected graphs.
 - [Weighted graphs](#weighted-graphs)
     - [Dijkstra's algorithm](#dijkstras-algorithm)
     - [Prim's algorithm](#dijkstras-algorithm)
+- [Flow networks](#flow-networks)
+    - [Greedy flow](#greedy-flow)
 - [Random graph generation](#random-graph-generation)
     - [Bottom-up approach](#bottom-up-approach)
     - [Top-down approach](#top-down-approach)
