@@ -264,18 +264,20 @@ non-saturated paths from the source $s$ to the sink $t$. A path
 $$s = v_0 \to v_1 \to \ldots \to v_{k-1} \to v_k = t$$ 
 
 is non-saturated if $f(\overrightarrow{v_i v_{i+1}}) <
-c(\overrightarrow{v_i{v_{i+1}}})$. Upon finding such path, the algorithm
+c(\overrightarrow{v_i{v_{i+1}}})$ for $i = 0, \ldots, k-1$. Upon finding such path, the algorithm
 increases the flow through that path by the maximum value which does not
 surpass the remaining capacity of any edge. The algorithm continues until no
 more saturated paths exist.
 
 The greedy flow algorithm has some nice properties:
 
-- It always produces a valid flow 
-- It always halts, since it saturates at least an edge per iteration, and 
+- It always produces a valid flow.
+- It always halts, since it saturates at least an edge per iteration, and
 saturated edges are never re-emptied.
 - Its complexity is $O(m^2)$, since it performs $O(m)$ iterations, each of
 which has complexity $O(m)$.
+
+The downside is that the flow found is not necessarily maximal.
 
 To find a flow $f$ using the greedy flow algorithm, assuming you have defined 
 a flow network `Graph *N` with the `F_FLAG`, call either
