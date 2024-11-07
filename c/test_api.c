@@ -41,6 +41,7 @@ void testAddEdge() {
     addEdge(G, 0, 2, NULL, NULL);
     addEdge(G, 2, 3, NULL, NULL);
     assert(G->m == 4);
+    printGraph(G);
     assert(isNeighbour(0, 1, G));
     assert(isNeighbour(1, 2, G));
     assert(isNeighbour(0, 2, G));
