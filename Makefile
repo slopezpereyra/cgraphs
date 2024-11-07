@@ -15,12 +15,15 @@ final: main.o $(OBJS_P1)
 
 
 # Compile and run the tests in test_generator.c
-test_graphs: test_utils.o test_generator.o test_search.o test_api.o test_dijkstra.o test_prim.o test_network.o test_greedyflow.o $(OBJS_P1)
+test_graphs: test_utils.o test_generator.o test_search.o test_api.o test_digraph.o test_dijkstra.o test_prim.o test_network.o test_greedyflow.o $(OBJS_P1)
 	$(CC) $(CFLAGS) -o test_graphs test_utils.o $(OBJS_P1)
 	@echo "\nRunning utilities tests..."
 	$(VALGRIND_CMD) ./test_graphs
 	$(CC) $(CFLAGS) -o test_graphs test_api.o $(OBJS_P1)
 	@echo "\nRunning API tests..."
+	$(VALGRIND_CMD) ./test_graphs
+	$(CC) $(CFLAGS) -o test_graphs test_digraph.o $(OBJS_P1)
+	@echo "\nRunning digraph tests..."
 	$(VALGRIND_CMD) ./test_graphs
 	$(CC) $(CFLAGS) -o test_graphs test_network.o $(OBJS_P1)
 	@echo "\nRunning API tests for flow networks..."
@@ -84,6 +87,8 @@ insertionArray.o: c/insertionArray.h
 	$(CC) $(CFLAGS) -c c/insertionArray.c
 diapi.o: c/diapi.c c/diapi.h c/graphStruct.h
 	$(CC) $(CFLAGS) -c c/diapi.c
+test_digraph.o: 
+	$(CC) $(CFLAGS) -c c/test_digraph.c
 
 
 

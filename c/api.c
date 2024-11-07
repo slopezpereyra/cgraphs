@@ -30,7 +30,7 @@ Graph *initGraph(u32 n, u32 m, g_flag flags) {
     G->_formatted = true;
     G->_g_flag = flags;
 
-    if (flags == F_FLAG){
+    if (flags & D_FLAG){
         G->_indegrees = (u32*)calloc(n, sizeof(u32));
         G->_outdegrees = (u32*)calloc(n, sizeof(u32));
     }else
@@ -351,6 +351,8 @@ Graph * readGraph(char *filename) {
         FLAG = C_FLAG;
     } else if (strcmp(flag_str, "STD_FLAG") == 0) {
         FLAG = STD_FLAG;
+    } else if (strcmp(flag_str, "D_FLAG") == 0) {
+        FLAG = D_FLAG;
     } else {
         printf("ERROR: Unknown flag '%s'.\n", flag_str);
         return NULL;
