@@ -106,9 +106,8 @@ specifies
 To read a graph from a `.txt` in Penazzi format, use `readGraph(char
 *filename)` function, which returns a pointer to a `Graph`.
 
-A `Graph G*` can be written in a `.txt` file in Penazzi format (for instance,
-to be read by a graph plotting algorithm) using the `writeGraph(Graph *G, char
-*fname)` function.
+A `Graph *G` can be written in a `.txt` file in Penazzi format sing the
+`writeGraph(Graph *G, char *fname)` function.
 
 #### Initializing a graph
 
@@ -118,23 +117,21 @@ To initialize a graph with `n` vertices, `m` edges, use the function
 Graph G* initGraph(n, m, FLAG) // Set FLAG to a valid flag
 ```
 
-Upon initialization, all edges in `G` are set to `{0, 0}`. Memory is not
-allocated for edge weights nor vertex colors if the weighted/colored flags are
-not used. This allows all kinds of graphs to share a common API without using
-unnecessary memory.
+Upon initialization, all edges in `G` are set to `{0, 0}`. No unnecessary
+memory is allocated - i.e. memory for the colors, weights, or capacities is
+only allocated for colored, weighted, or flow-network graphs.
 
-To add an edge, the function
+To set the value of an edge in a `Graph`, call 
 
 ```c
 void setEdge(Graph* G, u32 i, u32 x, u32 y, u32 *w, u32 *c)
 ```
 
-
 This function sets the `i`th edge to `(x, y)`. `w` is either `NULL` (if the
-graph is not weighted) or a pointer to a `u32`, if the graph is weighted. The
-same applies to `*c`, depending on whether the graph is a flow network or not.
-Passing a non-null `w` pointer to the function with a non-weighted graph `G` is
-undefined behavior and will produce a crash.
+graph is not weighted) or a pointer to a `u32`, if the graph is weighted.
+Naturally, $0 \leq i < |E|$ is a restriction.  The `w` and `c` pointers (weight
+and capacity) should be NULL if the graph is not weighted (`w`) or is not a
+flow network (`c`).
 
 **It is fundamental to call** to call `formatEdges(G)` after dynamically
 creating a graph with calls to the `setEdge` function.
@@ -143,9 +140,9 @@ For instance,
 
 ```c
 Graph *G = initGraph(4, 3, STD_FLAG);
-setEdge(G, 0, 0, 1, NULL);
-setEdge(G, 1, 1, 2, NULL);
-setEdge(G, 2, 1, 3, NULL);
+setEdge(G, 0, 0, 1, NULL, NULL);
+setEdge(G, 1, 1, 2, NULL, NULL);
+setEdge(G, 2, 1, 3, NULL, NULL);
 formatEdges(G);
 ```
 
@@ -176,7 +173,6 @@ Existing edges can be removed with the void
 void removeEdge(struct Graph *G, u32 x, u32 y) 
 ```
 
-
 function. Both functions perform the necessary memory reallocations and update
 the graph attributes (e.g. $\Delta(G)$, $d(x)$, $d(y)$). They also  call
 `formatEdges(G)` implicitly, so there is no need for an implicit call to this
@@ -184,14 +180,18 @@ function afterwards.
 
 #### Graph and vertex attributes
 
+Here are some common graph properties and the function calls they 
+relate to.
+
 The number of edges or vertices in a graph can be found with the
 `numberOfVertices(Graph *G)` or `numberOfEdges(Graph *G)` functions. The same
 is true of the $\Delta(G)$, obtained with `Δ(Graph *G)`.
 
 Since edges in a graph are formatted and ordered, we can find the `j`th
 neighbour of vertex `i` with the `neighbour(u32 j, u32 i, Graph G*)`
-function. For instance, in the graph generated above, the `j=0` (first)
-neighbour of vertex `1` is `2`, and the `j=1` neighbour of vertex `1` is `3`.
+function. We are assuming the neighbours of a vertex are ordered increasingly. 
+For instance, in the graph generated above, the `j=0` (first) neighbour of
+vertex `1` is `2`, and the `j=1` neighbour of vertex `1` is `3`.
 
 If the graph is directed, the `j`th neighbour is understood to be the 
 `j`th *target*, i.e. the neighbours of a vertex are those vertices it 
