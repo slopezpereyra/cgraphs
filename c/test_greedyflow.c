@@ -12,7 +12,6 @@ void test_greedyflow(){
     assert(G != NULL);
 
     greedyFlow(G, 0, 5, flowBFS);
-    printGraph(G);
 
 
     Graph *W = readGraph("graphs/greedyflow.txt");
@@ -21,6 +20,7 @@ void test_greedyflow(){
     printf("Attempting FLOW DFS\n");
     greedyFlow(W, 0, 5, flowDFS);
     printGraph(W);
+    printGraph(G);
 
 }
 

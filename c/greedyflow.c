@@ -152,11 +152,6 @@ u32 greedyFlow(Graph *N, u32 s, u32 t, SearchFunction searchFunc) {
         if (edgesInPath == NULL)
             break;
 
-        for (u32 i = 0; i < numberOfVertices(N); i++){
-            printf("InsArray[%d] = %d\n", i, insArrayGet(i, edgesInPath));
-        }
-        printf("\n********************************\n");
-
         u32 v = t;
         u32 flowToSend = INT_MAX;
         u32 w, remainingCapacity;
@@ -172,7 +167,6 @@ u32 greedyFlow(Graph *N, u32 s, u32 t, SearchFunction searchFunc) {
         }
         // Traverse the insertion array again to update the flow
         v = t;
-        printf("\nSending %d\n", flowToSend);
         flowValue += flowToSend;
         while (v != s) {
             w = insArrayGet(v, edgesInPath);

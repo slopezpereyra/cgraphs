@@ -39,7 +39,6 @@ void testBFS() {
    
     Graph *BFSResult = BFS(G, 0); // Run BFS from vertex 0
     assert(BFSResult != NULL);
-    printGraph(BFSResult);
 
     // Verify BFS tree structure
     assert(isNeighbour(0, 1, BFSResult));

@@ -1,7 +1,7 @@
 # Compiler and flags
 CC=gcc
 CFLAGS = -Wall -Wextra -O3 -std=c99 -g
-OBJS_P1 = api.o coloring.o queue.o heap.o search.o generator.o utils.o dijkstra.o prim.o greedyflow.o insertionArray.o
+OBJS_P1 = api.o coloring.o queue.o heap.o search.o generator.o utils.o dijkstra.o prim.o greedyflow.o insertionArray.o diapi.o
 
 VALGRIND_FLAGS = --leak-check=full --show-reachable=yes
 VALGRIND_CMD = $(if $(VALGRIND),valgrind $(VALGRIND_FLAGS),)
@@ -82,6 +82,8 @@ test_greedyflow.o:
 	$(CC) $(CFLAGS) -c c/test_greedyflow.c
 insertionArray.o: c/insertionArray.h
 	$(CC) $(CFLAGS) -c c/insertionArray.c
+diapi.o: c/diapi.c c/diapi.h c/graphStruct.h
+	$(CC) $(CFLAGS) -c c/diapi.c
 
 
 

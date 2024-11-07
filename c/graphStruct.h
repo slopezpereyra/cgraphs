@@ -5,10 +5,12 @@
 #include <stdbool.h>
 
 typedef unsigned int g_flag;
-#define C_FLAG (1 << 0) // 01
-#define W_FLAG (1 << 1) // 10 
-#define F_FLAG (W_FLAG | (1 << 2)) // 100
-#define STD_FLAG (0)    // 00
+
+#define STD_FLAG (0)    // 0000
+#define C_FLAG (1 << 0) // 0001
+#define W_FLAG (1 << 1) // 0010 
+#define D_FLAG (1 << 2) // 0100
+#define F_FLAG (W_FLAG | D_FLAG) // 0110
 
 typedef uint32_t u32;
 typedef u32 color;
@@ -26,7 +28,10 @@ typedef struct {
     u32 m;              
     u32 Δ;          
     u32* _degrees;   
+    u32* _outdegrees;   
+    u32* _indegrees;   
     Edge *_edges;        
+    u32 _edgeArraySize;        
     color* _colors;    
     u32* _firstneighbour; 
     bool _formatted;

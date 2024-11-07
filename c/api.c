@@ -4,6 +4,7 @@
  */
 
 #include "api.h"
+#include "diapi.h"
 #include "utils.h"
 #include <assert.h>
 #include <stdio.h>
@@ -20,11 +21,20 @@ Graph *initGraph(u32 n, u32 m, g_flag flags) {
     G->n = n;
     G->m = m;
     G->Δ = 0;
-    G->_edges = (Edge*)calloc(2 * m, sizeof(Edge));
+
+    G->_edgeArraySize = flags & D_FLAG ? m : 2*m;
+
+
+    G->_edges = (Edge*)calloc(G->_edgeArraySize, sizeof(Edge));
     G->_firstneighbour = (u32*)calloc(n, sizeof(u32));
-    G->_degrees = (u32*)calloc(n, sizeof(u32));
     G->_formatted = true;
     G->_g_flag = flags;
+
+    if (flags == F_FLAG){
+        G->_indegrees = (u32*)calloc(n, sizeof(u32));
+        G->_outdegrees = (u32*)calloc(n, sizeof(u32));
+    }else
+        G->_degrees = (u32*)calloc(n, sizeof(u32));
 
     G->_colors = (flags & C_FLAG) ? (u32*)calloc(n, sizeof(u32)) : NULL;
     
@@ -38,6 +48,7 @@ Graph *initGraph(u32 n, u32 m, g_flag flags) {
  * @return `true` if `{x, y} ∈ E(G)`, `false` otherwise.
  */
 bool isNeighbour(u32 x, u32 y, Graph *G){
+    assert(G != NULL);
     for (u32 i = 0; i < degree(x, G); i++){
         if (neighbour(i,x, G) == y){
             return(true);
@@ -84,9 +95,10 @@ int compareEdges(const void* a, const void* b) {
  *       once after all these calls for efficiency.
  *
  */
-void setEdge(Graph *G, u32 i, u32 x, u32 y, u32 *w, u32 *c) {
+void setEdgeStdGraph(Graph *G, u32 i, u32 x, u32 y, u32 *w, u32 *c) {
     assert(G != NULL);
     assert(i < numberOfEdges(G));
+
     if (w != NULL) {assert(G->_g_flag & W_FLAG);}
     if (c != NULL) {assert(G->_g_flag & F_FLAG);}
 
@@ -110,6 +122,13 @@ void setEdge(Graph *G, u32 i, u32 x, u32 y, u32 *w, u32 *c) {
     (G->_degrees)[y]++;
     (G->Δ) = max(max((G->_degrees)[x], (G->_degrees)[y]), G->Δ);
     G->_formatted = false;
+}
+
+void setEdge(Graph *G, u32 i, u32 x, u32 y, u32 *w, u32 *c){
+    if (G->_g_flag & D_FLAG)
+        setEdgeDigraph(G, i, x, y, w, c);
+    else 
+        setEdgeStdGraph(G, i, x, y, w, c);
 }
 
 bool isFormatted(Graph *G){
@@ -157,29 +176,50 @@ void addEdge(Graph *G, u32 x, u32 y, u32 *w, u32 *c) {
     if (w != NULL) {assert(G->_g_flag & W_FLAG);}
     if (c != NULL) {assert(G->_g_flag & F_FLAG);}
 
+    bool isDirected = (G->_g_flag & D_FLAG);
+
     (G->m)++;
-    G->_edges = (Edge*)realloc(G->_edges, 2*(G->m) * sizeof(Edge));
-    (G->_edges)[2*( G->m )-2].x = x;
-    (G->_edges)[2*( G->m )-2].y = y;
-    (G->_edges)[2*( G->m )-1].x = y;
-    (G->_edges)[2*( G->m )-1].y = x;
+    (G->_edgeArraySize) = isDirected ? G -> m : 2 * G-> m;
+    G->_edges = (Edge*)realloc(G->_edges, G->_edgeArraySize * sizeof(Edge));
+
+    if (isDirected){
+        (G->_edges)[( G->_edgeArraySize )-1].x = x;
+        (G->_edges)[( G->_edgeArraySize )-1].y = y;
+    }else{
+        (G->_edges)[( G->_edgeArraySize )-2].x = x;
+        (G->_edges)[( G->_edgeArraySize )-2].y = y;
+        (G->_edges)[( G->_edgeArraySize )-1].x = y;
+        (G->_edges)[( G->_edgeArraySize )-1].y = x;
+    }
 
     if (w != NULL){
-        (G->_edges)[2*( G->m )-2].w = (u32*)malloc(sizeof(u32));
-        (G->_edges)[2*( G->m )-1].w = (u32*)malloc(sizeof(u32));
-        *((G->_edges)[2*( G->m )-2].w) = *w; 
-        *((G->_edges)[2*( G->m )-1].w) = *w; 
+        (G->_edges)[(G->_edgeArraySize)-1].w = (u32*)malloc(sizeof(u32));
+        *((G->_edges)[(G->_edgeArraySize)-1].w) = *w; 
+        if (!isDirected){
+            (G->_edges)[(G->_edgeArraySize)-2].w = (u32*)malloc(sizeof(u32));
+            *((G->_edges)[(G->_edgeArraySize)-2].w) = *w; 
+        }
     }
     if (c != NULL){
-        (G->_edges)[2*( G->m )-2].c = (u32*)malloc(sizeof(u32));
-        (G->_edges)[2*( G->m )-1].c = (u32*)malloc(sizeof(u32));
-        *((G->_edges)[2*( G->m )-2].c) = *c; 
-        *((G->_edges)[2*( G->m )-1].c) = *c; 
+        (G->_edges)[(G->_edgeArraySize)-1].c = (u32*)malloc(sizeof(u32));
+        *((G->_edges)[(G->_edgeArraySize)-1].c) = *c; 
+        if (!isDirected){
+            (G->_edges)[(G->_edgeArraySize)-2].c = (u32*)malloc(sizeof(u32));
+            *((G->_edges)[(G->_edgeArraySize)-2].c) = *c; 
+        }
+    }
+
+    if (isDirected){
+        (G->_outdegrees)[x]++;
+        (G->_indegrees)[y]++;
+        (G -> Δ) = max( G -> Δ, (G->_outdegrees)[x] );
+    }
+    else{
+        (G->_degrees)[x]++;
+        (G->_degrees)[y]++;
+        (G -> Δ) = max( G -> Δ, max((G->_degrees)[x], (G->_degrees)[y])  );
     }
    
-    (G->_degrees)[x]++;
-    (G->_degrees)[y]++;
-    (G -> Δ) = max( G -> Δ, max((G->_degrees)[x], (G->_degrees)[y])  );
     if ((G->_edges) == NULL) {
         printf("Error: Realloc failed\n");
         exit(1);
@@ -200,6 +240,8 @@ void addEdge(Graph *G, u32 x, u32 y, u32 *w, u32 *c) {
 void removeEdge(Graph *G, u32 x, u32 y) {
     assert(isFormatted(G));
     assert(x != y);
+
+    // WE ARE NOT UPDATEING EDGE ARRAY SZE;
     assert((G -> m) > 1);
 
     if (x > y){
@@ -207,25 +249,33 @@ void removeEdge(Graph *G, u32 x, u32 y) {
         x = y;
         y = temp;
     }
-    
     assert(isNeighbour(x, y, G));
+    bool isDirected = (G->_g_flag & D_FLAG);
    
     u32 index1 = edgeIndex(G, x, y);
     u32 index2 = edgeIndex(G, y, x) - 1;
-    for (u32 i = index1; i < 2*(G -> m)-1; i++) {
+    for (u32 i = index1; i < (G->_edgeArraySize)-1; i++) {
         (G->_edges)[i] = (G->_edges)[i + 1];
     }
-    for (u32 i = index2; i < 2*(G -> m) - 1; i++) {
+    for (u32 i = index2; i < (G->_edgeArraySize) - 1; i++) {
             (G->_edges)[i] = (G->_edges)[i + 1];
     }
     (G->m)--;
-    Edge *temp = (Edge *)realloc(G->_edges, 2 * (G->m) * sizeof(Edge));
-    if (temp == NULL && 2 * (G->m) > 0) {
+    G->_edgeArraySize = isDirected ? G->m : 2*G->m;
+    Edge *temp = (Edge *)realloc(G->_edges, G->_edgeArraySize * sizeof(Edge));
+    if (temp == NULL && G->_edgeArraySize > 0) {
         exit(1);
     }
     G->_edges = temp;
-    (G->_degrees)[x]--;
-    (G->_degrees)[y]--;
+
+    if (isDirected){
+        (G->_outdegrees)[x]--;
+        (G->_indegrees)[y]--;
+    }else{
+        (G->_degrees)[x]--;
+        (G->_degrees)[y]--;
+    }
+
     if ((G->_edges) == NULL) {
         printf("Error: Realloc failed\n");
         exit(1);
@@ -349,9 +399,12 @@ Graph * readGraph(char *filename) {
  *
  */
 void formatEdges(Graph *G){
-    qsort(G->_edges, 2 * (G->m), sizeof(Edge), compareEdges);
+    qsort(G->_edges, G->_edgeArraySize, sizeof(Edge), compareEdges);
     for (u32 j = 1; j < (G->n); j++) {
-        (G->_firstneighbour)[j] = (G->_firstneighbour[j - 1]) + (G->_degrees)[j - 1];
+        if (G->_g_flag & D_FLAG)
+            (G->_firstneighbour)[j] = (G->_firstneighbour[j - 1]) + (G->_outdegrees)[j - 1];
+        else
+            (G->_firstneighbour)[j] = (G->_firstneighbour[j - 1]) + (G->_degrees)[j - 1];
     };
     G->_formatted = true;
 }
@@ -365,19 +418,24 @@ void dumpGraph(Graph *G) {
     if (G != NULL) {
         if (G->_g_flag & W_FLAG)
         {
-            for (u32 i = 0; i < 2*G->m; i++){
+            for (u32 i = 0; i < G->_edgeArraySize; i++){
                 free(G->_edges[i].w);
             }
 
         }
         free(G->_edges);
-        free(G->_degrees);
         free(G->_firstneighbour);
         if (G->_colors != NULL)
         {
             free(G->_colors);
 
         }
+        if (G->_g_flag & D_FLAG){
+            free(G->_outdegrees);
+            free(G->_indegrees);
+        }else
+            free(G->_degrees);
+
         free(G);
     }
 }
@@ -417,10 +475,11 @@ u32 Δ(Graph *G) {
  */
 u32 degree(u32 i, Graph *G) {
     assert(G != NULL);
-    if (i < G->n) {
-        return (G->_degrees)[i];
-    }
-    return 0;
+    assert(i < G->n);
+
+    if (G->_g_flag & D_FLAG)
+        return (G->_outdegrees)[i];
+    return (G->_degrees)[i];
 }
 
 /**
@@ -442,7 +501,7 @@ color getColor(u32 i, Graph *G) {
  *
  */
 Edge getIthEdge(u32 i, Graph *G) {
-    assert(G != NULL && i < 2* numberOfEdges(G));
+    assert(G != NULL && i < G->_edgeArraySize);
     return ( G->_edges )[i];
 }
 
@@ -512,10 +571,10 @@ void setColor(color x, u32 i, Graph *G) {
 void printEdges(Graph *G) {
     assert(G != NULL);
     printf("\nEdges:\n");
-    for (u32 i = 0; i < 2 * (G->m); i++) {
+    for (u32 i = 0; i < G->_edgeArraySize; i++) {
         Edge e = getIthEdge(i, G);
         if (G -> _g_flag == F_FLAG) 
-            printf("%d ~ %d  (%d)  [%d]\n", e.x, e.y, *e.w, *e.c);
+            printf("%d ~~> %d  (%d)  [%d]\n", e.x, e.y, *e.w, *e.c);
         else if (G->_g_flag & W_FLAG)
             printf("%d ~ %d  (%d)\n", e.x, e.y, *e.w);
         else
@@ -532,7 +591,12 @@ void printVertices(Graph *G) {
     assert(G != NULL);
     printf("\nVertices:\n");
     for (u32 i = 0; i < G->n; i++) {
-        printf("Vertex %d: degree %d - Index in edge array %d\n", i,
+        if (G->_g_flag & D_FLAG)
+            printf("Vertex %d: out = %d | in = %d - Index in edge array %d\n", i,
+               (G->_outdegrees)[i], (G->_indegrees)[i], (G->_firstneighbour)[i]);
+
+        else
+            printf("Vertex %d: degree %d - Index in edge array %d\n", i,
                (G->_degrees)[i], (G->_firstneighbour)[i]);
     };
 }
