@@ -5,19 +5,29 @@
 </div>
 
 *C-Graphs* is a powerful and lightweight C library for (labeled) graph
-generation, manipulation, and traversal. It offers implementations of elemental
-graph traversal and coloring algorithms, as well as more sophisticated
-algorithms for the generation of random connected graphs.
+generation, manipulation, and traversal. One of its unique features is that it
+provides a common API for all kinds of graphs: simple graphs, directed graphs,
+weighted graphs, colored graphs, and flow networks. This means the user has to
+learn a single shared API: the library will *sub rosa* handle the specifics of
+whichever kind of graph is being used. 
+
+The library implements algorithms standard to graph theory (e.g. graph
+traversal with BFS/DFS, greedy coloring, Dijkstra's and Prim's algorithm for
+weighted graphs, etc.). It also provides implementations of algorithms which I
+have developed, detailed
+[here](https://slopezpereyra.github.io/2024-07-08-RanGraphGen/), for the
+generation of random *connected* graphs.
+
 
 - [API Overview](#api-overview)
     - [Reading and writing a graph](#reading-and-writing-a-graph)
     - [Initializing a graph](#initializing-a-graph)
     - [Modifying an existing graph](#modifying-an-existing-graph)
     - [Graph and vertex attributes](#graph-and-vertex-attributes)
-- [Weighted graphs](#weighted-graphs)
+- [Weighted graph algorithms](#weighted-graphs-algorithms)
     - [Dijkstra's algorithm](#dijkstras-algorithm)
     - [Prim's algorithm](#dijkstras-algorithm)
-- [Flow networks](#flow-networks)
+- [Flow network algorithms](#flow-network-algorithms)
     - [Greedy flow](#greedy-flow)
 - [Random graph generation](#random-graph-generation)
     - [Bottom-up approach](#bottom-up-approach)
@@ -36,6 +46,21 @@ accessed in constant or almost constant time in most cases. This makes it
 possible to handle extremely large graphs, though at the expense of some extra
 memory consumption.
 
+#### The Graph struct
+
+The central struct in this library is the `Graph` struct. The most important field of 
+this struct is a (private) bit-flag of one of the following values:
+
+- `STD_FLAG` : Specifies that this is a "standard" graph, i.e. unweighted, uncolored, undirected.
+- `D_FLAG` : Specifies that this is a directed graph.
+- `W_FLAG` : Specifies that this is a weighted graph.
+- `C_FLAG`: Specifies that this is a colored graph.
+- `F_FLAG`: Specifies that this is a flow network.
+
+One may combine this flags with the `|` operator. For example, `D_FLAG | W_FLAG
+= F_FLAG` specifies a directed weighted graph (a flow network, without loss of
+generality), and `D_FLAG | C_FLAG` specifies a directed colored graph.
+
 #### Reading and writing a graph
 
 A `stuct Graph *` pointer may be initialized or read from a `.txt` file in a 
@@ -43,13 +68,13 @@ special format, which we call the *Penazzi format*. A `.txt` file is in
 the Penazzi format if it satisfies the following conditions:
 
 - Its first line is of the form `p n m FLAG`, with `n, m`
-natural numbers and `FLAG` one of the follownig strings:
-    - `STD_FLAG` : Specifies that this is a "standard" graph, i.e. unweighted and uncolored.
-    - `W_FLAG` : Specifies that this is a weighted graph.
-    - `C_FLAG`: Specifies that this is a colored graph.
-- The rest of the lines are of the form `e x y` for standard graphs 
-or `e x y w` for weighted graphs. Each `x y` pair is read into an edge,
-with weight `w` if the graph is weighted.
+natural numbers and `FLAG` one of the bit-flags introduced above.
+- The rest of the lines are of the form 
+    - `e x y` for standard graphs or directed graphs.
+    - `e x y w` for weighted graphs. Each `x y` pair is read into an edge, with
+    weight `w` if the graph is weighted.
+    - `e x y w c` for flow networks, where `c` specifies the capacity of the
+    edge and `w` its weight (i.e. its current flow).
 
 
 For instance,
@@ -106,8 +131,7 @@ instance, to be read by a graph plotting algorithm) using the
 To initialize a graph with `n` vertices, `m` edges, use the function
 
 ```c 
-Graph G* initGraph(n, m, FLAG) // Set FLAG to STD_FLAG, W_FLAG or C_FLAG, or 
-                               // a combination (e.g. W_FLAG | G_FLAG)
+Graph G* initGraph(n, m, FLAG) // Set FLAG to a valid flag
 ```
 
 Upon initialization, all edges in `G` are set to `{0, 0}`. Memory is not
@@ -118,12 +142,13 @@ unnecessary memory.
 To add an edge, the function
 
 ```c
-void setEdge(Graph* G, u32 i, u32 x, u32 y, u32 * w)
+void setEdge(Graph* G, u32 i, u32 x, u32 y, u32 *w, u32 *c)
 ```
 
 
-This function sets the `i`th edge to `(x, y)`, with `w` either `NULL` (if the
-graph is not weighted) or a pointer to a `u32`, if the graph is weighted.
+This function sets the `i`th edge to `(x, y)`. `w` is either `NULL` (if the
+graph is not weighted) or a pointer to a `u32`, if the graph is weighted. The
+same applies to `*c`, depending on whether the graph is a flow network or not.
 Passing a non-null `w` pointer to the function with a non-weighted graph `G` is
 undefined behavior and will produce a crash.
 
@@ -158,11 +183,10 @@ required for storing this number of edges. However, new edges can be added with
 the function
 
 ```c
-void addEdge(Graph *G, u32 x, u32 y, NULL)
+void addEdge(Graph *G, u32 x, u32 y, u32 *w, u32 *c)
 ```
 
-Existing edges can be
-removed with the void 
+Existing edges can be removed with the void 
 
 ```c 
 void removeEdge(struct Graph *G, u32 x, u32 y) 
@@ -185,17 +209,23 @@ neighbour of vertex `i` with the `neighbour(u32 j, u32 i, Graph G*)`
 function. For instance, in the graph generated above, the `j=0` (first)
 neighbour of vertex `1` is `2`, and the `j=1` neighbour of vertex `1` is `3`.
 
+If the graph is directed, the `j`th neighbour is understood to be the 
+`j`th *target*, i.e. the neighbours of a vertex are those vertices it 
+leads to.
 
 The `bool isNeighbour(u32 x, u32 y, Graph *G)` returns `true` if $\{x, y\} \in
 E(G)$ and `false` otherwise.
 
-The degree of vertex `i` can be found with `degree(u32 i, Graph G*)`,
-and its color can be obtained or set with the `getColor(u32 i, Graph
-G*)` or `setColor(color x, u32 i, Graph *G)` functions. The `color` type
-is a mask over `u32`. If a graph has not been colored, the color of all
-vertices is set to zero.
+The degree of vertex `i` can be found with `degree(u32 i, Graph *G)`. Again, if
+the graph is directed, the degree is taken to be the number of vertices the
+vertex leads to. To find the number of vertices which lead into the vertex, use
+`inDegree(u32 i, Graph *G)`.
 
-## Weighted graphs 
+The color of a vertex be obtained or set with the `getColor(u32 i, Graph G*)`
+or `setColor(color x, u32 i, Graph *G)` functions. If a graph has not been
+colored, the color of all vertices is set to zero.
+
+## Weighted graph algorithms
 
 #### Dijkstra's algorithm
 
@@ -226,7 +256,7 @@ Graph *prim(Graph *G, u32 startVertex) {
 returns a pointer to a `Graph`, and the `Graph` pointed to is the found MST of
 `G`.
 
-## Flow networks
+## Flow network algorithms
 
 The flag `F_FLAG` specifies that a `Graph` is a flow network. 
 
