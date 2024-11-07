@@ -4,19 +4,9 @@
     <img src="logo.png" style="width:200px;height:200px;">
 </div>
 
-*C-Graphs* is a powerful and lightweight C library for (labeled) graph
-generation, manipulation, and traversal. One of its unique features is that it
-provides a common API for all kinds of graphs: simple graphs, directed graphs,
-weighted graphs, colored graphs, and flow networks. This means the user has to
-learn a single shared API: the library will *sub rosa* handle the specifics of
-whichever kind of graph is being used. 
-
-The library implements algorithms standard to graph theory (e.g. graph
-traversal with BFS/DFS, greedy coloring, Dijkstra's and Prim's algorithm for
-weighted graphs, etc.). It also provides implementations of algorithms which I
-have developed, detailed
-[here](https://slopezpereyra.github.io/2024-07-08-RanGraphGen/), for the
-generation of random *connected* graphs.
+A powerful and lightweight C library for graph theory. A single, common API 
+is provided for all kinds of graphs (directed, weighted, flow networks, etc.),
+making it easy to learn and use. 
 
 
 - [API Overview](#api-overview)
@@ -38,41 +28,32 @@ generation of random *connected* graphs.
 
 ## API Overview 
 
-The fundamental structure in this library is the `Graph`. A `struct Graph` of
-$n$ vertices always has vertices $0, \ldots, n-1$.
+The fundamental type in this library is the struct `Graph`. A `Graph` of $n$
+vertices always has vertices $0, \ldots, n-1$. A `Graph` is of a particular 
+type, as indicated by one of the following bit-flags:
 
-Graph's properties, such as the degree of a vertex or its neighbours, is
-accessed in constant or almost constant time in most cases. This makes it
-possible to handle extremely large graphs, though at the expense of some extra
-memory consumption.
+- `STD_FLAG` : A "standard" graph, i.e. unweighted, uncolored, undirected.
+- `D_FLAG` : A directed graph.
+- `W_FLAG` : A weighted graph.
+- `C_FLAG`: A colored graph.
+- `F_FLAG`: A flow network.
 
-#### The Graph struct
-
-The central struct in this library is the `Graph` struct. The most important field of 
-this struct is a (private) bit-flag of one of the following values:
-
-- `STD_FLAG` : Specifies that this is a "standard" graph, i.e. unweighted, uncolored, undirected.
-- `D_FLAG` : Specifies that this is a directed graph.
-- `W_FLAG` : Specifies that this is a weighted graph.
-- `C_FLAG`: Specifies that this is a colored graph.
-- `F_FLAG`: Specifies that this is a flow network.
-
-One may combine this flags with the `|` operator. For example, `D_FLAG | W_FLAG
-= F_FLAG` specifies a directed weighted graph (a flow network, without loss of
-generality), and `D_FLAG | C_FLAG` specifies a directed colored graph.
+One may combine these flags with the `|` operator. For example, `D_FLAG |
+W_FLAG` specifies a directed weighted graph.
 
 #### Reading and writing a graph
 
-A `stuct Graph *` pointer may be initialized or read from a `.txt` file in a 
-special format, which we call the *Penazzi format*. A `.txt` file is in 
-the Penazzi format if it satisfies the following conditions:
+##### The Penazzi format
+
+A `stuct Graph *` pointer may be initialized or read from a `.txt` file in a
+special format, which we call the *Penazzi format*. A `.txt` file is in the
+Penazzi format if it satisfies the following conditions:
 
 - Its first line is of the form `p n m FLAG`, with `n, m`
 natural numbers and `FLAG` one of the bit-flags introduced above.
-- The rest of the lines are of the form 
-    - `e x y` for standard graphs or directed graphs.
-    - `e x y w` for weighted graphs. Each `x y` pair is read into an edge, with
-    weight `w` if the graph is weighted.
+- The rest of the lines are of the form:
+    - `e x y` for standard graphs or directed graphs, indicating that $\\{x,y\\} \in E(G)$ (or $(x, y) \in E(G)$ in the directed case).
+    - `e x y w` for weighted graphs, where `w` is the weight $w$ of the edge $\\{x, y\\}$ or $(x, y)$.
     - `e x y w c` for flow networks, where `c` specifies the capacity of the
     edge and `w` its weight (i.e. its current flow).
 
@@ -120,11 +101,14 @@ specifies
       2   3
 ```
 
-To read a graph from a `.txt` in Penazzi format, use `readGraph(char *filename)` function, which returns a pointer to a `Graph`.
+##### Read/write operations
 
-A `Graph G*` can be written in a `.txt` file in Penazzi format (for
-instance, to be read by a graph plotting algorithm) using the
-`writeGraph(Graph *G, char *fname)` function.
+To read a graph from a `.txt` in Penazzi format, use `readGraph(char
+*filename)` function, which returns a pointer to a `Graph`.
+
+A `Graph G*` can be written in a `.txt` file in Penazzi format (for instance,
+to be read by a graph plotting algorithm) using the `writeGraph(Graph *G, char
+*fname)` function.
 
 #### Initializing a graph
 
