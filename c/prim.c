@@ -1,20 +1,20 @@
 /**
  * @file prim.c
- * @brief An implementation of Prim's algorithm for generating a spanning tree 
+ * @brief An implementation of Prim's algorithm for generating a spanning tree
  * of a weighted graph which minimizes the sum of the weights of the used edges.
  */
 
 #include "api.h"
-#include "utils.h"
 #include "heap.h"
+#include "utils.h"
 #include <assert.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <limits.h>
 
 // helper function
-void addEdgesToHeap(u32 root, Heap *heap, bool* inMST, Graph *G){
+void addEdgesToHeap(u32 root, Heap *heap, bool *inMST, Graph *G) {
 
   u32 rootIndex = firstNeighbourIndex(G, root);
 
@@ -22,7 +22,6 @@ void addEdgesToHeap(u32 root, Heap *heap, bool* inMST, Graph *G){
     u32 w = neighbour(i, root, G);
     insert(heap, rootIndex + i, *getEdge(root, w, G).w);
   }
-
 }
 
 Graph *prim(Graph *G, u32 s) {
@@ -48,8 +47,6 @@ Graph *prim(Graph *G, u32 s) {
     addEdge(MST, edgeToAdd.x, edgeToAdd.y, edgeToAdd.w, NULL);
     inMST[newVertex] = 1;
     addEdgesToHeap(newVertex, heap, inMST, G);
-
-
   }
 
   free(inMST);

@@ -57,7 +57,6 @@ natural numbers and `FLAG` one of the bit-flags introduced above.
     - `e x y w c` for flow networks, where `c` specifies the capacity of the
     edge and `w` its weight (i.e. its current flow).
 
-
 For instance,
 
 ```

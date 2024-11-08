@@ -13,8 +13,8 @@
 typedef uint32_t u32;
 
 typedef struct {
-    u32 *array;
-    u32 size;
+  u32 *array;
+  u32 size;
 } InsertionArray;
 
 InsertionArray *createInsertionArray(u32 size);
