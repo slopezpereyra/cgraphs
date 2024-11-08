@@ -54,7 +54,7 @@ u32 getEdgeWeight(u32 x, u32 y, Graph *G);
  * @return The capacity of the edge between nodes x and y.
  *
  * @pre G must not be NULL.
- * @pre Graph must have the F_FLAG enabled for capacity values.
+ * @pre Graph must have the NETFLOW_FLAG enabled for capacity values.
  */
 u32 getEdgeCapacity(u32 x, u32 y, Graph *G);
 
@@ -92,7 +92,7 @@ u32 getIthEdgeCapacity(u32 i, Graph *G);
  *
  * @pre G must not be NULL.
  * @pre Graph must have the W_FLAG enabled for weighted edges.
- * @pre If the F_FLAG is enabled, the weight must not exceed the edge capacity.
+ * @pre If the NETFLOW_FLAG is enabled, the weight must not exceed the edge capacity.
  */
 void setEdgeWeight(u32 x, u32 y, u32 w, Graph *G);
 
@@ -118,7 +118,7 @@ void setEdgeCapacity(u32 x, u32 y, u32 c, Graph *G);
  *
  * @pre G must not be NULL.
  * @pre Graph must have the W_FLAG enabled for weighted edges.
- * @pre If the F_FLAG is enabled, the weight must not exceed the edge capacity.
+ * @pre If the NETFLOW_FLAG is enabled, the weight must not exceed the edge capacity.
  */
 void setIthEdgeWeight(u32 i, u32 w, Graph *G);
 
@@ -143,7 +143,7 @@ void setIthEdgeCapacity(u32 i, u32 c, Graph *G);
  * @param G Pointer to the Graph structure.
  *
  * @pre G must not be NULL.
- * @pre Graph must have the F_FLAG.
+ * @pre Graph must have the NETFLOW_FLAG.
  */
 u32 getRemainingCapacity(u32 x, u32 y, Graph *G);
 

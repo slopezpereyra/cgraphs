@@ -44,7 +44,7 @@ the Penazzi format if it satisfies the following conditions:
 natural numbers and `FLAG` one of the follownig strings:
     - `STD_FLAG` : Specifies that this is a "standard" graph, i.e. unweighted and uncolored.
     - `W_FLAG` : Specifies that this is a weighted graph.
-    - `C_FLAG`: Specifies that this is a colored graph.
+    - `COL_FLAG`: Specifies that this is a colored graph.
 - The rest of the lines are of the form `e x y` for standard graphs 
 or `e x y w` for weighted graphs. Each `x y` pair is read into an edge,
 with weight `w` if the graph is weighted.
@@ -104,7 +104,7 @@ instance, to be read by a graph plotting algorithm) using the
 To initialize a graph with `n` vertices, `m` edges, use the function
 
 ```c 
-Graph G* initGraph(n, m, FLAG) // Set FLAG to STD_FLAG, W_FLAG or C_FLAG, or 
+Graph G* initGraph(n, m, FLAG) // Set FLAG to STD_FLAG, W_FLAG or COL_FLAG, or 
                                // a combination (e.g. W_FLAG | G_FLAG)
 ```
 

@@ -10,13 +10,13 @@
  * edge counts.
  */
 void testInitGraph() {
-  Graph *G = initGraph(5, 3, F_FLAG);
+  Graph *G = initGraph(5, 3, NETFLOW_FLAG);
   assert(G->n == 5);
   assert(G->m == 3);
   assert(G->Δ == 0);
   assert(G->_g_flag & W_FLAG);
-  assert(G->_g_flag & F_FLAG);
-  assert(!(G->_g_flag & C_FLAG));
+  assert(G->_g_flag & NETFLOW_FLAG);
+  assert(!(G->_g_flag & COL_FLAG));
   for (u32 i = 0; i < G->_edgeArraySize; i++) {
     Edge e = (G->_edges)[i];
     assert(e.x == 0 && e.y == 0 && e.w == NULL && e.c == NULL);
@@ -36,8 +36,8 @@ void testInitGraph() {
  * degrees are updated.
  */
 void testAddEdge() {
-  Graph *G = initGraph(4, 1, F_FLAG);
-  assert(G->_g_flag & F_FLAG);
+  Graph *G = initGraph(4, 1, NETFLOW_FLAG);
+  assert(G->_g_flag & NETFLOW_FLAG);
   setEdge(G, 0, 1, 2, &(u32){10}, &(u32){10});
   addEdge(G, 0, 1, &(u32){5}, &(u32){5});
   addEdge(G, 0, 2, &(u32){5}, &(u32){10});

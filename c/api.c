@@ -28,14 +28,18 @@ Graph *initGraph(u32 n, u32 m, g_flag flags) {
   G->_firstneighbour = (u32 *)calloc(n, sizeof(u32));
   G->_formatted = true;
   G->_g_flag = flags;
-
+  
   if (flags & D_FLAG) {
     G->_indegrees = (u32 *)calloc(n, sizeof(u32));
     G->_outdegrees = (u32 *)calloc(n, sizeof(u32));
-  } else
+    G->_degrees = NULL;
+  } else{
     G->_degrees = (u32 *)calloc(n, sizeof(u32));
+    G->_indegrees = NULL;
+    G->_outdegrees = NULL;
+  }
 
-  G->_colors = (flags & C_FLAG) ? (u32 *)calloc(n, sizeof(u32)) : NULL;
+  G->_colors = (flags & COL_FLAG) ? (u32 *)calloc(n, sizeof(u32)) : NULL;
 
   return (G);
 }
@@ -102,7 +106,7 @@ void setEdgeStdGraph(Graph *G, u32 i, u32 x, u32 y, u32 *w, u32 *c) {
     assert(G->_g_flag & W_FLAG);
   }
   if (c != NULL) {
-    assert(G->_g_flag & F_FLAG);
+    assert(G->_g_flag & CAP_FLAG);
   }
 
   (G->_edges)[i].x = x;
@@ -175,7 +179,7 @@ void addEdge(Graph *G, u32 x, u32 y, u32 *w, u32 *c) {
     assert(G->_g_flag & W_FLAG);
   }
   if (c != NULL) {
-    assert(G->_g_flag & F_FLAG);
+    assert(G->_g_flag & CAP_FLAG);
   }
 
   bool isDirected = (G->_g_flag & D_FLAG);
@@ -329,11 +333,11 @@ Graph *readGraph(char *filename) {
   // Asignamos 6: 4 char para edge, 1 para \0
   // y 1 para chequear si esta mal la linea.
   char edge_str[6];
-  char flag_str[10];
+  char flag_str[20];
   int matched_format; // Por el ret de fscanf
 
   // Lectura del FILE hasta p edge
-  matched_format = fscanf(file, "%s %u %u %s", edge_str, &n, &m, flag_str);
+  matched_format = fscanf(file, "%s %u %u %19s", edge_str, &n, &m, flag_str);
 
   if (matched_format < 3) {
     printf("ERROR: No hay match.\n"); // NOTE printConsole
@@ -344,12 +348,14 @@ Graph *readGraph(char *filename) {
     return NULL;
   }
 
+  printf("CONSIDER ME: %s\n", flag_str);
+
   if (strcmp(flag_str, "W_FLAG") == 0) {
     FLAG = W_FLAG;
-  } else if (strcmp(flag_str, "F_FLAG") == 0) {
-    FLAG = F_FLAG;
-  } else if (strcmp(flag_str, "C_FLAG") == 0) {
-    FLAG = C_FLAG;
+  } else if (strcmp(flag_str, "NETFLOW_FLAG") == 0) {
+    FLAG = NETFLOW_FLAG;
+  } else if (strcmp(flag_str, "COL_FLAG") == 0) {
+    FLAG = COL_FLAG;
   } else if (strcmp(flag_str, "STD_FLAG") == 0) {
     FLAG = STD_FLAG;
   } else if (strcmp(flag_str, "D_FLAG") == 0) {
@@ -363,7 +369,7 @@ Graph *readGraph(char *filename) {
 
   for (u32 i = 0; i < m; i++) {
     u32 x, y, w, c;
-    if (FLAG == F_FLAG) {
+    if (FLAG & W_FLAG && FLAG & CAP_FLAG) {
       if (fscanf(file, "e %u %u %d %d\n", &x, &y, &w, &c) == 4)
         setEdge(G, i, x, y, &w, &c);
       else {
@@ -568,7 +574,7 @@ void printEdges(Graph *G) {
   printf("\nEdges:\n");
   for (u32 i = 0; i < G->_edgeArraySize; i++) {
     Edge e = getIthEdge(i, G);
-    if (G->_g_flag == F_FLAG)
+    if (G->_g_flag == NETFLOW_FLAG)
       printf("%d ~~> %d  (%d)  [%d]\n", e.x, e.y, *e.w, *e.c);
     else if (G->_g_flag & W_FLAG)
       printf("%d ~ %d  (%d)\n", e.x, e.y, *e.w);
@@ -640,7 +646,7 @@ u32 getEdgeWeight(u32 x, u32 y, Graph *G) {
 
 u32 getEdgeCapacity(u32 x, u32 y, Graph *G) {
   assert(G != NULL);
-  assert(G->_g_flag == F_FLAG);
+  assert(G->_g_flag & CAP_FLAG);
   return *(getEdge(x, y, G).c);
 }
 
@@ -652,7 +658,7 @@ u32 getIthEdgeWeight(u32 i, Graph *G) {
 
 u32 getIthEdgeCapacity(u32 i, Graph *G) {
   assert(G != NULL);
-  assert(G->_g_flag == F_FLAG);
+  assert(G->_g_flag & CAP_FLAG);
   return *(getIthEdge(i, G).c);
 }
 
@@ -660,7 +666,7 @@ void setEdgeWeight(u32 x, u32 y, u32 w, Graph *G) {
   assert(G != NULL);
   assert(G->_g_flag & W_FLAG);
   Edge e = getEdge(x, y, G);
-  if (G->_g_flag & F_FLAG)
+  if (G->_g_flag & CAP_FLAG)
     assert(w <= *e.c);
   *e.w = w;
 }
@@ -669,14 +675,14 @@ void increaseEdgeWeight(u32 x, u32 y, u32 delta, Graph *G) {
   assert(G != NULL);
   assert(G->_g_flag & W_FLAG);
   Edge e = getEdge(x, y, G);
-  if (G->_g_flag & F_FLAG)
+  if (G->_g_flag & CAP_FLAG)
     assert(*e.w + delta <= *e.c);
   *e.w = *e.w + delta;
 }
 
 void setEdgeCapacity(u32 x, u32 y, u32 c, Graph *G) {
   assert(G != NULL);
-  assert(G->_g_flag == F_FLAG);
+  assert(G->_g_flag & CAP_FLAG);
   *getEdge(x, y, G).c = c;
 }
 
@@ -684,20 +690,20 @@ void setIthEdgeWeight(u32 i, u32 w, Graph *G) {
   assert(G != NULL);
   assert(G->_g_flag & W_FLAG);
   Edge e = getIthEdge(i, G);
-  if (G->_g_flag & F_FLAG)
+  if (G->_g_flag & CAP_FLAG)
     assert(w <= *e.c);
   *e.w = w;
 }
 
 void setIthEdgeCapacity(u32 i, u32 c, Graph *G) {
   assert(G != NULL);
-  assert(G->_g_flag == F_FLAG);
+  assert(G->_g_flag & CAP_FLAG);
   *getIthEdge(i, G).c = c;
 }
 
 u32 getRemainingCapacity(u32 x, u32 y, Graph *G) {
   assert(G != NULL);
-  assert(G->_g_flag == F_FLAG);
+  assert(G->_g_flag & CAP_FLAG);
   Edge e = getEdge(x, y, G);
   return *e.c - *e.w;
 }

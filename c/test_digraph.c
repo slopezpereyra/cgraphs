@@ -16,8 +16,8 @@ void testInitGraph() {
   assert(G->_edgeArraySize == G->m);
   assert(G->Δ == 0);
   assert(!(G->_g_flag & W_FLAG));
-  assert(!(G->_g_flag & C_FLAG));
-  assert((G->_g_flag != F_FLAG));
+  assert(!(G->_g_flag & COL_FLAG));
+  assert((G->_g_flag != NETFLOW_FLAG));
   for (u32 i = 0; i < G->_edgeArraySize; i++) {
     Edge e = (G->_edges)[i];
     assert(e.x == 0 && e.y == 0 && e.w == NULL && e.c == NULL);
@@ -39,8 +39,8 @@ void testInitGraph() {
 void testAddEdge() {
   Graph *G = initGraph(4, 1, D_FLAG);
   assert(!(G->_g_flag & W_FLAG));
-  assert((G->_g_flag != F_FLAG));
-  assert(!(G->_g_flag & C_FLAG));
+  assert((G->_g_flag != NETFLOW_FLAG));
+  assert(!(G->_g_flag & COL_FLAG));
   setEdge(G, 0, 1, 2, NULL, NULL);
   addEdge(G, 0, 1, NULL, NULL);
   addEdge(G, 0, 2, NULL, NULL);

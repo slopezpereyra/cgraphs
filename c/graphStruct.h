@@ -7,10 +7,11 @@
 typedef unsigned int g_flag;
 
 #define STD_FLAG (0)             // 0000
-#define C_FLAG (1 << 0)          // 0001
+#define COL_FLAG (1 << 0)        // 0001
 #define W_FLAG (1 << 1)          // 0010
 #define D_FLAG (1 << 2)          // 0100
-#define F_FLAG (W_FLAG | D_FLAG) // 0110
+#define CAP_FLAG (1 << 3)        // 1000
+#define NETFLOW_FLAG (( W_FLAG | D_FLAG ) | CAP_FLAG) // 1110
 
 typedef uint32_t u32;
 typedef u32 color;

@@ -159,7 +159,7 @@ void testDegree() {
  * @brief Tests coloring functionality by setting and getting vertex colors.
  */
 void testColors() {
-  Graph *G = initGraph(3, 1, C_FLAG);
+  Graph *G = initGraph(3, 1, COL_FLAG);
   assert(G->_colors != NULL);
   setColor(2, 0, G);
   assert(getColor(0, G) == 2);

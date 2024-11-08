@@ -19,7 +19,7 @@
 
 InsertionArray *flowBFS(Graph *G, u32 s, u32 target) {
   assert(s != target);
-  assert(G->_g_flag == F_FLAG);
+  assert(G->_g_flag == NETFLOW_FLAG);
 
   u32 n = numberOfVertices(G);
   u32 *visited = genArray(n);
@@ -63,7 +63,7 @@ InsertionArray *flowBFS(Graph *G, u32 s, u32 target) {
 
 void flowDFSRecursive(u32 v, InsertionArray *track, u32 root, u32 t, bool *flag,
                       Graph *G) {
-  assert(G->_g_flag == F_FLAG);
+  assert(G->_g_flag == NETFLOW_FLAG);
   for (u32 i = 0; i < degree(v, G); i++) {
     if (*flag)
       return;
@@ -85,7 +85,7 @@ void flowDFSRecursive(u32 v, InsertionArray *track, u32 root, u32 t, bool *flag,
 }
 
 InsertionArray *flowDFS(Graph *G, u32 s, u32 target) {
-  assert(G->_g_flag == F_FLAG);
+  assert(G->_g_flag == NETFLOW_FLAG);
 
   bool *flag = (bool *)malloc(sizeof(bool));
   *flag = false;
@@ -102,7 +102,7 @@ InsertionArray *flowDFS(Graph *G, u32 s, u32 target) {
 // Modify `greedyFlow` to accept a `SearchFunction` parameter
 u32 greedyFlow(Graph *N, u32 s, u32 t, SearchFunction searchFunc) {
   assert(N != NULL);
-  assert(N->_g_flag == F_FLAG);
+  assert(N->_g_flag == NETFLOW_FLAG);
 
   u32 flowValue = 0;
 

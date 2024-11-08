@@ -59,7 +59,7 @@ u32* naturalOrder(Graph *G) {
  */
 u32 greedy(Graph *G, u32 *Order) {
     assert(G != NULL);
-    assert(G->_g_flag & C_FLAG);
+    assert(G->_g_flag & COL_FLAG);
 
 
     u32* usedColorsDyn = genArray(Δ(G) + 1);
@@ -110,7 +110,7 @@ u32 greedy(Graph *G, u32 *Order) {
  */
 bool twoColorable(Graph *G) {
     assert(G != NULL);
-    assert(G->_g_flag & C_FLAG);
+    assert(G->_g_flag & COL_FLAG);
 
     struct Queue* Q = createQueue();
     enQueue(Q, 0);
@@ -144,7 +144,7 @@ bool twoColorable(Graph *G) {
  */
 struct Queue** genColorQueues(Graph *G, u32 nColorsUsed) {
     assert(G != NULL);
-    assert(G->_g_flag & C_FLAG);
+    assert(G->_g_flag & COL_FLAG);
 
     struct Queue** D = (struct Queue**) calloc(nColorsUsed, sizeof(struct Queue**));
     if (D == NULL) {
@@ -199,7 +199,7 @@ u32* unfoldColorQueues(Graph *G, u32 nColorsUsed, struct Queue** D) {
  */
 u32* cardinalityOrder(Graph *G, u32 nColorsUsed) {
     assert(G != NULL);
-    assert(G->_g_flag & C_FLAG);
+    assert(G->_g_flag & COL_FLAG);
     struct Queue** D = genColorQueues(G, nColorsUsed);
     qsort(D, nColorsUsed, sizeof(struct Queue*), compareQueue);
     return unfoldColorQueues(G, nColorsUsed, D);
@@ -213,7 +213,7 @@ u32* cardinalityOrder(Graph *G, u32 nColorsUsed) {
  */
 u32* reverseOrder(Graph *G, u32 nColorsUsed) {
     assert(G != NULL);
-    assert(G->_g_flag & C_FLAG);
+    assert(G->_g_flag & COL_FLAG);
     struct Queue** D = genColorQueues(G, nColorsUsed);
     return unfoldColorQueues(G, nColorsUsed, D);
 }
@@ -230,7 +230,7 @@ u32* reverseOrder(Graph *G, u32 nColorsUsed) {
  */
 u32* divisibilityOrder(Graph *G, u32 nColorsUsed) {
     assert(G != NULL);
-    assert(G->_g_flag & C_FLAG);
+    assert(G->_g_flag & COL_FLAG);
     struct Queue** D = genColorQueues(G, nColorsUsed);
     u32 nColorsDivisibleByFour = 0;
     u32 nColorsDivisibleByTwo = 0;
