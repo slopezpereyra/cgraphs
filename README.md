@@ -35,8 +35,9 @@ type, as indicated by one of the following bit-flags:
 - `STD_FLAG` : A "standard" graph, i.e. unweighted, uncolored, undirected.
 - `D_FLAG` : A directed graph.
 - `W_FLAG` : A weighted graph.
-- `C_FLAG`: A colored graph.
-- `F_FLAG`: A flow network.
+- `COL_FLAG`: A colored graph.
+- `CAP_FLAG`: A colored graph.
+- `NETFLOW_FLAG`: A flow network.
 
 One may combine these flags with the `|` operator. For example, `D_FLAG |
 W_FLAG` specifies a directed weighted graph.
@@ -241,7 +242,7 @@ returns a pointer to a `Graph`, and the `Graph` pointed to is the found MST of
 
 ## Flow network algorithms
 
-The flag `F_FLAG` specifies that a `Graph` is a flow network. 
+The flag `NETFLOW_FLAG` specifies that a `Graph` is a flow network. 
 
 A flow network is formally a $5$-uple $(V, E, c, s, t)$, with  $c : E \mapsto
 \mathbb{N}$ and $s, t \in V$. ($c$ could be a mapping into any subset of $\mathbb{R}$, but this
@@ -252,10 +253,10 @@ its current flow $f(e) \in [0, c(e)]$, and hence the usual functions
 (`getEdgeWeight, setEdgeWeight`, etc.) should be use to manipulate $f$.
 
 A flow network can be read from the Penazzi format by setting the flag as
-`F_FLAG` and adding the capacity next to the weight of each edge. For instance, 
+`NETFLOW_FLAG` and adding the capacity next to the weight of each edge. For instance, 
 
 ```
-p edge 6 8 F_FLAG
+p edge 6 8 NETFLOW_FLAG
 e 0 1 0 10
 e 0 2 0 20
 e 1 3 0 10
@@ -293,7 +294,7 @@ which has complexity $O(m)$.
 The downside is that the flow found is not necessarily maximal.
 
 To find a flow $f$ using the greedy flow algorithm, assuming you have defined 
-a flow network `Graph *N` with the `F_FLAG`, call either
+a flow network `Graph *N` with the `NETFLOW_FLAG`, call either
 
 ```c
 u32 flowValue = greedyFlow(N, s, t, flowBFS)
@@ -332,57 +333,9 @@ assuming `n, m` are defined integers.
 
 A formal analysis of this algorithm reveals that its complexity is $O(n^2)$,
 and it should be obvious that it is particularly fast (and distant from the
-$n^2$ bound) for sparse graphs. To see why, consider the following formalization 
-of the algorithm:
+$n^2$ bound) for sparse graphs. For a detailed analysis of its complexity,
+see [this link](https://slopezpereyra.github.io/2024-07-08-RanGraphGen/).
 
-
-$$
-\begin{align*}
-    &\textbf{Input: } n, m\\
-    &T := (V, E) = \textbf{genRandomTree}(n)\\
-    &S_T := [\Gamma^c(v_1), \ldots, \Gamma^c(v_n)]  \\
-    &C := [ |S_T[1]|, \ldots, |S_T|[n]|]  \\
-    &V := [1, \ldots, n]   \\
-    &n' := n\\
-    &\textbf{while } |E(T)| < m \textbf{ do } \\ 
-    &\qquad i := \textbf{random}(1, n') \\ 
-    &\qquad v := V[i]\\
-    &\qquad \textbf{if }  d(v) == n - 1  \textbf{ do } \\ 
-    &\qquad \qquad \textbf{deleteAt}(V, i)\\ 
-    &\qquad\qquad n' := n' - 1 \\ 
-    &\qquad\textbf{else } \\ 
-    &\qquad\qquad j = \textbf{random}(1, C[v])\\
-    &\qquad\qquad w := S_T[v][j] \\ 
-    &\qquad\qquad E(T) := E(T) \cup  \\{ v, w \\} \\
-    &\qquad\qquad C[v] := C[v] - 1 \\ 
-    &\qquad\qquad \textbf{deleteAt}(S_T[v], j)  \\ 
-    &\qquad\qquad\textbf{deleteElement}(S_T[w], v)\\ 
-    &\qquad\textbf{fi}\\
-    &\textbf{od}\\
-    &\textbf{return }
-\end{align*}
-$$
-
-Generating a tree from a random Prüfer sequence is $O(n^2)$. Forming $S_T$ is
-also $O(n^2)$. Within the while loop there are simply index manipulations, so
-the complexity of the loop is $\varphi \times O(1) = \varphi$, with $\varphi$
-the complexity of the number of iterations.
-
-All iterations add an edge except those where a saturated vertex (i.e. one
-connected to all other vertices) is chosen. A saturated vertex may be chosen at
-most once. 
-
-$\therefore$ There are $O(n)$ iterations where a saturated vertex is chosen.
-
-Since the rest of the iterations add an edge, their number is fixed: $m- (n-1)$, 
-where $(n-1)$ is the number of edges in the spanned tree.
-
-$\therefore$ There are exactly $m -n + 1$ edge-adding iterations.
-
-$\therefore  \varphi = O(n) + O(m - n + 1) = O(n) + O(m) = O(m)$
-
-$\therefore$ The complexity of the algorithm is
-$O(n^2) + O(m) = O(n^2)$.
 
 > **Note**: Some graphs of $n$ vertices, $m$ edges, have more spanning trees than 
 others. This entails `genFromRandomTree` *does not* sample uniformly from the 
@@ -408,112 +361,14 @@ assuming `n`, `m` are integers.
 
 The algorithm is $O(n^4)$, or more precisely $O(n^4 - n^2m)$. (Recall that $m$
 here is *not* the number of edges in a $K_n$ but the desired number of edges in
-the generated graph). To see why, consider the formalization of the algorithm:
-
-$$
-\begin{align*}
-&(V, E) := \textbf{genKn}(n)\\
-&\Gamma := [\Gamma(v_1), \ldots, \Gamma(v_n)]\\
-&V_c := [v_1, \ldots, v_n]\\ 
-&\textbf{while } |E| \neq m \textbf{do } \\ 
-&\quad\quad v = \textbf{randFrom}(V_c) \\ 
-&\quad\quad w = \textbf{randomFrom}(\Gamma[v]) \\ 
-&\quad\quad \Gamma[v] = \Gamma[v] - \{w\} \\ 
-&\quad\quad \Gamma[w] = \Gamma[w] - \{v\} \\ 
-&\quad\quad \textbf{if BFSFind}(E - \{v, w\}, v, w) \textbf{ do}  \\ 
-&\quad\quad\quad\quad E := E - \{v, w\}\\
-&\quad\quad \textbf{fi}  \\ 
-&\quad\quad \textbf{if } d(v) = 1 \lor \Gamma[v] = \emptyset \textbf{ do } \\
-&\quad\quad\quad\quad V_c := V_c - \{v\} \\ 
-&\quad\quad\textbf{fi}  \\ 
-&\quad\quad \textbf{if } d(w) = 1 \lor \Gamma[w] = \emptyset \textbf{ do } \\
-&\quad\quad\quad\quad V_c := V_c - \{w\} \\ 
-&\quad\quad\textbf{fi}  \\ 
-&\textbf{od}
-\end{align*}
-$$
-
-Generating a $K_n$ is $O(n^2)$. The $\textbf{while}$ selects a random vertex
-from $V_c$ and attempts to erase one of its edges. There is only one case one
-an edge is not removed; namely, when the sampled edge is a bridge. This happens
-at most once per bridge. There are at most $n - 1$ bridges in a graph.
-
-$\therefore$ There are $O(n)$ iterations which do not remove an edge.
-
-The remaining iterations will remove an edge and there will be exactly
-$\frac{n(n-1)}{2} - m$ of them.
-
-$\therefore$ There are $O(n) + O(\frac{n(n-1)}{2} - m) = O(n^2 - m)$
-iterations.
-
-The operations in each iteration are $O(1)$ except BFS search, whose 
-complexity is $O(n^2)$.
-
-$\therefore$ The algorithm is $O(n^2) + O(n^2 - m)O(n^2) = O(n^4 - n^2m)$.
-
-In practice the algorithm will perform better than this. The BFS search stops
-whenever $w$ is found starting from $v$. This still is asymptotically $O(|E|)$,
-but in practice the bound will seldom be reached. Furthermore, BFS is ran over
-an increasingly sparser graph. Its asymptotic complexity is given by the number
-of edges in the initial $K_n$, but it decreases with each edge-removing
-iteration.
-
-#### Correctness of the top-down approach
-
-Proving that the *top-down* algorithm is correct and unbiased requires more
-formalization. Let $\mathcal{C}\_{n,m}$ be the set of connected graphs of $n$
-vertices, $m$ edges. Let $\mathcal{E}\_{n,m}$ be the class of edges which, if
-removed from a $K_n$, produce a graph in $\mathcal{C}\_{n,m}$. Since any $G
-\in \mathcal{C}\_{n,m}$ corresponds univocally to a set of edges $W \in
-\mathcal{E}\_{n,m}$,
-
-$$
-|\mathcal{E}\_{n,m}| = |\mathcal{C}\_{n,m}|
-$$
-
-$\therefore$ There is a bijection $f\_{n,m} : \mathcal{E}\_{n,m} \mapsto \mathcal{C}_{n,
-m}$ mapping a set of edges to the connected graph generated by removing those
-edges from $K_n$.
-
-We shall first prove that our algorithm constructs a $W \in \mathcal{E}\_{n,m}$
-and that it computes $f(W)$. Secondly, we shall prove that any $W \in
-\mathcal{E}\_{n,m}$ has an equal probability of being constructed.
-
-*(1)* The algorithm iteratively samples and removes edges ensuring that the
-connectivity invariant is preserved. It is trivial to see that it removes $k :=\binom{n}{2} - m$ edges. 
-
-Let $S = \\{e_1, \ldots, e_{k}\\}$ be the set of randomly sampled edges, where
-$e_i$ was sampled at the $i$th edge-removing iteration. Preserving the
-invariant entails that, across iterations, the sampling spaces $E_1, \ldots,
-E_r$ from which each $e_i$ was sampled are:
-
-- $E_1 = \\{ e \in W : W \in \mathcal{E}\_{n,m}  \\}$
-- $E_2 = \\{ e \in W : W \in \mathcal{E}\_{n,m} \land \\{ e_1 \\}  \subseteq  W  \\}$
-- $E_3 = \\{ e \in W : W \in \mathcal{E}\_{n,m} \land \\{ e_1, e_2 \\}  \subseteq  W  \\}$
-
-etc. Thus, the general form is 
-
-$$E_i = \\{ e \in W : W \in \mathcal{E}\_{n,m} \land \\{ e_1, \ldots, e\_{i-1}\\} \subseteq W \\} $$
-
-It follows that $S = \\{ e_1, \ldots, e_k \\} \subseteq W$ for some $W
-\in \mathcal{E}\_{n,m}$. But $|S| = |W| = k$. Then $S = W$ and $S \in
-\mathcal{E}\_{n,m}$. And since $S$ is the set of removed edges, the algorithm
-computes $f(S)$. $\blacksquare$
-
-*(2)* Since there is a bijection between $\mathcal{C}\_{n,m}$ and
-$\mathcal{E}\_{n,m}$, a graph is more probable than others if and only if there
-is a set $S \in \mathcal{E}\_{n,m}$ that is more probably constructed than
-others. This could only be true for two cases: *(1)* An edge or set of edges in
-$S$ is more likely to be chosen, or *(2)* $S$ contains more elements than other
-members of $\mathcal{E}\_{n,m}$. But *(1)* is impossible if the selection is
-random, and *(2)* contradicts that $|S| = \binom{n}{2} - m$ for every $S \in
-\mathcal{E}\_{n,m}$. $\blacksquare$
-
-$\therefore$ The algorithm is correct and unbiased.
+the generated graph). In practice, its complexity is much better, as observed 
+in a [more detailed analysis of its complexity](https://slopezpereyra.github.io/2024-07-08-RanGraphGen/).
+In that same link, it is also proven that the algorithm is unbiased, i.e. 
+that it samples random connected graphs with uniformity.
 
 #### Other generation algorithms 
 
-Aside from the top-down and bottom-up approaches, the library provides:
+There are simpler generating functions provided:
 
 - A function `genFromRandomTreeUnbound(u32 n)`, which uses the *bottom-up* approach 
 without specifying a desired number of edges, instead deciding it randomly.
