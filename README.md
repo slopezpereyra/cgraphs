@@ -36,11 +36,13 @@ type, as indicated by one of the following bit-flags:
 - `D_FLAG` : A directed graph.
 - `W_FLAG` : A weighted graph.
 - `COL_FLAG`: A colored graph.
-- `CAP_FLAG`: A colored graph.
+- `CAP_FLAG`: A graph whose edges have a capacity (i.e. an upper bound).
 - `NETFLOW_FLAG`: A flow network.
 
 One may combine these flags with the `|` operator. For example, `D_FLAG |
-W_FLAG` specifies a directed weighted graph.
+W_FLAG` specifies a directed weighted graph. Since a flow network is a
+directed graph with weights (flows) and capacities,`NETFLOW_FLAG` is simply
+`((W_FLAG | D_FLAG) | CAP_FLAG)` by definition.
 
 #### Reading and writing a graph
 
